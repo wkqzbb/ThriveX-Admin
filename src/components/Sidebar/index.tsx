@@ -10,6 +10,7 @@ import { useUserStore } from '@/stores';
 import { getRouteListAPI } from '@/api/Role'
 import { Route } from '@/types/app/route';
 import logo from '@/images/logo/logo.png'
+import useVersionData from '@/hooks/useVersionData';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -19,6 +20,8 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const store = useUserStore();
+
+  const version = useVersionData();
 
   const { pathname } = location;
 
@@ -235,7 +238,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           to: "/iter",
           path: "iter",
           icon: <BiBug className='text-[22px]' />,
-          name: "更新日志"
+          // name: <div>更新日志 <b className='inline-block w-3 h-3 ml-2 bg-green-400 rounded-full'></b></div>
+          name: <div>更新日志 <b className={`inline-block w-3 h-3 ml-2 ${version.tag_name === import.meta.env.VITE_VERSION ? 'bg-green-400' : 'bg-red-400'} rounded-full`}></b></div>
+          // version
         }
       ]
     }

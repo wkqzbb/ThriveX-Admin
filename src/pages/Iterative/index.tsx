@@ -30,14 +30,20 @@ const Home = () => {
             }
         ))
 
-        sessionStorage.setItem('blog_project_iterative', JSON.stringify(result))
-        project === "ThriveX-Blog" && setBlog_IterativeRecording(result)
-
-        sessionStorage.setItem('admin_project_iterative', JSON.stringify(result))
-        project === "ThriveX-Admin" && setAdmin_IterativeRecording(result)
-
-        sessionStorage.setItem('server_project_iterative', JSON.stringify(result))
-        project === "ThriveX-Server" && setServer_IterativeRecording(result)
+        switch (project) {
+            case "ThriveX-Blog":
+                sessionStorage.setItem('blog_project_iterative', JSON.stringify(result))
+                setBlog_IterativeRecording(result)
+                break;
+            case "ThriveX-Admin":
+                sessionStorage.setItem('admin_project_iterative', JSON.stringify(result))
+                setAdmin_IterativeRecording(result)
+                break;
+            case "ThriveX-Server":
+                sessionStorage.setItem('server_project_iterative', JSON.stringify(result))
+                setServer_IterativeRecording(result)
+                break;
+        }
     }
 
     useEffect(() => {
@@ -80,7 +86,7 @@ const Home = () => {
                 </div>
 
                 <div className='overflow-auto w-full'>
-                    <div className='flex w-[1350px]'>
+                    <div className='flex w-[1350px] mx-auto'>
                         <div className='w-[400px]'>
                             <h3 className='text-xl text-center pb-6 font-bold text-gradient block'>ThriveX-Blog</h3>
                             <Timeline mode="left" items={blog_iterativeRecording} />
