@@ -26,7 +26,6 @@ const ThemePage = () => {
         setLoading(true);
 
         const { data } = await getConfigDataAPI<Theme>("layout");
-        console.log(typeof data.social);
 
         setTheme(data);
         setSwiperText(data.swiper_text ? JSON.parse(data.swiper_text).join('\n') : '');
@@ -47,10 +46,10 @@ const ThemePage = () => {
 
         const updatedLayout = {
             ...theme,
-            swiperText: JSON.stringify(swiperText.split('\n')),
+            swiper_text: JSON.stringify(swiperText.split('\n')),
             social,
             covers: JSON.stringify(cover.split('\n')),
-            recoArticle: JSON.stringify(recoArticle.split('\n'))
+            reco_article: JSON.stringify(recoArticle.split('\n'))
         };
 
         await editConfigDataAPI("layout", updatedLayout);

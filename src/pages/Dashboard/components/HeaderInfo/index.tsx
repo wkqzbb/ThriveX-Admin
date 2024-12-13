@@ -5,7 +5,6 @@ import useVersionData from '@/hooks/useVersionData';
 
 const HeaderInfo = () => {
     const { user } = useUserStore();
-
     const version = useVersionData();
 
     return (
