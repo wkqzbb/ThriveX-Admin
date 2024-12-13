@@ -236,7 +236,7 @@ const FootprintPage = () => {
           </Form.Item>
 
           <Form.Item className='!mb-0 w-full'>
-            <Button type="primary" onClick={onSubmit} loading={btnLoading} className='w-full'>新增足迹</Button>
+            <Button type="primary" onClick={onSubmit} loading={btnLoading} className='w-full'>{isMethod === "edit" ? "编辑足迹" : "新增足迹"}</Button>
           </Form.Item>
         </Form>
       </Modal>
