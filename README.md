@@ -6,6 +6,10 @@
 
 <p align="center" style="font-size:20px; font-weight:700;">ThriveX</p>
 
+<p align="center">
+    官网：<a href="https://thrivex.liuyuyang.net/" target="_blank">https://thrivex.liuyuyang.net/</a>
+</p>
+
 <p align="center" style="margin-bottom:10px">年轻、高颜值、全开源、永不收费的现代化博客管理系统</p>
 
 ![](https://bu.dusays.com/2024/11/25/67445b7df3742.png)
@@ -22,10 +26,10 @@
 
 🛠️ **技术架构：**
 
-前端：React、**Nextjs**、TypeScript、Zustand、**TailwindCSS**、Antd、Scss、Echarts
+前端：React、**NextJS**、**TailwindCSS**、TypeScript、Zustand、React Form Hooks、Echarts、Antd、Scss、Vercel、Docker
 
 
-后端：**Spring Boot**、Mybatis Plus、MySQL、Qiniu、Socket.io、Swagger
+后端：**Spring Boot**、Mybatis Plus、MySQL、Qiniu、Swagger、Docker
 
 
 
@@ -195,14 +199,16 @@ lyy:
 
 ## 关于项目
 
-这个项目是我一个人从设计 -> 产品 -> 前端 -> 控制端 -> 后端以及数据库从 `0` 到 `1` 创造的，一个人的精力有限在刚开始可能会有很多隐藏的 `BUG`，希望大家能够及时在 `GitHub` 向我反馈，这样我也好加以改正，不断改善，成为最佳！
+这个项目是我一个人从设计 -> 产品 -> 前端 -> 控制端 -> 后端以及数据库从 `0` 到 `1` 创造的，一个人的精力有限，项目可能会存在一些隐藏的 `BUG`，希望大家能够及时在 `GitHub` 向我反馈，这样也好加以改正，不断改善，成为最佳！
 
 当然我更希望大家能够提交 `PR` 成为 `ThriveX` 的贡献者，大家一起参与进来，构建一个强大的博客管理系统！
 
 最后我想说该项目的风格借鉴了很多网站的灵感，下面我主要列举几个：
 
 [https://blog.zwying.com/](https://blog.zwying.com/)
+
 [https://www.blatr.cn/](https://www.blatr.cn/)
+
 [https://poetize.cn/](https://poetize.cn/)
 
 
