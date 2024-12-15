@@ -51,7 +51,7 @@ const RolePage = () => {
     // 获取路由列表
     const getRouteList = async () => {
         const { data } = await getRouteListAPI();
-        setRouteList(data.map(item => ({ key: item.id, title: item.path })) as { key: number, title: string }[]);
+        setRouteList(data.map(item => ({ key: item.id, title: item.description })) as { key: number, title: string }[]);
     };
 
     // 获取角色列表
