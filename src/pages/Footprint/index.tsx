@@ -4,7 +4,10 @@ import { titleSty } from '@/styles/sty';
 import Title from '@/components/Title';
 import { delFootprintDataAPI, getFootprintListAPI, addFootprintDataAPI, editFootprintDataAPI, getFootprintDataAPI } from '@/api/Footprint';
 import type { FilterForm, Footprint } from '@/types/app/footprint';
+import { GiPositionMarker } from "react-icons/gi";
+import { IoSearch } from "react-icons/io5";
 import dayjs from 'dayjs';
+import axios from 'axios';
 
 const FootprintPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -165,6 +168,37 @@ const FootprintPage = () => {
     setFootprintList(data as Footprint[]);
   }
 
+  // 通过详细地址获取纬度
+  const getGeocode = async () => {
+    const address = form.getFieldValue("address")
+
+    try {
+      const { data } = await axios.get('https://restapi.amap.com/v3/geocode/geo', {
+        params: {
+          address,
+          key: import.meta.env.VITE_GAODE_WEB_API // 替换为你的高德地图 API 密钥
+        }
+      });
+
+      if (data.geocodes.length > 0) {
+        const location = data.geocodes[0].location
+        form.setFieldValue("position", location)
+
+        // 立即触发校验
+        form.validateFields(['position']);
+
+        return data.geocodes[0].location;
+      } else {
+        message.warning('未找到该地址的经纬度');
+        return '';
+      }
+    } catch (error) {
+      console.error('获取地理编码时出错:', error);
+      message.error('获取地理编码时出错');
+      return '';
+    }
+  };
+
   return (
     <>
       <Title value="足迹管理">
@@ -214,7 +248,7 @@ const FootprintPage = () => {
           </Form.Item>
 
           <Form.Item label="坐标纬度" name="position" rules={[{ required: true, message: '坐标纬度不能为空' }]}>
-            <Input placeholder="请输入坐标纬度" />
+            <Input placeholder="请输入坐标纬度" prefix={<GiPositionMarker />} addonAfter={<IoSearch onClick={getGeocode} className='cursor-pointer' />} />
           </Form.Item>
 
           <Form.Item label="图片" name="images">
