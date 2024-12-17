@@ -36,7 +36,9 @@ export interface Theme {
     swiper_text: string,
     reco_article: string,
     social: string,
-    covers: string
+    covers: string,
+    record_name: string,
+    record_info: string
 }
 
 // 其他配置
