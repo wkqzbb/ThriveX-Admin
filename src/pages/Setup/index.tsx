@@ -39,7 +39,7 @@ const SetupPage = () => {
             title: "主题设置",
             description: "配置网站主题风格",
             icon: <BiLayout className={iconSty} />,
-            key: "layout"
+            key: "theme"
         },
         {
             title: "个人设置",
@@ -80,7 +80,7 @@ const SetupPage = () => {
                     <div className='w-full md:w-[80%] px-0 md:px-8'>
                         {active === "system" && <System />}
                         {active === "web" && <Web />}
-                        {active === "layout" && <Theme />}
+                        {active === "theme" && <Theme />}
                         {active === "my" && <My />}
                         {/* {active === "other" && <Other />} */}
                     </div>

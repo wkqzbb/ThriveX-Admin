@@ -176,7 +176,7 @@ const FootprintPage = () => {
       const { data } = await axios.get('https://restapi.amap.com/v3/geocode/geo', {
         params: {
           address,
-          key: import.meta.env.VITE_GAODE_WEB_API // 替换为你的高德地图 API 密钥
+          key: import.meta.env.VITE_GAODE_WEB_API
         }
       });
 
