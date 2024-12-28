@@ -22,7 +22,7 @@ const markers = (): BytemdPlugin => {
     remark: (processor) => processor.use(remarkFlexibleMarkers),
     actions: [
       {
-        title: 'markers',
+        title: '标记',
         icon: markerSvg,
         handler: {
           type: 'action',
@@ -50,13 +50,13 @@ const callouts = (): BytemdPlugin => {
         icon: calloutSvg,
         handler: {
           type: 'dropdown',
-          actions: calloutTypes.map(type => ({
-            title: type.title,
-            icon: type.icon,
+          actions: calloutTypes.map(({ title, icon, blockType }) => ({
+            title,
+            icon,
             handler: {
               type: 'action',
               click: (ctx) => {
-                ctx.appendBlock(`> ${type.blockType} ${type.title}\n> `);
+                ctx.appendBlock(`> ${blockType} ${title}\n> `);
               }
             }
           }))
@@ -66,13 +66,11 @@ const callouts = (): BytemdPlugin => {
   }
 }
 
-const plugins = [
+export default [
   gfm({ singleTilde: false }),
-  markers(),
+  // markers(),
   gemoji(),
   math(),
   highlight(),
   callouts()
-]
-
-export default plugins;
+];

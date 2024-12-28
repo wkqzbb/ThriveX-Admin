@@ -6,9 +6,7 @@ import { baseURL } from '@/utils/request';
 import { useUserStore } from '@/stores';
 
 import { Editor } from '@bytemd/react';
-import gfm from '@bytemd/plugin-gfm'
-import gemoji from '@bytemd/plugin-gemoji'
-import highlight from '@bytemd/plugin-highlight';
+import plugins from './plugins';
 import 'highlight.js/styles/vs2015.css';
 import 'bytemd/dist/index.css';
 import zh from 'bytemd/lib/locales/zh_Hans.json';
@@ -19,12 +17,6 @@ interface Props {
     value: string;
     onChange: (value: string) => void;
 }
-
-const plugins = [
-    gfm(),
-    gemoji(),
-    highlight()
-];
 
 const EditorMD = ({ value, onChange }: Props) => {
     const store = useUserStore();
