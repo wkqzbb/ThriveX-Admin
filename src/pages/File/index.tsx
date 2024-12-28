@@ -110,7 +110,7 @@ export default () => {
                                     fileList.map((item, index) =>
                                         <div
                                             key={index}
-                                            className={`group relative overflow-hidden w-44 h-44 p-[2px] flex flex-col items-center cursor-pointer m-4 border-2 ${file.url === item.url ? 'border-primary' : 'border-[#eee]'} rounded-md`}
+                                            className={`group relative overflow-hidden w-[21.625rem] h-44 p-[2px] flex flex-col items-center cursor-pointer m-4 border-2 ${file.url === item.url ? 'border-primary' : 'border-[#eee]'} rounded-md`}
                                             onClick={() => viewOpenFileInfo(item)}>
                                             <img src={item.url} alt="" className='rounded-md w-full h-full object-cover object-center' />
                                         </div>
