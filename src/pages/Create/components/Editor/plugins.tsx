@@ -5,6 +5,7 @@ import tipSvg from './icon/tip.svg?raw';
 import warningSvg from './icon/warning.svg?raw';
 import checkSvg from './icon/check.svg?raw';
 import dangerSvg from './icon/danger.svg?raw';
+
 import gemoji from '@bytemd/plugin-gemoji';
 import gfm from '@bytemd/plugin-gfm';
 import highlight from '@bytemd/plugin-highlight';
@@ -26,7 +27,7 @@ const markers = (): BytemdPlugin => {
         handler: {
           type: 'action',
           click: (ctx) => {
-              ctx.wrapText("==", "==");
+            ctx.wrapText("==", "==");
           }
         }
       }
@@ -66,7 +67,7 @@ const callouts = (): BytemdPlugin => {
 }
 
 const plugins = [
-  gfm({singleTilde: false}),
+  gfm({ singleTilde: false }),
   markers(),
   gemoji(),
   math(),
