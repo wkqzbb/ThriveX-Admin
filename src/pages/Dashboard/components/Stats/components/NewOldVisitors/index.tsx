@@ -65,8 +65,8 @@ const ChartThree: React.FC = () => {
     const data = await response.json();
     const { result } = data;
 
-    const newVisitors = result.items[1][0][1]
-    const oldVisitors = 100 - result.items[1][0][1]
+    const newVisitors = result.items[1][0][1] !== "--" ? result.items[1][0][1] : 0
+    const oldVisitors = result.items[1][0][1] !== "--" ? 100 - result.items[1][0][1] : 0
 
     setState({ series: [newVisitors, oldVisitors] })
     setResult({ newVisitors, oldVisitors })

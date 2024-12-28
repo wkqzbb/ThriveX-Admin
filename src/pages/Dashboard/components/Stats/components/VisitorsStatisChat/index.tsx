@@ -233,7 +233,7 @@ const VisitorsStatisChat = () => {
     useEffect(() => {
         setOptions((data) => ({
             ...data,
-            xaxis: { ...options.xaxis, categories: scopeData.categories }
+            xaxis: { ...options.xaxis, categories: scopeData.categories || [] }
         }));
 
         setState((prevState) => ({
@@ -241,11 +241,11 @@ const VisitorsStatisChat = () => {
             series: [
                 {
                     name: '访客数量',
-                    data: scopeData.series[0],
+                    data: scopeData.series[0] || 0,
                 },
                 {
                     name: 'IP数量',
-                    data: scopeData.series[1],
+                    data: scopeData.series[1] || 0,
                 },
             ],
         }));

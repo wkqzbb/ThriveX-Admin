@@ -70,7 +70,7 @@ export default () => {
             }
         });
 
-        setStats({ pv, ip, bounce: bounce / count, avgTime: formatTime(avgTime / count) })
+        setStats({ pv, ip, bounce: (bounce / count) || 0, avgTime: formatTime(avgTime / count) || "00:00:00" })
     };
 
     useEffect(() => {
