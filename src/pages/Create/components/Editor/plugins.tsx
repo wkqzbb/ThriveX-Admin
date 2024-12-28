@@ -68,7 +68,7 @@ const callouts = (): BytemdPlugin => {
 
 export default [
   gfm({ singleTilde: false }),
-  // markers(),
+  markers(),
   gemoji(),
   math(),
   highlight(),
