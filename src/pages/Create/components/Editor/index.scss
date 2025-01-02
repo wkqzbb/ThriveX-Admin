@@ -22,4 +22,8 @@
     .CodeMirror {
         @apply dark:text-white bg-white dark:bg-boxdark;
     }
+
+    .icon {
+        @apply dark:fill-white;
+    }
 }

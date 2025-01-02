@@ -15,11 +15,11 @@ import 'highlight.js/styles/vs2015.css';
 import 'katex/dist/katex.css';
 import rehypeCallouts from 'rehype-callouts';
 import 'rehype-callouts/theme/obsidian';
-import remarkFlexibleMarkers from "remark-flexible-markers";
+import { remarkMark } from 'remark-mark-highlight';
 
 const markers = (): BytemdPlugin => {
   return {
-    remark: (processor) => processor.use(remarkFlexibleMarkers),
+    remark: (processor) => processor.use(remarkMark),
     actions: [
       {
         title: '标记',
