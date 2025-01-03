@@ -185,6 +185,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               path: "user",
               name: "用户管理"
             },
+            {
+              to: "/storage",
+              path: "storage",
+              name: "存储管理"
+            },
           ]
         },
         {
