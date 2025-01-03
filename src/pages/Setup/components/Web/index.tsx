@@ -57,13 +57,13 @@ const WebPage = () => {
                     <Input placeholder="https://liuyuyang.net/" />
                 </Form.Item>
 
-                <Form.Item
+                {/* <Form.Item
                     label="网站图标"
                     name="favicon"
                     rules={[{ required: true, message: '网站图标不能为空' }]}
                 >
                     <Input placeholder="https://liuyuyang.net/favicon.ico" />
-                </Form.Item>
+                </Form.Item> */}
 
                 <Form.Item
                     label="网站描述"
