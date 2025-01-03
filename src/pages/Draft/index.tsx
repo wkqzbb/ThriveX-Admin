@@ -107,7 +107,7 @@ export default () => {
         <>
             <Title value="草稿箱" />
 
-            <Card className={`${titleSty} mt-2 min-h-[calc(100vh-250px)]`}>
+            <Card className={`${titleSty} mt-2 min-h-[calc(100vh-270px)]`}>
                 <Table
                     rowKey="id"
                     dataSource={articleList}

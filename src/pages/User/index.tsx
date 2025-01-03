@@ -205,7 +205,7 @@ const UserPage = () => {
                 </Form>
             </Card>
 
-            <Card className={`${titleSty} min-h-[calc(100vh-250px)]`}>
+            <Card className={`${titleSty} min-h-[calc(100vh-270px)]`}>
                 <Table
                     rowKey="id"
                     dataSource={userList}

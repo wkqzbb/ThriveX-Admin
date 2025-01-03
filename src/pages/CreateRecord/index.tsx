@@ -67,7 +67,7 @@ export default () => {
         <>
             <Title value="闪念" />
 
-            <Card className={`${titleSty} min-h-[calc(100vh-250px)]`}>
+            <Card className={`${titleSty} min-h-[calc(100vh-270px)]`}>
                 <div className="relative flex w-[800px] mx-auto mt-[50px]">
                     <TextArea
                         rows={10}
