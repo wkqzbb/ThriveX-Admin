@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Table, Button, Form, Input, Popconfirm, message, Card, Modal, Tag } from 'antd';
-import { addOssDataAPI, delOssDataAPI, editOssDataAPI, getOssListAPI, enableOssDataAPI, disableOssDataAPI } from '@/api/Oss';
+import { addOssDataAPI, delOssDataAPI, editOssDataAPI, getOssListAPI, enableOssDataAPI, disableOssDataAPI, getOssDataAPI } from '@/api/Oss';
 import type { Oss } from '@/types/app/oss';
 import Title from '@/components/Title';
 import type { ColumnsType } from 'antd/es/table';
+import { titleSty } from '@/styles/sty';
 
 const StoragePage = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -15,14 +16,9 @@ const StoragePage = () => {
 
     const columns: ColumnsType<Oss> = [
         { title: 'ID', dataIndex: 'id', key: 'id', align: 'center', width: 80 },
-        { title: '平台', dataIndex: 'platform', key: 'platform', align: 'center', width: 120 },
-        { title: 'Access Key', dataIndex: 'accessKey', key: 'accessKey' },
-        { title: '地域', dataIndex: 'endPoint', key: 'endPoint' },
-        { title: '存储桶', dataIndex: 'bucketName', key: 'bucketName' },
-        { title: '域名', dataIndex: 'domain', key: 'domain' },
-        { title: '根目录', dataIndex: 'basePath', key: 'basePath', align: 'center', width: 120 },
         {
             title: '状态',
+            fixed: 'left',
             dataIndex: 'isEnable',
             key: 'isEnable',
             align: 'center',
@@ -34,6 +30,22 @@ const StoragePage = () => {
                 </div>
             )
         },
+        {
+            title: '平台',
+            dataIndex: 'platform',
+            key: 'platform',
+            align: 'center',
+            width: 120,
+            render: (text: string) => (
+                <div>{text}</div>
+            )
+        },
+        // { title: 'Access Key', dataIndex: 'accessKey', key: 'accessKey' },
+        // { title: 'Secret Key', dataIndex: 'secretKey', key: 'secretKey' },
+        { title: '地域', dataIndex: 'endPoint', key: 'endPoint' },
+        { title: '存储桶', dataIndex: 'bucketName', key: 'bucketName' },
+        { title: '域名', dataIndex: 'domain', key: 'domain' },
+        { title: '根目录', dataIndex: 'basePath', key: 'basePath', align: 'center', width: 120 },
         {
             title: '操作',
             key: 'action',
@@ -81,9 +93,10 @@ const StoragePage = () => {
         getOssList();
     };
 
-    const editOssData = (record: Oss) => {
+    const editOssData = async (record: Oss) => {
         setOss(record);
-        form.setFieldsValue(record);
+        const { data } = await getOssDataAPI(record.id)
+        form.setFieldsValue(data);
         setIsModalOpen(true);
     };
 
@@ -135,7 +148,7 @@ const StoragePage = () => {
                 <Button type="primary" size='large' onClick={handleAdd}>新增配置</Button>
             </Title>
 
-            <Card className="mt-2 min-h-[calc(100vh-180px)]">
+            <Card className={`${titleSty} min-h-[calc(100vh-180px)]`}>
                 <Table
                     rowKey="id"
                     dataSource={ossList}
@@ -173,11 +186,14 @@ const StoragePage = () => {
                     </Form.Item>
 
                     <Form.Item
-                        label="AccessKey"
+                        label="Access Key"
                         name="accessKey"
-                        rules={[{ required: true, message: 'AccessKey不能为空' }]}
+                        rules={[
+                            { required: true, message: 'Access Key 不能为空' },
+                            { min: 10, max: 50, message: 'Access Key 限制在10~50个字符' }
+                        ]}
                     >
-                        <Input placeholder="请输入AccessKey" />
+                        <Input placeholder="请输入Access Key" />
                     </Form.Item>
 
                     <Form.Item
