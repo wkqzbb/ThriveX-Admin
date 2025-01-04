@@ -14,6 +14,7 @@
     "url": "https://liuyuyang.net"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.5.2",
     "@bytemd/plugin-gemoji": "^1.21.0",
     "@bytemd/plugin-gfm": "^1.21.0",
     "@bytemd/plugin-highlight": "^1.21.0",
