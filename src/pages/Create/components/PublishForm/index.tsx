@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { Form, Input, Button, Select, DatePicker, Cascader, FormProps, message, Switch, Radio } from "antd";
+import { Form, Input, Button, Select, DatePicker, Cascader, message, Switch, Radio } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { RuleObject } from "antd/es/form";
 
@@ -23,7 +23,8 @@ interface FieldType {
     cover: string;
     description: string;
     top: boolean;
-    status: Status,
+    isEncrypt: number;
+    status: Status;
     password: string
 }
 
@@ -39,6 +40,7 @@ const PublishForm = ({ data, closeModel }: { data: Article, closeModel: () => vo
 
     const [cateList, setCateList] = useState<Cate[]>([])
     const [tagList, setTagList] = useState<Tag[]>([])
+    const [isEncryptEnabled, setIsEncryptEnabled] = useState(false);
 
     useEffect(() => {
         if (!id) return form.resetFields()
@@ -54,14 +56,18 @@ const PublishForm = ({ data, closeModel }: { data: Article, closeModel: () => vo
 
         const tagIds = data.tagList!.map(item => item.id)
 
-        form.setFieldsValue({
+        const formValues = {
             ...data,
             status: data.config.status,
             password: data.config.password,
             cateIds,
             tagIds,
             createTime: dayjs(+data.createTime!)
-        })
+        }
+
+        form.setFieldsValue(formValues)
+        // 设置初始的加密状态
+        setIsEncryptEnabled(!!formValues.isEncrypt)
     }, [data, id])
 
     const getCateList = async () => {
@@ -86,6 +92,9 @@ const PublishForm = ({ data, closeModel }: { data: Article, closeModel: () => vo
 
     const onSubmit = async (values: FieldType, isDraft?: boolean) => {
         setBtnLoading(true)
+
+        console.log(values);
+        values.isEncrypt = values.isEncrypt ? 1 : 0
 
         // 如果是文章标签，则先判断是否存在，如果不存在则添加
         let tagIds: number[] = []
@@ -134,6 +143,7 @@ const PublishForm = ({ data, closeModel }: { data: Article, closeModel: () => vo
                     tagIds: tagIds.join(','),
                     isDraft: isDraft ? 1 : 0,
                     isDel: 0,
+                    isEncrypt: 0,
                     config: {
                         status: values.status,
                         password: values.password
@@ -228,7 +238,7 @@ const PublishForm = ({ data, closeModel }: { data: Article, closeModel: () => vo
                     <DatePicker showTime placeholder="选择文章发布时间" className="w-full" />
                 </Form.Item>
 
-                <Form.Item label="是否置顶" name="top">
+                <Form.Item label="是否置顶" name="top" valuePropName="checked">
                     <Switch />
                 </Form.Item>
 
@@ -240,9 +250,19 @@ const PublishForm = ({ data, closeModel }: { data: Article, closeModel: () => vo
                     </Radio.Group>
                 </Form.Item>
 
-                <Form.Item label="访问密码" name="password">
-                    <Input.Password placeholder="请输入访问密码" />
+                <Form.Item label="是否加密" name="isEncrypt" valuePropName="checked">
+                    <Switch onChange={(checked: boolean) => setIsEncryptEnabled(checked)} />
                 </Form.Item>
+
+                {isEncryptEnabled && (
+                    <Form.Item
+                        label="访问密码"
+                        name="password"
+                        rules={[{ required: isEncryptEnabled, message: '请输入访问密码' }]}
+                    >
+                        <Input.Password placeholder="请输入访问密码" />
+                    </Form.Item>
+                )}
 
                 <Form.Item className="!mb-0">
                     <Button type="primary" htmlType="submit" loading={btnLoading} className="w-full">{(id && !isDraftParams) ? "编辑文章" : "发布文章"}</Button>

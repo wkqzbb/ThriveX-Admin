@@ -24,6 +24,7 @@ export interface Article {
     comment?: number,
     config: Config,
     isDraft: number,
+    isEncrypt: number,
     isDel: number,
     createTime?: string,
 }
