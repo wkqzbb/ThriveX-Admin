@@ -1,7 +1,7 @@
 {
     "rewrites": [
         {
-            "source": "/api/:path*",
+            "source": "/baidu/:path*",
             "destination": "https://openapi.baidu.com/:path*"
         },
         {
