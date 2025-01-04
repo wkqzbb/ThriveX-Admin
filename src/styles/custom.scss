@@ -39,3 +39,16 @@
         transform: translate3d(0, -3px, 0) rotate(.01deg)
     }
 }
+
+// 瀑布流布局
+.masonry-grid {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    width: auto;
+}
+
+.masonry-grid_column {
+    padding-left: 10px;
+    background-clip: padding-box;
+}

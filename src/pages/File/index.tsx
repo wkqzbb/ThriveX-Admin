@@ -5,10 +5,18 @@ import FileUpload from '@/components/FileUpload'
 
 import fileSvg from './image/file.svg'
 import { delFileDataAPI, getDirListAPI, getFileListAPI } from '@/api/File'
-import { File } from '@/types/app/file'
+import { File, FileDir } from '@/types/app/file'
 import { PiKeyReturnFill } from "react-icons/pi";
 import { DeleteOutlined, DownloadOutlined, RotateLeftOutlined, RotateRightOutlined, SwapOutlined, UndoOutlined, ZoomInOutlined, ZoomOutOutlined, } from '@ant-design/icons';
+import Masonry from "react-masonry-css";
 import "./index.scss"
+
+const breakpointColumnsObj = {
+    default: 4,
+    1100: 3,
+    700: 2,
+    500: 1
+};
 
 export default () => {
     const [loading, setLoading] = useState(false)
@@ -17,7 +25,7 @@ export default () => {
     const [openFileInfoDrawer, setOpenFileInfoDrawer] = useState(false);
     const [openFilePreviewDrawer, setOpenFilePreviewDrawer] = useState(false);
 
-    const [dirList, setDirList] = useState<string[]>([])
+    const [dirList, setDirList] = useState<FileDir[]>([])
     const [fileList, setFileList] = useState<File[]>([])
 
     const [dirName, setDirName] = useState("")
@@ -33,7 +41,7 @@ export default () => {
 
     // 获取指定目录的文件列表
     const getFileList = async (dir: string) => {
-        const { data } = await getFileListAPI({ dir })
+        const { data } = await getFileListAPI(dir)
 
         if (!fileList.length && !(data as File[]).length) message.error("该目录中没有文件")
 
@@ -44,7 +52,10 @@ export default () => {
     // 删除图片
     const onDeleteImage = async (data: File) => {
         setLoading(true)
-        await delFileDataAPI(`${dirName}/${data.name}`)
+
+        let filePath = data.url.replace(/^https?:\/\//, '');
+
+        await delFileDataAPI(filePath)
         message.success("🎉 删除图片成功")
         getFileList(dirName)
         setFile({} as File)
@@ -107,22 +118,36 @@ export default () => {
                         {
                             fileList.length
                                 ? (
-                                    fileList.map((item, index) =>
-                                        <div
-                                            key={index}
-                                            className={`group relative overflow-hidden w-[21.625rem] h-44 p-[2px] flex flex-col items-center cursor-pointer m-4 border-2 ${file.url === item.url ? 'border-primary' : 'border-[#eee]'} rounded-md`}
-                                            onClick={() => viewOpenFileInfo(item)}>
-                                            <img src={item.url} alt="" className='rounded-md w-full h-full object-cover object-center' />
-                                        </div>
-                                    )
+                                    <Masonry
+                                        breakpointCols={breakpointColumnsObj}
+                                        className="masonry-grid"
+                                        columnClassName="masonry-grid_column"
+                                    >
+                                        {
+                                            fileList.map((item, index) =>
+                                                <div
+                                                    key={index}
+                                                    className={`group relative overflow-hidden rounded-md cursor-pointer mb-4 border-2 border-[#eee] dark:border-transparent hover:!border-primary p-1 ${file.url === item.url ? 'border-primary' : 'border-gray-100'}`}
+                                                    onClick={() => viewOpenFileInfo(item)}>
+                                                    <Image
+                                                        src={item.url}
+                                                        alt=""
+                                                        className='w-full rounded-md'
+                                                        loading="lazy"
+                                                        preview={false}
+                                                    />
+                                                </div>
+                                            )
+                                        }
+                                    </Masonry>
                                 )
-                                : dirList.map((dir, index) => (
+                                : dirList.map((item, index) => (
                                     <div
                                         key={index}
                                         className='group w-25 flex flex-col items-center cursor-pointer mx-4 my-2'
-                                        onClick={() => openDir(dir)}>
+                                        onClick={() => openDir(item.name)}>
                                         <img src={fileSvg} alt="" />
-                                        <p className='group-hover:text-primary transition-colors'>{dir}</p>
+                                        <p className='group-hover:text-primary transition-colors'>{item.name}</p>
                                     </div>
                                 ))
                         }

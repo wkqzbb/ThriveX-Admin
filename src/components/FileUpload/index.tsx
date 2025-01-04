@@ -2,12 +2,12 @@ import { useRef, useState } from 'react';
 import { InboxOutlined } from '@ant-design/icons';
 import { message, Modal, Radio, Select, Spin } from 'antd';
 import { useUserStore } from '@/stores';
-import { FileDir } from '@/types/app/file';
+import { DirList } from '@/types/app/file';
 import { baseURL } from '@/utils/request';
 import Compressor from 'compressorjs';
 
 interface UploadFileProps {
-    dir: FileDir,
+    dir: DirList,
     open: boolean,
     onSuccess: (urls: string[]) => void,
     onCancel: () => void
@@ -52,7 +52,7 @@ export default ({ dir, open, onCancel, onSuccess }: UploadFileProps) => {
         }
 
         // 发起网络请求
-        const res = await fetch(`${baseURL}/file`, {
+        const res = await fetch(`${baseURL}/file/plus`, {
             method: "POST",
             body: formData,
             headers: {
