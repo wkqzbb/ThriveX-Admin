@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Form, Input, Popconfirm, message, Card, Modal, Tag } from 'antd';
-import { addOssDataAPI, delOssDataAPI, editOssDataAPI, getOssListAPI, enableOssDataAPI, disableOssDataAPI, getOssDataAPI } from '@/api/Oss';
+import { Table, Button, Form, Input, Popconfirm, message, Card, Modal, Select } from 'antd';
+import { addOssDataAPI, delOssDataAPI, editOssDataAPI, getOssListAPI, enableOssDataAPI, disableOssDataAPI, getOssDataAPI, getOssPlatformListAPI } from '@/api/Oss';
 import type { Oss } from '@/types/app/oss';
 import Title from '@/components/Title';
 import type { ColumnsType } from 'antd/es/table';
@@ -12,6 +12,7 @@ const StoragePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [oss, setOss] = useState<Oss>({} as Oss);
     const [ossList, setOssList] = useState<Oss[]>([]);
+    const [platformList, setPlatformList] = useState<{ label: string, value: string, disabled: boolean }[]>([]);
     const [form] = Form.useForm();
 
     const columns: ColumnsType<Oss> = [
@@ -32,20 +33,15 @@ const StoragePage = () => {
         },
         {
             title: '平台',
-            dataIndex: 'platform',
-            key: 'platform',
+            dataIndex: 'platformName',
+            key: 'platformName',
             align: 'center',
-            width: 120,
-            render: (text: string) => (
-                <div>{text}</div>
-            )
+            width: 120
         },
-        // { title: 'Access Key', dataIndex: 'accessKey', key: 'accessKey' },
-        // { title: 'Secret Key', dataIndex: 'secretKey', key: 'secretKey' },
         { title: '地域', dataIndex: 'endPoint', key: 'endPoint' },
         { title: '存储桶', dataIndex: 'bucketName', key: 'bucketName' },
         { title: '域名', dataIndex: 'domain', key: 'domain' },
-        { title: '根目录', dataIndex: 'basePath', key: 'basePath', align: 'center', width: 120 },
+        { title: '文件目录', dataIndex: 'basePath', key: 'basePath', align: 'center', width: 120 },
         {
             title: '操作',
             key: 'action',
@@ -70,15 +66,32 @@ const StoragePage = () => {
         }
     ];
 
+    // 获取支持的平台列表
+    const getOssPlatformList = async () => {
+        // 获取已经使用的平台
+        const selectPlatformList = ossList.map(item => item.platform)
+
+        const { data } = await getOssPlatformListAPI();
+        setPlatformList(data.map(item => (
+            {
+                label: item.name,
+                value: item.value,
+                // 限制一个平台只能添加一个
+                disabled: selectPlatformList.includes(item.value)
+            }
+        )));
+    };
+
     const getOssList = async () => {
         setLoading(true);
         const { data } = await getOssListAPI();
-        setOssList(data as Oss[]);
+        setOssList(data);
         setLoading(false);
     };
 
     useEffect(() => {
         getOssList();
+        getOssPlatformList()
     }, []);
 
     const handleEnable = async (id: number) => {
@@ -110,6 +123,7 @@ const StoragePage = () => {
     const handleAdd = () => {
         setOss({} as Oss);
         form.resetFields();
+        form.setFieldsValue({});
         setIsModalOpen(true);
     };
 
@@ -135,11 +149,11 @@ const StoragePage = () => {
             setIsModalOpen(false);
             getOssList();
             form.resetFields();
+            setBtnLoading(false);
         } catch (error) {
             console.error('表单验证失败:', error);
+            setBtnLoading(false);
         }
-
-        setBtnLoading(false);
     };
 
     return (
@@ -172,18 +186,13 @@ const StoragePage = () => {
                 <Form
                     form={form}
                     layout="vertical"
-                    initialValues={oss}
                     onFinish={onSubmit}
                     size='large'
                     className='mt-6'
                 >
-                    <Form.Item
-                        label="平台名称"
-                        name="platform"
-                        rules={[{ required: true, message: '平台名称不能为空' }]}
-                    >
-                        <Input placeholder="请输入平台名称" />
-                    </Form.Item>
+                    {!oss.id && <Form.Item label="选择平台" name="platform" className='w-full'>
+                        <Select options={platformList} placeholder="请选择平台" />
+                    </Form.Item>}
 
                     <Form.Item
                         label="Access Key"
@@ -205,19 +214,19 @@ const StoragePage = () => {
                     </Form.Item>
 
                     <Form.Item
-                        label="EndPoint"
+                        label="地域"
                         name="endPoint"
-                        rules={[{ required: true, message: 'EndPoint不能为空' }]}
+                        rules={[{ required: true, message: '地域不能为空' }]}
                     >
-                        <Input placeholder="请输入EndPoint" />
+                        <Input placeholder="请输入地域" />
                     </Form.Item>
 
                     <Form.Item
-                        label="Bucket名称"
+                        label="存储桶"
                         name="bucketName"
-                        rules={[{ required: true, message: 'Bucket名称不能为空' }]}
+                        rules={[{ required: true, message: '存储桶不能为空' }]}
                     >
-                        <Input placeholder="请输入Bucket名称" />
+                        <Input placeholder="请输入存储桶" />
                     </Form.Item>
 
                     <Form.Item
@@ -229,11 +238,11 @@ const StoragePage = () => {
                     </Form.Item>
 
                     <Form.Item
-                        label="基础路径"
+                        label="文件目录"
                         name="basePath"
-                        rules={[{ required: true, message: '基础路径不能为空' }]}
+                        rules={[{ required: true, message: '文件目录不能为空' }]}
                     >
-                        <Input placeholder="请输入基础路径" />
+                        <Input placeholder="请输入文件目录" />
                     </Form.Item>
 
                     <Form.Item className='mb-0'>

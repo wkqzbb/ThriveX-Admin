@@ -1,6 +1,7 @@
 export interface Oss {
     id?: number;
     platform: string;
+    platformName?:string;
     accessKey: string;
     secretKey: string;
     endPoint: string;

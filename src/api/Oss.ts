@@ -17,10 +17,13 @@ export const getOssDataAPI = (id?: number) => Request<Oss>("GET", `/oss/${id}`)
 export const getOssListAPI = () => Request<Oss[]>("POST", `/oss/list`)
 
 // 获取启用的OSS列表
-export const getOssEnableListAPI = () => Request<Oss[]>("POST", `/oss/getEnableOss`)
+export const getOssEnableListAPI = () => Request<Oss[]>("GET", `/oss/getEnableOss`)
 
 // 启用OSS
 export const enableOssDataAPI = (id: number) => Request<Oss>("PATCH", `/oss/enable/${id}`)
 
 // 禁用OSS
 export const disableOssDataAPI = (id: number) => Request<Oss>("PATCH", `/oss/disable/${id}`)
+
+// 获取支持的OSS平台列表
+export const getOssPlatformListAPI = () => Request<{ name: string, value: string }[]>("GET", `/oss/platform`)
