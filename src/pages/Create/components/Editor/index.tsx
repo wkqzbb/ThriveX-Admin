@@ -30,7 +30,7 @@ const EditorMD = ({ value, onChange }: Props) => {
         formData.append("dir", "article");
         for (let i = 0; i < files.length; i++) formData.append('files', files[i])
 
-        const { data: { code, data } } = await axios.post(`${baseURL}/file/plus`, formData, {
+        const { data: { code, data } } = await axios.post(`${baseURL}/file`, formData, {
             headers: {
                 "Authorization": `Bearer ${store.token}`,
                 "Content-Type": "multipart/form-data"

@@ -194,24 +194,28 @@ const StoragePage = () => {
                         <Select options={platformList} placeholder="请选择平台" />
                     </Form.Item>}
 
-                    <Form.Item
-                        label="Access Key"
-                        name="accessKey"
-                        rules={[
-                            { required: true, message: 'Access Key 不能为空' },
-                            { min: 10, max: 50, message: 'Access Key 限制在10~50个字符' }
-                        ]}
-                    >
-                        <Input placeholder="请输入Access Key" />
-                    </Form.Item>
+                    {oss.platform !== "local-plus" && (
+                        <>
+                            <Form.Item
+                                label="Access Key"
+                                name="accessKey"
+                                rules={[
+                                    { required: true, message: 'Access Key 不能为空' },
+                                    { min: 10, max: 50, message: 'Access Key 限制在10~50个字符' }
+                                ]}
+                            >
+                                <Input placeholder="请输入Access Key" />
+                            </Form.Item>
 
-                    <Form.Item
-                        label="SecretKey"
-                        name="secretKey"
-                        rules={[{ required: true, message: 'SecretKey不能为空' }]}
-                    >
-                        <Input.Password placeholder="请输入SecretKey" />
-                    </Form.Item>
+                            <Form.Item
+                                label="SecretKey"
+                                name="secretKey"
+                                rules={[{ required: true, message: 'SecretKey不能为空' }]}
+                            >
+                                <Input.Password placeholder="请输入SecretKey" />
+                            </Form.Item>
+                        </>
+                    )}
 
                     <Form.Item
                         label="地域"
@@ -221,13 +225,17 @@ const StoragePage = () => {
                         <Input placeholder="请输入地域" />
                     </Form.Item>
 
-                    <Form.Item
-                        label="存储桶"
-                        name="bucketName"
-                        rules={[{ required: true, message: '存储桶不能为空' }]}
-                    >
-                        <Input placeholder="请输入存储桶" />
-                    </Form.Item>
+                    {
+                        oss.platform !== "local-plus" && (
+                            <Form.Item
+                                label="存储桶"
+                                name="bucketName"
+                                rules={[{ required: true, message: '存储桶不能为空' }]}
+                            >
+                                <Input placeholder="请输入存储桶" />
+                            </Form.Item>
+                        )
+                    }
 
                     <Form.Item
                         label="域名"
@@ -251,7 +259,7 @@ const StoragePage = () => {
                         </Button>
                     </Form.Item>
                 </Form>
-            </Modal>
+            </Modal >
         </>
     );
 };

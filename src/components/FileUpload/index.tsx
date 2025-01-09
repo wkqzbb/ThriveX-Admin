@@ -52,7 +52,7 @@ export default ({ dir, open, onCancel, onSuccess }: UploadFileProps) => {
         }
 
         // 发起网络请求
-        const res = await fetch(`${baseURL}/file/plus`, {
+        const res = await fetch(`${baseURL}/file`, {
             method: "POST",
             body: formData,
             headers: {
