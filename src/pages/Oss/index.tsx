@@ -194,7 +194,7 @@ const StoragePage = () => {
                         <Select options={platformList} placeholder="请选择平台" />
                     </Form.Item>}
 
-                    {oss.platform !== "local-plus" && (
+                    {oss.platform !== "local" && (
                         <>
                             <Form.Item
                                 label="Access Key"
@@ -226,7 +226,7 @@ const StoragePage = () => {
                     </Form.Item>
 
                     {
-                        oss.platform !== "local-plus" && (
+                        oss.platform !== "local" && (
                             <Form.Item
                                 label="存储桶"
                                 name="bucketName"
