@@ -10,6 +10,7 @@ import { PiKeyReturnFill } from "react-icons/pi";
 import { DeleteOutlined, DownloadOutlined, RotateLeftOutlined, RotateRightOutlined, SwapOutlined, UndoOutlined, ZoomInOutlined, ZoomOutOutlined, } from '@ant-design/icons';
 import Masonry from "react-masonry-css";
 import "./index.scss"
+import errorImg from './image/error.png'
 
 const breakpointColumnsObj = {
     default: 4,
@@ -53,9 +54,7 @@ export default () => {
     const onDeleteImage = async (data: File) => {
         setLoading(true)
 
-        let filePath = data.url.replace(/^https?:\/\//, '');
-
-        await delFileDataAPI(filePath)
+        await delFileDataAPI(data.url)
         message.success("🎉 删除图片成功")
         getFileList(dirName)
         setFile({} as File)
@@ -129,12 +128,13 @@ export default () => {
                                                     key={index}
                                                     className={`group relative overflow-hidden rounded-md cursor-pointer mb-4 border-2 border-[#eee] dark:border-transparent hover:!border-primary p-1 ${file.url === item.url ? 'border-primary' : 'border-gray-100'}`}
                                                     onClick={() => viewOpenFileInfo(item)}>
+
                                                     <Image
                                                         src={item.url}
-                                                        alt=""
                                                         className='w-full rounded-md'
                                                         loading="lazy"
                                                         preview={false}
+                                                        fallback={errorImg}
                                                     />
                                                 </div>
                                             )
@@ -201,6 +201,7 @@ export default () => {
                 <Image
                     src={file.url}
                     className='rounded-md object-cover object-center'
+                    fallback={errorImg}
                     preview={{
                         onVisibleChange: (visible) => setOpenFilePreviewDrawer(visible),
                         visible: openFilePreviewDrawer,
