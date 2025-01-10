@@ -85,8 +85,10 @@ export default () => {
                         message.warning('最多只能上传 4 张图片');
                         return;
                     }
+
                     let inputUrl = '';
-                    Modal.confirm({
+
+                    Modal.info({
                         title: '输入图片链接',
                         content: (
                             <Input
@@ -104,6 +106,7 @@ export default () => {
                                 message.error('链接必须以 http:// 或 https:// 开头');
                                 return Promise.reject();
                             }
+                            
                             setImageList([...imageList, inputUrl]);
                             return Promise.resolve();
                         }

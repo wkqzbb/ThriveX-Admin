@@ -1,3 +1,6 @@
+import { Modal, Input, message } from 'antd';
+
+import videoSvg from "./icon/video.svg?raw";
 import markerSvg from './icon/marker.svg?raw';
 import calloutSvg from './icon/callout.svg?raw';
 import noteSvg from './icon/note.svg?raw';
@@ -16,6 +19,45 @@ import 'katex/dist/katex.css';
 import rehypeCallouts from 'rehype-callouts';
 import 'rehype-callouts/theme/obsidian';
 import { remarkMark } from 'remark-mark-highlight';
+
+const videos = (): BytemdPlugin => {
+  return {
+    actions: [
+      {
+        title: '视频',
+        icon: videoSvg,
+        handler: {
+          type: 'action',
+          click: (ctx) => {
+            let videoUrl = '';
+
+            Modal.info({
+              title: '插入视频',
+              content: <Input placeholder="请输入视频链接" onChange={(e) => videoUrl = e.target.value.trim()} />,
+              cancelText: '取消',
+              okText: '确认',
+              onOk: () => {
+                if (!videoUrl) {
+                  message.error('请输入视频链接');
+                  return Promise.reject();
+                }
+
+                if (!/^https?:\/\//i.test(videoUrl)) {
+                  message.error('视频链接必须以 http:// 或 https:// 开头');
+                  return Promise.reject();
+                }
+                
+                ctx.appendBlock(`[jvideo](${videoUrl})`);
+              },
+              maskClosable: true,
+              keyboard: true
+            });
+          }
+        }
+      }
+    ]
+  }
+}
 
 const markers = (): BytemdPlugin => {
   return {
@@ -43,6 +85,7 @@ const callouts = (): BytemdPlugin => {
     { title: 'Check', icon: checkSvg, blockType: '[!CHECK]' },
     { title: 'Danger', icon: dangerSvg, blockType: '[!DANGER]' }
   ];
+
   return {
     rehype: (processor) => processor.use(rehypeCallouts),
     actions: [
@@ -67,6 +110,7 @@ const callouts = (): BytemdPlugin => {
 }
 
 export default [
+  videos(),
   gfm({ singleTilde: false }),
   markers(),
   gemoji(),
