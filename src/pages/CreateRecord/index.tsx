@@ -69,12 +69,22 @@ export default () => {
             {
                 key: 'upload',
                 label: '上传图片',
-                onClick: () => setIsModalOpen(true)
+                onClick: () => {
+                    if (imageList.length >= 4) {
+                        message.warning('最多只能上传 4 张图片');
+                        return;
+                    }
+                    setIsModalOpen(true);
+                }
             },
             {
                 key: 'input',
                 label: '输入链接',
                 onClick: () => {
+                    if (imageList.length >= 4) {
+                        message.warning('最多只能上传 4 张图片');
+                        return;
+                    }
                     let inputUrl = '';
                     Modal.confirm({
                         title: '输入图片链接',
@@ -107,18 +117,19 @@ export default () => {
         <>
             <Title value="闪念" />
 
-            <Card className={`${titleSty} min-h-[calc(100vh-270px)]`}>
-                <div className="relative flex w-[800px] mx-auto mt-[50px]">
+            <Card className={`${titleSty} min-h-[calc(100vh-180px)]`}>
+                <div className="relative flex w-[90%] xl:w-[800px] mx-auto mt-[50px]">
                     <TextArea
                         rows={10}
                         maxLength={500}
                         placeholder="记录此刻！"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        className="w-[800px] p-4 border-2 border-[#eee] dark:border-strokedark text-base rounded-md" />
+                        className="w-full p-4 border-2 border-[#eee] dark:border-strokedark text-base rounded-md" 
+                    />
 
-                    <div className="absolute bottom-4 left-4 flex items-end space-x-3">
-                        <div className="flex space-x-2 overflow-x-auto">
+                    <div className="absolute bottom-4 left-4 flex items-end space-x-3 max-w-[calc(100%-80px)]">
+                        <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
                             {imageList.length > 0 && imageList.map((item, index) => (
                                 <div key={index} className="group overflow-hidden relative shrink-0">
                                     <div className="absolute top-0 -right-6 group-hover:right-0 z-10 bg-slate-600 rounded-full cursor-pointer p-1" onClick={() => handleDelImage(item)}>
@@ -128,21 +139,27 @@ export default () => {
                                     <Image
                                         key={index}
                                         src={item}
-                                        width={100}
-                                        height={100}
+                                        width={80}
+                                        height={80}
                                         preview={false}
-                                        className='rounded-lg'
+                                        className='rounded-lg md:w-[100px] md:h-[100px] xs:w-20 xs:h-20 w-15 h-15 object-cover'
                                     />
                                 </div>
                             ))}
                         </div>
                         
                         <Dropdown menu={dropdownItems} placement="top">
-                            <LuImagePlus className="mb-1 text-4xl text-slate-700 dark:text-white hover:text-primary dark:hover:text-primary cursor-pointer shrink-0" />
+                            <LuImagePlus className="mb-1 text-3xl md:text-4xl text-slate-700 dark:text-white hover:text-primary dark:hover:text-primary cursor-pointer shrink-0" />
                         </Dropdown>
                     </div>
 
-                    <Button type="primary" size="large" icon={<BiLogoTelegram className="text-xl" />} className="absolute bottom-4 right-4" onClick={onSubmit} />
+                    <Button 
+                        type="primary" 
+                        size="large" 
+                        icon={<BiLogoTelegram className="text-xl" />} 
+                        className="absolute bottom-4 right-4" 
+                        onClick={onSubmit} 
+                    />
                 </div>
             </Card>
 

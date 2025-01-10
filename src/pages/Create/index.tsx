@@ -11,6 +11,7 @@ import { getArticleDataAPI } from '@/api/Article'
 
 import { BiSave } from "react-icons/bi";
 import { AiOutlineEdit, AiOutlineSend } from 'react-icons/ai';
+import { titleSty } from '@/styles/sty';
 
 const CreatePage = () => {
   const [params] = useSearchParams()
@@ -175,7 +176,7 @@ const CreatePage = () => {
         </div>
       </Title>
 
-      <Card className='[&>.ant-card-body]:!p-0 overflow-hidden rounded-xl'>
+      <Card className={`${titleSty} overflow-hidden rounded-xl min-h-[calc(100vh-180px)]`}>
         <Editor value={content} onChange={(value) => setContent(value)} />
 
         <Drawer
