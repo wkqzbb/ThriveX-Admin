@@ -139,10 +139,8 @@ export default () => {
                                     <Image
                                         key={index}
                                         src={item}
-                                        width={80}
-                                        height={80}
                                         preview={false}
-                                        className='rounded-lg md:w-[100px] md:h-[100px] xs:w-20 xs:h-20 w-15 h-15 object-cover'
+                                        className='rounded-lg md:!w-[100px] md:!h-[100px] xs:!w-20 xs:!h-20 !w-15 !h-15 object-cover'
                                     />
                                 </div>
                             ))}
