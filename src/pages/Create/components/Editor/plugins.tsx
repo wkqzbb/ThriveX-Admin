@@ -19,9 +19,54 @@ import 'katex/dist/katex.css';
 import rehypeCallouts from 'rehype-callouts';
 import 'rehype-callouts/theme/obsidian';
 import { remarkMark } from 'remark-mark-highlight';
+import type { Plugin } from 'unified';
+import { visit } from 'unist-util-visit';
+import type { Element, Root } from 'hast';
+
+const rehypeDouyinVideo: Plugin<[], Root> = () => {
+  return (tree) => {
+    visit(tree, 'element', (node: Element) => {
+      if (node.tagName === 'p') {
+        const link = node.children[0];
+        if (
+          link.type === 'element' &&
+          link.tagName === 'a' &&
+          link.properties?.href &&
+          typeof link.properties.href === 'string'
+        ) {
+          const match = /(?:ixigua\.com|douyin\.com)\/(\d+)/.exec(link.properties.href);
+          if (match) {
+            const videoId = match[1];
+            const wrapperDiv = {
+              type: 'element',
+              tagName: 'div',
+              properties: {
+                className: 'flex justify-center'
+              },
+              children: [{
+                type: 'element',
+                tagName: 'iframe',
+                properties: {
+                  src: `https://open.douyin.com/player/video?vid=${videoId}&autoplay=0`,
+                  referrerPolicy: 'unsafe-url',
+                  allowFullScreen: true,
+                  className: 'douyin'
+                },
+                children: []
+              }]
+            };
+            
+            Object.assign(node, wrapperDiv);
+          }
+        }
+      }
+    });
+  };
+};
 
 const videos = (): BytemdPlugin => {
   return {
+    rehype: (processor) => processor.use(rehypeDouyinVideo),
     actions: [
       {
         title: '视频',
