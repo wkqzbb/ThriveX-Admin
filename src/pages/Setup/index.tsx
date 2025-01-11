@@ -22,6 +22,7 @@ const SetupPage = () => {
     const [active, setActive] = useState("system");
     
     const iconSty = "w-5 h-8 mr-1"
+    
     const list: Setup[] = [
         {
             title: "系统设置",

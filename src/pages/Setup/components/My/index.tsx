@@ -12,36 +12,43 @@ interface UserForm {
 }
 
 const UserPage = () => {
-    const [form] = Form.useForm<UserForm>();
     const [loading, setLoading] = useState<boolean>(false);
+
+    const [form] = Form.useForm<UserForm>();
     const store = useUserStore();
 
     const getUserData = async () => {
-        setLoading(true);
-
-        const { data } = await getUserDataAPI(store.user?.id);
-        store.setUser(data);
-        form.setFieldsValue(data);
+        try {
+            const { data } = await getUserDataAPI(store.user?.id);
+            store.setUser(data);
+            form.setFieldsValue(data);
+        } catch (error) {
+            setLoading(false);
+        }
 
         setLoading(false);
     };
 
     useEffect(() => {
+        setLoading(true);
         getUserData();
     }, []);
 
     const onSubmit = async (values: UserForm) => {
         setLoading(true)
 
-        await editUserDataAPI({
-            id: store.user.id, ...values,
-            role: undefined
-        });
-        message.success("🎉 修改用户信息成功");
-        store.setUser(values as User); 
-        getUserData();
+        try {
+            await editUserDataAPI({
+                id: store.user.id, ...values,
+                role: undefined
+            });
 
-        setLoading(false)
+            await getUserData();
+            message.success("🎉 修改用户信息成功");
+            store.setUser(values as User);
+        } catch (error) {
+            setLoading(false)
+        }
     };
 
     return (
@@ -88,7 +95,7 @@ const UserPage = () => {
                 </Form.Item>
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" className="w-full" loading={loading}>编辑信息</Button>
+                    <Button type="primary" htmlType="submit" className="w-full" loading={loading}>保存</Button>
                 </Form.Item>
             </Form>
         </div>

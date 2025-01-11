@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Table, Button, Form, Input, Popconfirm, message, Card } from 'antd';
-import { getRouteListAPI, addRouteDataAPI, editRouteDataAPI, delRouteDataAPI } from '@/api/Route';
+import { getRouteListAPI, addRouteDataAPI, editRouteDataAPI, delRouteDataAPI, getRouteDataAPI } from '@/api/Route';
 import { Route } from '@/types/app/route';
 import Title from '@/components/Title';
 import { ColumnsType } from 'antd/es/table';
@@ -8,6 +8,8 @@ import { ColumnsType } from 'antd/es/table';
 const RoutePage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
+
+    const [form] = Form.useForm();
 
     const [route, setRoute] = useState<Route>({} as Route);
     const [list, setList] = useState<Route[]>([]);
@@ -30,50 +32,73 @@ const RoutePage = () => {
     ];
 
     const getRouteList = async () => {
-        setLoading(true);
-        const { data } = await getRouteListAPI();
-        setList(data as Route[]);
+        try {
+            const { data } = await getRouteListAPI();
+            setList(data);
+        } catch (error) {
+            setLoading(false);
+        }
+
         setLoading(false);
     };
 
     useEffect(() => {
+        setLoading(true);
         getRouteList();
     }, []);
 
-    const [form] = Form.useForm();
-    const editRouteData = (record: Route) => {
-        setRoute(record);
-        form.setFieldsValue(record);
+    const editRouteData = async (record: Route) => {
+        setLoading(true)
+
+        try {
+            const { data } = await getRouteDataAPI(record.id);
+            setRoute(data);
+            form.setFieldsValue(data);
+        } catch (error) {
+            setLoading(false)
+        }
+
+        setLoading(false)
     };
 
     const delRouteData = async (id: number) => {
         setLoading(true);
-        await delRouteDataAPI(id);
-        message.success('🎉 删除路由成功');
-        getRouteList();
+
+        try {
+            await delRouteDataAPI(id);
+            await getRouteList();
+            message.success('🎉 删除路由成功');
+        } catch (error) {
+            setLoading(false)
+        }
     };
 
     const onSubmit = async () => {
         setLoading(true);
         setBtnLoading(true)
-        
-        form.validateFields().then(async (values: Route) => {
-            
-            if (route.id) {
-                await editRouteDataAPI({ ...route, ...values });
-                message.success('🎉 编辑路由成功');
-            } else {
-                await addRouteDataAPI(values);
-                message.success('🎉 新增路由成功');
-            }
 
-            getRouteList();
-            form.resetFields();
-            form.setFieldsValue({ path: '', description: '' })
-            setRoute({} as Route);
-        });
+        try {
+            form.validateFields().then(async (values: Route) => {
+                if (route.id) {
+                    await editRouteDataAPI({ ...route, ...values });
+                    message.success('🎉 编辑路由成功');
+                } else {
+                    await addRouteDataAPI(values);
+                    message.success('🎉 新增路由成功');
+                }
 
-        setBtnLoading(false)
+                await getRouteList();
+                form.resetFields();
+                form.setFieldsValue({ path: '', description: '' })
+                setRoute({} as Route);
+            });
+        } catch (error) {
+            setLoading(false)
+            setBtnLoading(true)
+        }
+
+        setLoading(false)
+        setBtnLoading(true)
     };
 
     return (

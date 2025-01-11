@@ -12,7 +12,7 @@ import axios from 'axios';
 const FootprintPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState(false)
-  const [modalLoading, setModalLoading] = useState(false)
+  const [editLoading, setEditLoading] = useState(false)
 
   const [footprintList, setFootprintList] = useState<Footprint[]>([]);
   const [isModelOpen, setIsModelOpen] = useState(false);
@@ -129,7 +129,7 @@ const FootprintPage = () => {
   };
 
   const editFootprintData = async (id: number) => {
-    setModalLoading(true);
+    setEditLoading(true);
 
     try {
       setIsMethod("edit");
@@ -143,10 +143,10 @@ const FootprintPage = () => {
       setFootprint(data);
       form.setFieldsValue(data);
     } catch (error) {
-      setModalLoading(false);
+      setEditLoading(false);
     }
 
-    setModalLoading(false);
+    setEditLoading(false);
   };
 
   const onSubmit = async () => {
@@ -196,7 +196,7 @@ const FootprintPage = () => {
 
   // 通过详细地址获取纬度
   const getGeocode = async () => {
-    setModalLoading(true)
+    setEditLoading(true)
     
     try {
       const address = form.getFieldValue("address")
@@ -215,14 +215,14 @@ const FootprintPage = () => {
         // 立即触发校验
         form.validateFields(['position']);
 
-        setModalLoading(false)
+        setEditLoading(false)
 
         return data.geocodes[0].location;
       } else {
         message.warning('未找到该地址的经纬度');
       }
     } catch (error) {
-      setModalLoading(false)
+      setEditLoading(false)
     }
 
     
@@ -266,7 +266,7 @@ const FootprintPage = () => {
         />
       </Card>
 
-      <Modal loading={modalLoading} title={isMethod === "edit" ? "编辑足迹" : "新增足迹"} open={isModelOpen} onCancel={closeModel} destroyOnClose footer={null}>
+      <Modal loading={editLoading} title={isMethod === "edit" ? "编辑足迹" : "新增足迹"} open={isModelOpen} onCancel={closeModel} destroyOnClose footer={null}>
         <Form form={form} layout="vertical" initialValues={footprint} size='large' preserve={false} className='mt-6'>
           <Form.Item label="标题" name="title" rules={[{ required: true, message: '标题不能为空' }]}>
             <Input placeholder="请输入标题" />

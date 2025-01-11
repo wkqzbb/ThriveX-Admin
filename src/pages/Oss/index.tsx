@@ -9,7 +9,7 @@ import { titleSty } from '@/styles/sty';
 const StoragePage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false);
-    const [modalLoading, setModalLoading] = useState(false)
+    const [editLoading, setEditLoading] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [oss, setOss] = useState<Oss>({} as Oss);
@@ -122,7 +122,7 @@ const StoragePage = () => {
     };
 
     const editOssData = async (record: Oss) => {
-        setModalLoading(true)
+        setEditLoading(true)
 
         try {
             setIsModalOpen(true);
@@ -131,10 +131,10 @@ const StoragePage = () => {
             setOss(data);
             form.setFieldsValue(data);
         } catch (error) {
-            setModalLoading(false)
+            setEditLoading(false)
         }
 
-        setModalLoading(false)
+        setEditLoading(false)
     };
 
     const delOssData = async (id: number) => {
@@ -207,7 +207,7 @@ const StoragePage = () => {
             </Card>
 
             <Modal
-                loading={modalLoading}
+                loading={editLoading}
                 title={oss.id ? "编辑存储配置" : "新增存储配置"}
                 open={isModalOpen}
                 onCancel={handleCancel}

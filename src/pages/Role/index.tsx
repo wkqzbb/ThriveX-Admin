@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Table, Button, Form, Input, Popconfirm, message, Card, Modal, Transfer, Spin } from 'antd';
 import { getRouteListAPI } from '@/api/Route';
-import { getRoleListAPI, addRoleDataAPI, editRoleDataAPI, delRoleDataAPI, getRouteListAPI as getRoleRouteListAPI, bindingRouteAPI } from '@/api/Role';
+import { getRoleListAPI, addRoleDataAPI, editRoleDataAPI, delRoleDataAPI, getRouteListAPI as getRoleRouteListAPI, bindingRouteAPI, getRoleDataAPI } from '@/api/Role';
 import { Role } from '@/types/app/role';
 import Title from '@/components/Title';
 import { ColumnsType } from 'antd/es/table';
@@ -9,8 +9,11 @@ import "./index.scss"
 
 const RolePage = () => {
     const [loading, setLoading] = useState<boolean>(false);
+    const [btnLoading, setBtnLoading] = useState(false)
+    const [editLoading, setEditLoading] = useState<boolean>(false);
     const [bindingLoading, setBindingLoading] = useState<boolean>(false);
-    const [addLoading, setAddLoading] = useState(false)
+
+    const [form] = Form.useForm();
 
     const [id, setId] = useState(0)
     const [role, setRole] = useState<Role>({} as Role);
@@ -44,7 +47,6 @@ const RolePage = () => {
     // 获取指定角色的路由列表
     const getRoleRouteList = async (id: number) => {
         const { data } = await getRoleRouteListAPI(id);
-
         setTargetKeys(data.map(item => item.id) as number[])
     };
 
@@ -56,75 +58,95 @@ const RolePage = () => {
 
     // 获取角色列表
     const getRoleList = async () => {
-        setLoading(true);
-        const { data } = await getRoleListAPI();
-        setRoleList(data as Role[]);
+        try {
+            const { data } = await getRoleListAPI();
+            setRoleList(data as Role[]);
+        } catch (error) {
+            setLoading(false);
+        }
+
         setLoading(false);
     };
 
     useEffect(() => {
+        setLoading(true);
         getRoleList()
         getRouteList()
     }, []);
 
-
-    const [form] = Form.useForm();
-
+    // 绑定路由
     const bindingRoute = (record: Role) => {
         setIsModalOpen(true)
         getRoleRouteList(record.id)
         setId(record.id)
     }
 
-    const editRoleData = (record: Role) => {
-        setRole(record);
-        form.setFieldsValue(record);
+    const editRoleData = async (record: Role) => {
+        setEditLoading(true);
+
+        try {
+            const { data } = await getRoleDataAPI(record.id);
+            setRole(data);
+            form.setFieldsValue(data);
+        } catch (error) {
+            setEditLoading(false);
+        }
+
+        setEditLoading(false);
     };
 
     const delRoleData = async (id: number) => {
         setLoading(true);
-        await delRoleDataAPI(id);
-        message.success('🎉 删除角色成功');
-        getRoleList();
+
+        try {
+            await delRoleDataAPI(id);
+            await getRoleList();
+            message.success('🎉 删除角色成功');
+        } catch (error) {
+            setLoading(false);
+        }
     };
 
     const onSubmit = async () => {
-        setLoading(true);
-        setAddLoading(true)
+        setBtnLoading(true)
 
-        form.validateFields().then(async (values: Role) => {
-            if (role.id) {
-                await editRoleDataAPI({ ...role, ...values });
-                message.success('🎉 编辑角色成功');
-            } else {
-                await addRoleDataAPI(values);
-                message.success('🎉 新增角色成功');
-            }
+        try {
+            form.validateFields().then(async (values: Role) => {
+                if (role.id) {
+                    await editRoleDataAPI({ ...role, ...values });
+                    message.success('🎉 编辑角色成功');
+                } else {
+                    await addRoleDataAPI(values);
+                    message.success('🎉 新增角色成功');
+                }
 
-            getRoleList();
-            form.resetFields();
-            form.setFieldsValue({ name: '', description: '' })
-            setRole({} as Role);
-        });
+                await getRoleList();
+                form.resetFields();
+                form.setFieldsValue({ name: '', description: '' })
+                setRole({} as Role);
+            });
+        } catch (error) {
+            setBtnLoading(false)
+        }
 
-        setAddLoading(false)
+        setBtnLoading(false)
     };
 
-    const onChange: any = (list: number[]) => {
-        setTargetKeys(list);
-    };
+    // 设置目标路由
+    const onChange: any = (list: number[]) => setTargetKeys(list);
 
     // 绑定路由
     const onBindingRouteSubmit = async () => {
         setBindingLoading(true);
-        await bindingRouteAPI(id, targetKeys)
-        setBindingLoading(false)
 
-        message.success('🎉 绑定成功');
-        setIsModalOpen(false)
-
-        // 刷新页面
-        window.location.reload()
+        try {
+            await bindingRouteAPI(id, targetKeys)
+            message.success('🎉 绑定成功');
+            // 刷新页面
+            window.location.reload()
+        } catch (error) {
+            setBindingLoading(false);
+        }
     }
 
     // 让n改变 触发Transfer重新渲染
@@ -157,7 +179,7 @@ const RolePage = () => {
                         </Form.Item>
 
                         <Form.Item>
-                            <Button type="primary" htmlType="submit" loading={addLoading} className="w-full">{role.id ? '编辑角色' : '新增角色'}</Button>
+                            <Button type="primary" htmlType="submit" loading={btnLoading} className="w-full">{role.id ? '编辑角色' : '新增角色'}</Button>
                         </Form.Item>
                     </Form>
                 </Card>
@@ -177,7 +199,7 @@ const RolePage = () => {
                 </Card>
             </div>
 
-            <Modal title="角色权限" open={isModalOpen} onCancel={() => [setIsModalOpen(false), setN(n + 1)]} footer={null} className='RolePageModal'>
+            <Modal loading={editLoading} title="角色权限" open={isModalOpen} onCancel={() => [setIsModalOpen(false), setN(n + 1)]} footer={null} className='RolePageModal'>
                 <div className='flex justify-center py-6'>
                     <Spin spinning={bindingLoading}>
                         <Transfer

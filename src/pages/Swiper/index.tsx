@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Image, Form, Input, Tabs, Card, Popconfirm, message } from 'antd';
-import { getSwiperListAPI, addSwiperDataAPI, editSwiperDataAPI, delSwiperDataAPI } from '@/api/Swiper';
+import { Table, Button, Image, Form, Input, Tabs, Card, Popconfirm, message, Spin } from 'antd';
+import { getSwiperListAPI, addSwiperDataAPI, editSwiperDataAPI, delSwiperDataAPI, getSwiperDataAPI } from '@/api/Swiper';
 import { Swiper } from '@/types/app/swiper';
 import Title from '@/components/Title';
 import { ColumnsType } from 'antd/es/table';
@@ -10,6 +10,9 @@ import FileUpload from '@/components/FileUpload';
 const SwiperPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
+    const [editLoading, setEditLoading] = useState(false)
+
+    const [form] = Form.useForm();
 
     const [swiper, setSwiper] = useState<Swiper>({} as Swiper);
     const [list, setList] = useState<Swiper[]>([]);
@@ -39,8 +42,13 @@ const SwiperPage = () => {
     ];
 
     const getSwiperList = async () => {
-        const { data } = await getSwiperListAPI();
-        setList(data as Swiper[]);
+        try {
+            const { data } = await getSwiperListAPI();
+            setList(data as Swiper[]);
+        } catch (error) {
+            setLoading(false);
+        }
+
         setLoading(false);
     };
 
@@ -49,39 +57,56 @@ const SwiperPage = () => {
         getSwiperList();
     }, []);
 
-    const [form] = Form.useForm();
-    const editSwiperData = (record: Swiper) => {
-        setSwiper(record);
-        form.setFieldsValue(record);
+    const editSwiperData = async (record: Swiper) => {
+        setEditLoading(true);
         setTab('operate');
+
+        try {
+            const { data } = await getSwiperDataAPI(record.id)
+            setSwiper(data);
+            form.setFieldsValue(record);
+        } catch (error) {
+            setEditLoading(false);
+        }
+
+        setEditLoading(false);
     };
 
     const delSwiperData = async (id: number) => {
-        setLoading(true);
-        await delSwiperDataAPI(id);
-        message.success('🎉 删除轮播图成功');
-        getSwiperList();
+        setBtnLoading(true);
+
+        try {
+            await delSwiperDataAPI(id);
+            await getSwiperList();
+            message.success('🎉 删除轮播图成功');
+        } catch (error) {
+            setBtnLoading(false);
+        }
+
+        setBtnLoading(false);
     };
 
     const onSubmit = async () => {
         setBtnLoading(true)
 
-        form.validateFields().then(async (values: Swiper) => {
-            if (swiper.id) {
-                await editSwiperDataAPI({ ...swiper, ...values });
-                message.success('🎉 编辑轮播图成功');
-            } else {
-                await addSwiperDataAPI({ ...swiper, ...values });
-                message.success('🎉 新增轮播图成功');
-            }
+        try {
+            form.validateFields().then(async (values: Swiper) => {
+                if (swiper.id) {
+                    await editSwiperDataAPI({ ...swiper, ...values });
+                    message.success('🎉 编辑轮播图成功');
+                } else {
+                    await addSwiperDataAPI({ ...swiper, ...values });
+                    message.success('🎉 新增轮播图成功');
+                }
 
-            getSwiperList();
-            setTab('list');
-            form.resetFields();
-            setSwiper({} as Swiper);
-        })
-
-        setBtnLoading(false)
+                await getSwiperList();
+                setTab('list');
+                form.resetFields();
+                setSwiper({} as Swiper);
+            })
+        } catch (error) {
+            setBtnLoading(false)
+        }
     };
 
     const handleTabChange = (key: string) => {
@@ -118,7 +143,7 @@ const SwiperPage = () => {
             label: swiper.id ? '编辑轮播图' : '新增轮播图',
             key: 'operate',
             children: (
-                <>
+                <Spin spinning={editLoading}>
                     <h2 className="text-xl pb-4 text-center">{swiper.id ? '编辑轮播图' : '新增轮播图'}</h2>
 
                     <Form
@@ -149,7 +174,7 @@ const SwiperPage = () => {
                             <Button type="primary" htmlType="submit" loading={btnLoading} className="w-full">{swiper.id ? '编辑轮播图' : '新增轮播图'}</Button>
                         </Form.Item>
                     </Form>
-                </>
+                </Spin>
             )
         }
     ];

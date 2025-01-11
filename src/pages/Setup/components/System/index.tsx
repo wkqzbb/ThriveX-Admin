@@ -35,29 +35,23 @@ const SystemPage = () => {
     };
 
     const handleSubmit = async (values: EditUser) => {
-        try {
-            setLoading(true)
+        setLoading(true)
 
+        try {
             await editAdminPassAPI(values);
+
             confirm({
                 title: '提示',
                 content: '🔒️ 修改成功，请重新登录',
                 okText: '确定',
-                onOk: () => {
-                    store.quitLogin();
-                },
+                onOk: store.quitLogin,
                 cancelButtonProps: { style: { display: 'none' } }
             });
-
-            setLoading(false)
         } catch (error) {
             setLoading(false)
-
-            notification.error({
-                message: '错误',
-                description: '修改密码失败，请重试：' + error
-            });
         }
+
+        setLoading(false)
     };
 
     return (
@@ -97,9 +91,7 @@ const SystemPage = () => {
                 </Form.Item>
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={loading} className="w-full">
-                        保存
-                    </Button>
+                    <Button type="primary" htmlType="submit" loading={loading} className="w-full">保存</Button>
                 </Form.Item>
             </Form>
         </div>
