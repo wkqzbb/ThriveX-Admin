@@ -41,20 +41,24 @@ const CatePage = () => {
     };
 
     const editCateData = async (id: number) => {
-        setIsMethod("edit")
         setLoading(true);
+        setIsMethod("edit")
         setIsModelOpen(true);
 
-        const { data } = await getCateDataAPI(id);
-        setIsCateShow(data.type === "cate" ? false : true)
-        setCate(data);
+        try {
+            const { data } = await getCateDataAPI(id);
+            setIsCateShow(data.type === "cate" ? false : true)
+            setCate(data);
 
-        form.setFieldsValue(data);
-        setLoading(false);
+            form.setFieldsValue(data);
+        } catch (error) {
+            setLoading(false);
+        }
     };
 
     const delCateData = async (id: number) => {
         setLoading(true);
+
         try {
             await delCateDataAPI(id);
             message.success('🎉 删除分类成功');
@@ -67,27 +71,29 @@ const CatePage = () => {
     const submit = async () => {
         setBtnLoading(true)
 
-        form.validateFields().then(async (values: Cate) => {
-            if (values.type === "cate") values.url = '/'
+        try {
+            form.validateFields().then(async (values: Cate) => {
+                if (values.type === "cate") values.url = '/'
 
-            if (isMethod === "edit") {
-                await editCateDataAPI({ ...cate, ...values });
-                message.success('🎉 修改分类成功');
-            } else {
-                await addCateDataAPI({ ...cate, ...values });
-                message.success('🎉 新增分类成功');
-            }
+                if (isMethod === "edit") {
+                    await editCateDataAPI({ ...cate, ...values });
+                    message.success('🎉 修改分类成功');
+                } else {
+                    await addCateDataAPI({ ...cate, ...values });
+                    message.success('🎉 新增分类成功');
+                }
 
-            // 初始化表单状态
-            form.resetFields();
-            setCate({} as Cate);
+                // 初始化表单状态
+                form.resetFields();
+                setCate({} as Cate);
 
-            setIsModelOpen(false);
-            getCateList();
-            setIsMethod("create")
-        })
-
-        setBtnLoading(false)
+                setIsModelOpen(false);
+                getCateList();
+                setIsMethod("create")
+            })
+        } catch (error) {
+            setBtnLoading(false)
+        }
     };
 
     const closeModel = () => {

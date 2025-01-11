@@ -5,17 +5,20 @@ import CardDataStats from "@/components/CardDataStats"
 import { AiOutlineEye, AiOutlineMeh, AiOutlineStock, AiOutlineFieldTime } from "react-icons/ai";
 import { useEffect, useState } from "react"
 import dayjs from 'dayjs';
+import { Spin } from "antd";
 
 export default () => {
+    const [loading, setLoading] = useState(false)
+
     const [stats, setStats] = useState({
         pv: 0,
         ip: 0,
         bounce: 0,
         avgTime: "",
     });
-    
+
     const date = dayjs(new Date()).format("YYYY/MM/DD");
-    
+
     const formatTime = (seconds: number) => {
         // 四舍五入到最接近的整数
         const roundedSeconds = Math.round(seconds);
@@ -28,49 +31,58 @@ export default () => {
 
     // 获取统计数据
     const getDataList = async () => {
-        const siteId = import.meta.env.VITE_BAIDU_TONGJI_SITE_ID;
-        const token = import.meta.env.VITE_BAIDU_TONGJI_ACCESS_TOKEN;
+        setLoading(true)
 
-        const response = await fetch(`/baidu/rest/2.0/tongji/report/getData?access_token=${token}&site_id=${siteId}&start_date=${date}&end_date=${date}&metrics=pv_count%2Cip_count%2Cbounce_ratio%2Cavg_visit_time&method=overview%2FgetTimeTrendRpt`);
-        const data = await response.json();
-        const { result } = data;
+        try {
+            const siteId = import.meta.env.VITE_BAIDU_TONGJI_SITE_ID;
+            const token = import.meta.env.VITE_BAIDU_TONGJI_ACCESS_TOKEN;
 
-        let pv = 0;
-        let ip = 0;
-        let bounce = 0;
-        let avgTime = 0;
-        let count = 0
+            const response = await fetch(`/baidu/rest/2.0/tongji/report/getData?access_token=${token}&site_id=${siteId}&start_date=${date}&end_date=${date}&metrics=pv_count%2Cip_count%2Cbounce_ratio%2Cavg_visit_time&method=overview%2FgetTimeTrendRpt`);
+            const data = await response.json();
+            const { result } = data;
 
-        result.items[1].forEach((item: number[]) => {
-            if (!Number(item[0])) return;
+            let pv = 0;
+            let ip = 0;
+            let bounce = 0;
+            let avgTime = 0;
+            let count = 0
 
-            // 检查并累加 pv
-            if (!isNaN(Number(item[0]))) {
-                pv += Number(item[0]);
-            }
+            result.items[1].forEach((item: number[]) => {
+                if (!Number(item[0])) return;
 
-            // 检查并累加 ip
-            if (!isNaN(Number(item[1]))) {
-                ip += Number(item[1]);
-            }
+                // 检查并累加 pv
+                if (!isNaN(Number(item[0]))) {
+                    pv += Number(item[0]);
+                }
 
-            // 检查并累加 bounce
-            if (!isNaN(Number(item[2]))) {
-                bounce += Number(item[2]);
-            }
+                // 检查并累加 ip
+                if (!isNaN(Number(item[1]))) {
+                    ip += Number(item[1]);
+                }
 
-            // 检查并累加 avgTime
-            if (!isNaN(Number(item[3]))) {
-                avgTime += Number(item[3]);
-            }
+                // 检查并累加 bounce
+                if (!isNaN(Number(item[2]))) {
+                    bounce += Number(item[2]);
+                }
 
-            // 只有第三个和第四个数据都有值时才增加 count
-            if (!isNaN(Number(item[2])) && !isNaN(Number(item[3]))) {
-                count++;
-            }
-        });
+                // 检查并累加 avgTime
+                if (!isNaN(Number(item[3]))) {
+                    avgTime += Number(item[3]);
+                }
 
-        setStats({ pv, ip, bounce: (bounce / count) || 0, avgTime: formatTime(avgTime / count) || "00:00:00" })
+                // 只有第三个和第四个数据都有值时才增加 count
+                if (!isNaN(Number(item[2])) && !isNaN(Number(item[3]))) {
+                    count++;
+                }
+            });
+
+            setStats({ pv, ip, bounce: (bounce / count) || 0, avgTime: formatTime(avgTime / count) || "00:00:00" })
+
+        } catch (error) {
+            setLoading(false)
+        }
+        
+        setLoading(false)
     };
 
     useEffect(() => {
@@ -78,7 +90,7 @@ export default () => {
     }, []);
 
     return (
-        <>
+        <Spin spinning={loading}>
             {/* 基本数据 */}
             <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
                 <CardDataStats title="今日访客" total={stats.pv + ''} rate="0.43%" levelUp>
@@ -104,6 +116,6 @@ export default () => {
                 {/* <ChartTwo />
                 <ChatCard /> */}
             </div>
-        </>
+        </Spin>
     )
 }

@@ -9,7 +9,9 @@ import { titleSty } from '@/styles/sty';
 const StoragePage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false);
+    const [modalLoading, setModalLoading] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     const [oss, setOss] = useState<Oss>({} as Oss);
     const [ossList, setOssList] = useState<Oss[]>([]);
     const [platformList, setPlatformList] = useState<{ label: string, value: string, disabled: boolean }[]>([]);
@@ -51,9 +53,9 @@ const StoragePage = () => {
             render: (_, record: Oss) => (
                 <div className='space-x-2'>
                     {record.isEnable ? (
-                        <Button type="primary" danger onClick={() => handleDisable(record.id!)}>禁用</Button>
+                        <Button type="primary" danger onClick={() => disableOssData(record.id!)}>禁用</Button>
                     ) : (
-                        <Button type="primary" onClick={() => handleEnable(record.id!)}>启用</Button>
+                        <Button type="primary" onClick={() => enableOssData(record.id!)}>启用</Button>
                     )}
 
                     <Button onClick={() => editOssData(record)}>修改</Button>
@@ -83,44 +85,71 @@ const StoragePage = () => {
     };
 
     const getOssList = async () => {
-        setLoading(true);
-        const { data } = await getOssListAPI();
-        setOssList(data);
+        try {
+            const { data } = await getOssListAPI();
+            setOssList(data);
+        } catch (error) {
+            setLoading(false)
+        }
+
         setLoading(false);
     };
 
     useEffect(() => {
+        setLoading(true);
         getOssList();
         getOssPlatformList()
     }, []);
 
-    const handleEnable = async (id: number) => {
-        await enableOssDataAPI(id);
-        message.success('启用成功');
-        getOssList();
+    const enableOssData = async (id: number) => {
+        try {
+            await enableOssDataAPI(id);
+            await getOssList();
+            message.success('启用成功');
+        } catch (error) {
+            setLoading(false)
+        }
     };
 
-    const handleDisable = async (id: number) => {
-        await disableOssDataAPI(id);
-        message.success('禁用成功');
-        getOssList();
+    const disableOssData = async (id: number) => {
+        try {
+            await disableOssDataAPI(id);
+            await getOssList();
+            message.success('禁用成功');
+        } catch (error) {
+            setLoading(false)
+        }
     };
 
     const editOssData = async (record: Oss) => {
-        setOss(record);
-        const { data } = await getOssDataAPI(record.id)
-        form.setFieldsValue(data);
-        setIsModalOpen(true);
+        setModalLoading(true)
+
+        try {
+            setIsModalOpen(true);
+
+            const { data } = await getOssDataAPI(record.id)
+            setOss(data);
+            form.setFieldsValue(data);
+        } catch (error) {
+            setModalLoading(false)
+        }
+
+        setModalLoading(false)
     };
 
     const delOssData = async (id: number) => {
         setLoading(true);
-        await delOssDataAPI(id);
-        message.success('🎉 删除存储配置成功');
-        getOssList();
+
+        try {
+            await delOssDataAPI(id);
+            await getOssList();
+            message.success('🎉 删除存储配置成功');
+        } catch (error) {
+            setLoading(false)
+        }
     };
 
-    const handleAdd = () => {
+    const addOssData = () => {
         setOss({} as Oss);
         form.resetFields();
         form.setFieldsValue({});
@@ -151,20 +180,22 @@ const StoragePage = () => {
             form.resetFields();
             setBtnLoading(false);
         } catch (error) {
-            console.error('表单验证失败:', error);
             setBtnLoading(false);
         }
+
+        setBtnLoading(false)
     };
 
     return (
         <>
             <Title value="存储管理">
-                <Button type="primary" size='large' onClick={handleAdd}>新增配置</Button>
+                <Button type="primary" size='large' onClick={addOssData}>新增配置</Button>
             </Title>
 
             <Card className={`${titleSty} min-h-[calc(100vh-180px)]`}>
                 <Table
                     rowKey="id"
+                    loading={loading}
                     dataSource={ossList}
                     columns={columns}
                     scroll={{ x: 'max-content' }}
@@ -172,11 +203,11 @@ const StoragePage = () => {
                         position: ['bottomCenter'],
                         pageSize: 8
                     }}
-                    loading={loading}
                 />
             </Card>
 
             <Modal
+                loading={modalLoading}
                 title={oss.id ? "编辑存储配置" : "新增存储配置"}
                 open={isModalOpen}
                 onCancel={handleCancel}

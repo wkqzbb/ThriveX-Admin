@@ -18,6 +18,8 @@ const CreatePage = () => {
   const id = +params.get('id')!
   const isDraftParams = Boolean(params.get('draft'))
 
+  const [loading, setLoading] = useState(false)
+
   const [data, setData] = useState<Article>({} as Article)
   const [content, setContent] = useState('');
   const [publishOpen, setPublishOpen] = useState(false)
@@ -29,13 +31,18 @@ const CreatePage = () => {
 
   // 获取文章数据
   const getArticleData = async () => {
-    const { data } = await getArticleDataAPI(id)
-    setData(data)
-    setContent(data.content)
+    try {
+      const { data } = await getArticleDataAPI(id)
+      setData(data)
+      setContent(data.content)
+    } catch (error) {
+      setLoading(false)
+    }
   }
 
   // 回显数据
   useEffect(() => {
+    setLoading(true)
     setPublishOpen(false)
 
     // 有Id就回显指定的数据
@@ -176,7 +183,7 @@ const CreatePage = () => {
         </div>
       </Title>
 
-      <Card className={`${titleSty} overflow-hidden rounded-xl min-h-[calc(100vh-180px)]`}>
+      <Card loading={loading} className={`${titleSty} overflow-hidden rounded-xl min-h-[calc(100vh-180px)]`}>
         <Editor value={content} onChange={(value) => setContent(value)} />
 
         <Drawer

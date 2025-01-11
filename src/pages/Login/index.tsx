@@ -7,6 +7,8 @@ import { loginDataAPI } from '@/api/User';
 import { useUserStore } from '@/stores';
 
 const LoginPage = () => {
+    const [loading, setLoading] = useState(false)
+
     const [form] = useForm();
     const [isPassVisible, setIsPassVisible] = useState(false);
     const store = useUserStore();
@@ -15,20 +17,28 @@ const LoginPage = () => {
     const returnUrl = new URLSearchParams(location.search).get('returnUrl') || '/';
 
     const onSubmit = async () => {
-        const values = await form.validateFields();
-        const { data } = await loginDataAPI(values);
+        setLoading(true)
 
-        // 将用户信息和token保存起来
-        store.setToken(data.token);
-        store.setUser(data.user);
-        store.setRole(data.role)
+        try {
+            const values = await form.validateFields();
+            const { data } = await loginDataAPI(values);
 
-        notification.success({
-            message: '🎉 登录成功',
-            description: `Hello ${data.user.name} 欢迎回来`,
-        });
+            // 将用户信息和token保存起来
+            store.setToken(data.token);
+            store.setUser(data.user);
+            store.setRole(data.role)
 
-        navigate(returnUrl);
+            notification.success({
+                message: '🎉 登录成功',
+                description: `Hello ${data.user.name} 欢迎回来`,
+            });
+
+            navigate(returnUrl);
+        } catch (error) {
+            setLoading(false)
+        }
+
+        setLoading(false)
     };
 
     return (
@@ -70,7 +80,7 @@ const LoginPage = () => {
                     </Form.Item>
 
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" className="w-full" block>登录</Button>
+                        <Button type="primary" htmlType="submit" loading={loading} className="w-full" block>登录</Button>
                     </Form.Item>
                 </Form>
             </div>

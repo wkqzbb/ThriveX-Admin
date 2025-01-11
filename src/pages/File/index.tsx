@@ -34,9 +34,13 @@ export default () => {
 
     // 获取目录列表
     const getDirList = async () => {
-        setLoading(true)
-        const { data } = await getDirListAPI()
-        setDirList(data)
+        try {
+            const { data } = await getDirListAPI()
+            setDirList(data)
+        } catch (error) {
+            setLoading(false)
+        }
+
         setLoading(false)
     }
 
@@ -54,13 +58,16 @@ export default () => {
     const onDeleteImage = async (data: File) => {
         setLoading(true)
 
-        await delFileDataAPI(data.url)
-        message.success("🎉 删除图片成功")
-        getFileList(dirName)
-        setFile({} as File)
-
-        setOpenFileInfoDrawer(false)
-        setOpenFilePreviewDrawer(false)
+        try {
+            await delFileDataAPI(data.url)
+            message.success("🎉 删除图片成功")
+            getFileList(dirName)
+            setFile({} as File)
+            setOpenFileInfoDrawer(false)
+            setOpenFilePreviewDrawer(false)
+        } catch (error) {
+            setLoading(false)
+        }
     }
 
     // 下载图片

@@ -21,26 +21,32 @@ export default () => {
     const [form] = Form.useForm();
 
     const getArticleList = async () => {
-        setLoading(true);
-        const { data } = await getArticleListAPI({ query: { isDraft: 1 } });
-        setArticleList(data as Article[]);
-        setLoading(false);
+        try {
+            const { data } = await getArticleListAPI({ query: { isDraft: 1 } });
+            setArticleList(data as Article[]);
+        } catch (error) {
+            setLoading(false);
+        }
+        setLoading(false)
     };
 
     useEffect(() => {
+        setLoading(true)
         getArticleList()
     }, []);
 
     const delArticleData = async (id: number) => {
         setLoading(true);
 
-        await delArticleDataAPI(id);
-        await getArticleList();
-        form.resetFields()
-        setCurrent(1)
-        notification.success({ message: '🎉 删除文章成功' })
-
-        setLoading(false);
+        try {
+            await delArticleDataAPI(id);
+            await getArticleList();
+            form.resetFields()
+            setCurrent(1)
+            notification.success({ message: '🎉 删除文章成功' })
+        } catch (error) {
+            setLoading(false);
+        }
     };
 
     // 标签颜色

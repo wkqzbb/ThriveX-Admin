@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { Button, Card, Dropdown, Image, Input, message, Modal } from "antd"
+import { Button, Card, Dropdown, Image, Input, message, Modal, Spin } from "antd"
 import TextArea from "antd/es/input/TextArea"
 
 import { addRecordDataAPI, editRecordDataAPI, getRecordDataAPI } from '@/api/Record'
@@ -19,6 +19,8 @@ export default () => {
     const id = +params.get('id')!
     const navigate = useNavigate()
 
+    const [loading, setLoading] = useState(false)
+
     const [content, setContent] = useState("")
     const [imageList, setImageList] = useState<string[]>([])
 
@@ -30,31 +32,42 @@ export default () => {
     }
 
     const onSubmit = async () => {
-        const data = {
-            content,
-            images: JSON.stringify(imageList),
-            createTime: new Date().getTime().toString()
+        setLoading(true)
+
+        try {
+            const data = {
+                content,
+                images: JSON.stringify(imageList),
+                createTime: new Date().getTime().toString()
+            }
+
+            if (!content.trim().length) {
+                message.error("请输入内容")
+                return
+            }
+
+            if (id) {
+                await editRecordDataAPI({ id, content: data.content, images: data.images })
+            } else {
+                await addRecordDataAPI(data)
+            }
+
+            navigate("/record")
+        } catch (error) {
+            setLoading(false)
         }
 
-        if (!content.trim().length) {
-            message.error("请输入内容")
-            return
-        }
-
-        if (id) {
-            await editRecordDataAPI({ id, content: data.content, images: data.images })
-        } else {
-            await addRecordDataAPI(data)
-        }
-
-        navigate("/record")
+        setLoading(false)
     }
 
     const getRecordData = async () => {
+        setLoading(true)
+
         const { data } = await getRecordDataAPI(id)
-        console.log(data, 222);
         setContent(data.content)
         setImageList(JSON.parse(data.images as string))
+
+        setLoading(false)
     }
 
     // 回显数据
@@ -106,7 +119,7 @@ export default () => {
                                 message.error('链接必须以 http:// 或 https:// 开头');
                                 return Promise.reject();
                             }
-                            
+
                             setImageList([...imageList, inputUrl]);
                             return Promise.resolve();
                         }
@@ -120,49 +133,51 @@ export default () => {
         <>
             <Title value="闪念" />
 
-            <Card className={`${titleSty} min-h-[calc(100vh-180px)]`}>
-                <div className="relative flex w-[90%] xl:w-[800px] mx-auto mt-[50px]">
-                    <TextArea
-                        rows={10}
-                        maxLength={500}
-                        placeholder="记录此刻！"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        className="w-full p-4 border-2 border-[#eee] dark:border-strokedark text-base rounded-md" 
-                    />
+            <Spin spinning={loading}>
+                <Card className={`${titleSty} min-h-[calc(100vh-180px)]`}>
+                    <div className="relative flex w-[90%] xl:w-[800px] mx-auto mt-[50px]">
+                        <TextArea
+                            rows={10}
+                            maxLength={500}
+                            placeholder="记录此刻！"
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            className="w-full p-4 border-2 border-[#eee] dark:border-strokedark text-base rounded-md"
+                        />
 
-                    <div className="absolute bottom-4 left-4 flex items-end space-x-3 max-w-[calc(100%-80px)]">
-                        <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
-                            {imageList.length > 0 && imageList.map((item, index) => (
-                                <div key={index} className="group overflow-hidden relative shrink-0">
-                                    <div className="absolute top-0 -right-6 group-hover:right-0 z-10 bg-slate-600 rounded-full cursor-pointer p-1" onClick={() => handleDelImage(item)}>
-                                        <RiDeleteBinLine className="text-white" />
+                        <div className="absolute bottom-4 left-4 flex items-end space-x-3 max-w-[calc(100%-80px)]">
+                            <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
+                                {imageList.length > 0 && imageList.map((item, index) => (
+                                    <div key={index} className="group overflow-hidden relative shrink-0">
+                                        <div className="absolute top-0 -right-6 group-hover:right-0 z-10 bg-slate-600 rounded-full cursor-pointer p-1" onClick={() => handleDelImage(item)}>
+                                            <RiDeleteBinLine className="text-white" />
+                                        </div>
+
+                                        <Image
+                                            key={index}
+                                            src={item}
+                                            preview={false}
+                                            className='rounded-lg md:!w-[100px] md:!h-[100px] xs:!w-20 xs:!h-20 !w-15 !h-15 object-cover'
+                                        />
                                     </div>
+                                ))}
+                            </div>
 
-                                    <Image
-                                        key={index}
-                                        src={item}
-                                        preview={false}
-                                        className='rounded-lg md:!w-[100px] md:!h-[100px] xs:!w-20 xs:!h-20 !w-15 !h-15 object-cover'
-                                    />
-                                </div>
-                            ))}
+                            <Dropdown menu={dropdownItems} placement="top">
+                                <LuImagePlus className="mb-1 text-3xl md:text-4xl text-slate-700 dark:text-white hover:text-primary dark:hover:text-primary cursor-pointer shrink-0" />
+                            </Dropdown>
                         </div>
-                        
-                        <Dropdown menu={dropdownItems} placement="top">
-                            <LuImagePlus className="mb-1 text-3xl md:text-4xl text-slate-700 dark:text-white hover:text-primary dark:hover:text-primary cursor-pointer shrink-0" />
-                        </Dropdown>
-                    </div>
 
-                    <Button 
-                        type="primary" 
-                        size="large" 
-                        icon={<BiLogoTelegram className="text-xl" />} 
-                        className="absolute bottom-4 right-4" 
-                        onClick={onSubmit} 
-                    />
-                </div>
-            </Card>
+                        <Button
+                            type="primary"
+                            size="large"
+                            icon={<BiLogoTelegram className="text-xl" />}
+                            className="absolute bottom-4 right-4"
+                            onClick={onSubmit}
+                        />
+                    </div>
+                </Card>
+            </Spin>
 
             <FileUpload
                 dir="record"

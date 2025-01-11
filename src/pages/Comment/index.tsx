@@ -20,6 +20,8 @@ const CommentPage = () => {
     const user = useUserStore(state => state.user)
 
     const [loading, setLoading] = useState(false);
+    const [btnLoading, setBtnLoading] = useState(false);
+
     const [comment, setComment] = useState<Comment>({} as Comment);
     const [list, setList] = useState<Comment[]>([]);
 
@@ -27,16 +29,19 @@ const CommentPage = () => {
 
     const getCommentList = async () => {
         const { data } = await getCommentListAPI();
-
         setList(data)
         setLoading(false)
     }
 
     const delCommentData = async (id: number) => {
         setLoading(true)
-        await delCommentDataAPI(id);
-        getCommentList();
-        message.success('🎉 删除评论成功');
+        try {
+            await delCommentDataAPI(id);
+            getCommentList();
+            message.success('🎉 删除评论成功');
+        } catch (error) {
+            setLoading(false)
+        }
     };
 
     useEffect(() => {
@@ -115,38 +120,50 @@ const CommentPage = () => {
     const { RangePicker } = DatePicker;
 
     const onSubmit = async (values: FilterForm) => {
-        const query: FilterData = {
-            key: values?.title,
-            content: values?.content,
-            startDate: values.createTime && values.createTime[0].valueOf() + '',
-            endDate: values.createTime && values.createTime[1].valueOf() + ''
-        }
+        setLoading(true)
 
-        const { data } = await getCommentListAPI({ query });
-        setList(data)
+        try {
+            const query: FilterData = {
+                key: values?.title,
+                content: values?.content,
+                startDate: values.createTime && values.createTime[0].valueOf() + '',
+                endDate: values.createTime && values.createTime[1].valueOf() + ''
+            }
+
+            const { data } = await getCommentListAPI({ query });
+            setList(data)
+        } catch (error) {
+            setLoading(false)
+        }
     }
 
     // 回复内容
     const [replyInfo, setReplyInfo] = useState("")
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
     const handleReply = async () => {
-        await addCommentDataAPI({
-            avatar: user.avatar,
-            url: web.url,
-            content: replyInfo,
-            commentId: comment?.id!,
-            auditStatus: 1,
-            email: user.email,
-            name: user.name,
-            articleId: comment?.articleId!,
-            createTime: new Date().getTime().toString(),
-        })
+        setBtnLoading(true)
 
-        message.success('🎉 回复评论成功');
+        try {
+            await addCommentDataAPI({
+                avatar: user.avatar,
+                url: web.url,
+                content: replyInfo,
+                commentId: comment?.id!,
+                auditStatus: 1,
+                email: user.email,
+                name: user.name,
+                articleId: comment?.articleId!,
+                createTime: new Date().getTime().toString(),
+            })
 
-        setIsReplyModalOpen(false)
-        setReplyInfo("")
-        getCommentList()
+            message.success('🎉 回复评论成功');
+
+            setIsReplyModalOpen(false)
+            setReplyInfo("")
+            getCommentList()
+        } catch (error) {
+            setBtnLoading(false)
+        }
     }
 
     return (
@@ -198,7 +215,7 @@ const CommentPage = () => {
                     <div><b>内容：</b> {comment?.content}</div>
                 </div>
 
-                <Button type='primary' onClick={() => setIsReplyModalOpen(true)} className='w-full mt-4'>回复</Button>
+                <Button type='primary' loading={btnLoading} onClick={() => setIsReplyModalOpen(true)} className='w-full mt-4'>回复</Button>
             </Modal>
 
             <Modal title="回复评论" open={isReplyModalOpen} footer={null} onCancel={() => setIsReplyModalOpen(false)}>
@@ -211,7 +228,7 @@ const CommentPage = () => {
 
                 <div className="flex space-x-4">
                     <Button className="w-full mt-2" onClick={() => setIsReplyModalOpen(false)}>取消</Button>
-                    <Button type="primary" className="w-full mt-2" onClick={handleReply}>确定</Button>
+                    <Button type="primary" loading={btnLoading} onClick={handleReply} className="w-full mt-2">确定</Button>
                 </div>
             </Modal>
         </>

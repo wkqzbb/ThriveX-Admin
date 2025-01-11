@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Tag, notification, Card, Popconfirm, Form } from 'antd';
+import { Table, Button, Tag, notification, Card, Popconfirm, Form, Spin } from 'antd';
 import { titleSty } from '@/styles/sty'
 import Title from '@/components/Title';
 
 import { delArticleDataAPI, getArticleListAPI, reductionArticleDataAPI } from '@/api/Article';
 import type { Tag as ArticleTag } from '@/types/app/tag';
 import type { Cate } from '@/types/app/cate';
-import type { Article, Config } from '@/types/app/article';
+import type { Article } from '@/types/app/article';
 
 import { useWebStore } from '@/stores';
 import dayjs from 'dayjs';
@@ -23,33 +23,46 @@ export default () => {
     const [form] = Form.useForm();
 
     const getArticleList = async () => {
-        setLoading(true);
-        const { data } = await getArticleListAPI({ query: { isDel: 1 } });
-        setArticleList(data as Article[]);
+        try {
+            const { data } = await getArticleListAPI({ query: { isDel: 1 } });
+            setArticleList(data as Article[]);
+        } catch (error) {
+            setLoading(false);
+        }
+
         setLoading(false);
     };
 
     useEffect(() => {
+        setLoading(true);
         getArticleList()
     }, []);
 
     const delArticleData = async (id: number) => {
         setLoading(true);
 
-        // 严格删除：彻底从数据库删除，无法恢复
-        await delArticleDataAPI(id);
-        await getArticleList();
-        form.resetFields()
-        setCurrent(1)
-        notification.success({ message: '🎉 删除文章成功' })
-
-        setLoading(false);
+        try {
+            // 严格删除：彻底从数据库删除，无法恢复
+            await delArticleDataAPI(id);
+            await getArticleList();
+            form.resetFields()
+            setCurrent(1)
+            notification.success({ message: '🎉 删除文章成功' })
+        } catch (error) {
+            setLoading(false);
+        }
     };
 
     const reductionArticleData = async (id: number) => {
-        await reductionArticleDataAPI(id)
-        navigate("/article")
-        notification.success({ message: '🎉 还原文章成功' })
+        setLoading(true);
+
+        try {
+            await reductionArticleDataAPI(id)
+            navigate("/article")
+            notification.success({ message: '🎉 还原文章成功' })
+        } catch (error) {
+            setLoading(false);
+        }
     }
 
     // 标签颜色
