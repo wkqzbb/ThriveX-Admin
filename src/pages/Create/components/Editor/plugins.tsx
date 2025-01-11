@@ -29,25 +29,25 @@ const videos = (): BytemdPlugin => {
         handler: {
           type: 'action',
           click: (ctx) => {
-            let videoUrl = '';
+            let videoId = '';
 
             Modal.info({
-              title: '插入视频',
-              content: <Input placeholder="请输入视频链接" onChange={(e) => videoUrl = e.target.value.trim()} />,
+              title: '插入抖音视频',
+              content: (
+                <div>
+                  <div className='mb-2 text-xs'>目前仅支持插入抖音视频</div>
+                  <Input placeholder="请输入抖音视频ID" onChange={(e) => videoId = e.target.value.trim()} />
+                </div>
+              ),
               cancelText: '取消',
               okText: '确认',
               onOk: () => {
-                if (!videoUrl) {
-                  message.error('请输入视频链接');
+                if (!videoId) {
+                  message.error('请输入抖音视频ID');
                   return Promise.reject();
                 }
 
-                if (!/^https?:\/\//i.test(videoUrl)) {
-                  message.error('视频链接必须以 http:// 或 https:// 开头');
-                  return Promise.reject();
-                }
-                
-                ctx.appendBlock(`[jvideo](${videoUrl})`);
+                ctx.appendBlock(`[douyin-video](${videoId})`);
               },
               maskClosable: true,
               keyboard: true
