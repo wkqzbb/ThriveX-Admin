@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Tabs, Input, Button, Form, Spin, Empty, Card, Popconfirm, Select, message } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { getLinkListAPI, addLinkDataAPI, editLinkDataAPI, delLinkDataAPI, getWebTypeListAPI } from '@/api/Web';
+import { getLinkListAPI, addLinkDataAPI, editLinkDataAPI, delLinkDataAPI, getWebTypeListAPI, getLinkDataAPI } from '@/api/Web';
 import { WebType, Web } from '@/types/app/web';
 import Title from '@/components/Title';
 import { RuleObject } from 'antd/es/form';
 import './index.scss';
 
-const LinkPage = () => {
+export default () => {
     const [loading, setLoading] = useState(false);
     const [btnLoading, setBtnLoading] = useState(false)
+    const [editLoading, setEditLoading] = useState(false)
+
+    const [form] = Form.useForm();
 
     const [tab, setTab] = useState<string>('list');
     const [list, setList] = useState<Web[]>([]);
@@ -23,13 +26,18 @@ const LinkPage = () => {
 
     // 获取网站列表
     const getLinkList = async () => {
-        const { data } = await getLinkListAPI();
-        data.sort((a, b) => a.order - b.order)
-        data.sort((a, b) => a.type.order - b.type.order)
+        try {
+            const { data } = await getLinkListAPI();
+            data.sort((a, b) => a.order - b.order)
+            data.sort((a, b) => a.type.order - b.type.order)
 
-        setList(data as Web[]);
-        setListTemp(data as Web[]);
-        setLoading(false);
+            setList(data);
+            setListTemp(data);
+        } catch (error) {
+            setLoading(false);
+        }
+
+        setLoading(false)
     };
 
     // 获取网站类型列表
@@ -50,18 +58,31 @@ const LinkPage = () => {
 
     const deleteLinkData = async (id: number) => {
         setLoading(true);
-        await delLinkDataAPI(id);
-        message.success('🎉 删除网站成功');
-        getLinkList();
+
+        try {
+            await delLinkDataAPI(id);
+            await getLinkList();
+            message.success('🎉 删除网站成功');
+        } catch (error) {
+            setLoading(false)
+        }
     };
 
-    const [form] = Form.useForm();
+    const editLinkData = async (record: Web) => {
+        setEditLoading(true)
 
-    const editLinkData = (item: Web) => {
-        setTab('operate');
-        setIsMethod("edit");
-        setLink(item);
-        form.setFieldsValue(item); // 回显数据
+        try {
+            setTab('operate');
+            setIsMethod("edit");
+
+            const { data } = await getLinkDataAPI(record.id)
+            setLink(data);
+            form.setFieldsValue(data);
+        } catch (error) {
+            setEditLoading(false)
+        }
+
+        setEditLoading(false)
     };
 
     // 做一些初始化的事情
@@ -79,19 +100,23 @@ const LinkPage = () => {
     const submit = async () => {
         setBtnLoading(true)
 
-        form.validateFields().then(async (values: Web) => {
-            if (isMethod === "edit") {
-                await editLinkDataAPI({ ...link, ...values });
-                message.success('🎉 编辑网站成功');
-            } else {
-                await addLinkDataAPI({ ...values, createTime: new Date().getTime().toString() });
-                message.success('🎉 新增网站成功');
-            }
+        try {
+            form.validateFields().then(async (values: Web) => {
+                if (isMethod === "edit") {
+                    await editLinkDataAPI({ ...link, ...values });
+                    message.success('🎉 编辑网站成功');
+                } else {
+                    await addLinkDataAPI({ ...values, createTime: new Date().getTime().toString() });
+                    message.success('🎉 新增网站成功');
+                }
 
-            getLinkList();
-            setTab('list');
-            reset()
-        });
+                await getLinkList();
+                reset()
+                setTab('list');
+            });
+        } catch (error) {
+            setBtnLoading(false)
+        }
 
         setBtnLoading(false)
     };
@@ -164,47 +189,49 @@ const LinkPage = () => {
                 <>
                     <h2 className="text-xl pb-4 text-center">{isMethod === "edit" ? '编辑网站' : '新增网站'}</h2>
 
-                    <div className='w-full md:w-[500px] mx-auto'>
-                        <Form form={form} layout="vertical" size='large' initialValues={link} onFinish={submit}>
-                            <Form.Item label="网站标题" name="title" rules={[{ required: true, message: '网站标题不能为空' }]}>
-                                <Input placeholder="Thrive" />
-                            </Form.Item>
+                    <Spin spinning={editLoading}>
+                        <div className='w-full md:w-[500px] mx-auto'>
+                            <Form form={form} layout="vertical" size='large' initialValues={link} onFinish={submit}>
+                                <Form.Item label="网站标题" name="title" rules={[{ required: true, message: '网站标题不能为空' }]}>
+                                    <Input placeholder="Thrive" />
+                                </Form.Item>
 
-                            <Form.Item label="网站描述" name="description" rules={[{ required: true, message: '网站描述不能为空' }]}>
-                                <Input placeholder="记录前端、Python、Java点点滴滴" />
-                            </Form.Item>
+                                <Form.Item label="网站描述" name="description" rules={[{ required: true, message: '网站描述不能为空' }]}>
+                                    <Input placeholder="记录前端、Python、Java点点滴滴" />
+                                </Form.Item>
 
-                            <Form.Item label="站长邮箱" name="email">
-                                <Input placeholder="3311118881@qq.com" />
-                            </Form.Item>
+                                <Form.Item label="站长邮箱" name="email">
+                                    <Input placeholder="3311118881@qq.com" />
+                                </Form.Item>
 
-                            <Form.Item label="网站图标" name="image" rules={[{ required: true, message: '网站图标不能为空' }]}>
-                                <Input placeholder="https://liuyuyang.net/logo.png" />
-                            </Form.Item>
+                                <Form.Item label="网站图标" name="image" rules={[{ required: true, message: '网站图标不能为空' }]}>
+                                    <Input placeholder="https://liuyuyang.net/logo.png" />
+                                </Form.Item>
 
-                            <Form.Item label="网站链接" name="url" rules={[{ required: true, message: '网站链接不能为空' }, { validator: validateURL }]}>
-                                <Input placeholder="https://liuyuyang.net/" />
-                            </Form.Item>
+                                <Form.Item label="网站链接" name="url" rules={[{ required: true, message: '网站链接不能为空' }, { validator: validateURL }]}>
+                                    <Input placeholder="https://liuyuyang.net/" />
+                                </Form.Item>
 
-                            <Form.Item label="订阅地址" name="rss" rules={[{ validator: validateURL }]}>
-                                <Input placeholder="https://liuyuyang.net/api/rss" />
-                            </Form.Item>
+                                <Form.Item label="订阅地址" name="rss" rules={[{ validator: validateURL }]}>
+                                    <Input placeholder="https://liuyuyang.net/api/rss" />
+                                </Form.Item>
 
-                            <Form.Item name="typeId" label="网站类型" rules={[{ required: true, message: '网站类型不能为空' }]}>
-                                <Select placeholder="请选择网站类型" allowClear>
-                                    {typeList.map(item => <Option key={item.id} value={item.id}>{item.name}</Option>)}
-                                </Select>
-                            </Form.Item>
+                                <Form.Item name="typeId" label="网站类型" rules={[{ required: true, message: '网站类型不能为空' }]}>
+                                    <Select placeholder="请选择网站类型" allowClear>
+                                        {typeList.map(item => <Option key={item.id} value={item.id}>{item.name}</Option>)}
+                                    </Select>
+                                </Form.Item>
 
-                            <Form.Item label="顺序" name="order">
-                                <Input placeholder="请输入网站顺序（值越小越靠前）" />
-                            </Form.Item>
+                                <Form.Item label="顺序" name="order">
+                                    <Input placeholder="请输入网站顺序（值越小越靠前）" />
+                                </Form.Item>
 
-                            <Form.Item>
-                                <Button type="primary" htmlType="submit" loading={btnLoading} className='w-full'>{isMethod === "edit" ? '编辑网站' : '新增网站'}</Button>
-                            </Form.Item>
-                        </Form>
-                    </div>
+                                <Form.Item>
+                                    <Button type="primary" htmlType="submit" loading={btnLoading} className='w-full'>{isMethod === "edit" ? '编辑网站' : '新增网站'}</Button>
+                                </Form.Item>
+                            </Form>
+                        </div>
+                    </Spin>
                 </>
             ),
         },
@@ -220,5 +247,3 @@ const LinkPage = () => {
         </>
     );
 };
-
-export default LinkPage;

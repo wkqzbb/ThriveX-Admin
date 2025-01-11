@@ -9,23 +9,35 @@ import dayjs from 'dayjs';
 
 const WallPage = () => {
     const [loading, setLoading] = useState(false);
-    const [wall, setWall] = useState<Wall>();
+
+    const [wall, setWall] = useState<Wall>({} as Wall);
     const [list, setList] = useState<Wall[]>([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const getWallList = async () => {
-        const { data } = await getWallListAPI();
+        try {
+            const { data } = await getWallListAPI();
+            setList(data)
+        } catch (error) {
+            setLoading(false)
+        }
 
-        setList(data)
         setLoading(false)
     }
 
     const delWallData = async (id: number) => {
         setLoading(true)
-        await delWallDataAPI(id);
-        getWallList();
-        message.success('🎉 删除留言成功');
+
+        try {
+            await delWallDataAPI(id);
+            await getWallList();
+            message.success('🎉 删除留言成功');
+        } catch (error) {
+            setLoading(false)
+        }
+
+        setLoading(false)
     };
 
     // 获取留言的分类列表
@@ -105,16 +117,24 @@ const WallPage = () => {
 
     const { RangePicker } = DatePicker;
 
-    const onSubmit = async (values: FilterForm) => {
-        const query: FilterWall = {
-            key: values.content,
-            cateId: values.cateId,
-            startDate: values.createTime && values.createTime[0].valueOf() + '',
-            endDate: values.createTime && values.createTime[1].valueOf() + ''
+    const onFilterSubmit = async (values: FilterForm) => {
+        setLoading(true)
+
+        try {
+            const query: FilterWall = {
+                key: values.content,
+                cateId: values.cateId,
+                startDate: values.createTime && values.createTime[0].valueOf() + '',
+                endDate: values.createTime && values.createTime[1].valueOf() + ''
+            }
+
+            const { data } = await getWallListAPI({ query });
+            setList(data)
+        } catch (error) {
+            setLoading(false)
         }
 
-        const { data } = await getWallListAPI({ query });
-        setList(data)
+        setLoading(false)
     }
 
     return (
@@ -122,7 +142,7 @@ const WallPage = () => {
             <Title value='留言管理' />
 
             <Card className='my-2 overflow-scroll'>
-                <Form layout="inline" onFinish={onSubmit} autoComplete="off" className='flex-nowrap'>
+                <Form layout="inline" onFinish={onFilterSubmit} autoComplete="off" className='flex-nowrap'>
                     <Form.Item label="内容" name="content" className='min-w-[200px]'>
                         <Input placeholder='请输入内容关键词' />
                     </Form.Item>

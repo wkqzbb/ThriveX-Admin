@@ -17,7 +17,9 @@ import dayjs from 'dayjs';
 const UserPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
+    const [editLoading, setEditLoading] = useState(false)
 
+    const [form] = Form.useForm();
     const store = useUserStore()
 
     const [userList, setUserList] = useState<User[]>([]);
@@ -107,76 +109,105 @@ const UserPage = () => {
         },
     ];
 
-    const [userForm] = Form.useForm();
-
     const getUserList = async () => {
-        setLoading(true);
-        const { data } = await getUserListAPI();
-        setUserList(data as User[]);
+        try {
+            const { data } = await getUserListAPI();
+            setUserList(data as User[]);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+        }
+
         setLoading(false);
     };
 
     const getRoleList = async () => {
         const { data } = await getRoleListAPI();
-        setRoleList(data as Role[]);
+        console.log(data);
+
+        setRoleList(data);
     };
 
     useEffect(() => {
+        setLoading(true);
         getUserList();
         getRoleList()
     }, []);
 
     const delUserData = async (id: number) => {
         setLoading(true);
-        await delUserDataAPI(id);
-        await getUserList();
-        notification.success({ message: '🎉 删除用户成功' });
-        setLoading(false);
+
+        try {
+            await delUserDataAPI(id);
+            await getUserList();
+            notification.success({ message: '🎉 删除用户成功' });
+        } catch (error) {
+            setLoading(false);
+        }
     };
 
     const editUserData = async (id: number) => {
-        const { data } = await getUserDataAPI(id)
-        setUser({ ...data, role: data.role.id });
+        setEditLoading(true);
 
-        userForm.setFieldsValue({ ...data, roleId: data.role.id });
-        setDrawerVisible(true);
+        try {
+            setDrawerVisible(true);
+            const { data } = await getUserDataAPI(id)
+            setUser(data);
+            form.setFieldsValue(data);
+        } catch (error) {
+            setEditLoading(false);
+        }
+
+        setEditLoading(false);
     };
 
     const reset = () => {
         setUser({} as User)
-        userForm.resetFields()
+        form.resetFields()
     }
 
     const onSubmit = async () => {
         setBtnLoading(true)
 
-        userForm.validateFields().then(async (values: User) => {
-            if (user.id) {
-                await editUserDataAPI({ ...user, ...values });
-                notification.success({ message: '🎉 编辑用户成功' });
-            } else {
-                await addUserDataAPI({ ...values, password: "123456", createTime: new Date().getTime().toString() });
-                notification.success({ message: '🎉 创建用户成功' });
-            }
-            setDrawerVisible(false);
-            getUserList();
-        })
+        try {
+            form.validateFields().then(async (values: User) => {
+                if (user.id) {
+                    await editUserDataAPI({ ...user, ...values });
+                    notification.success({ message: '🎉 编辑用户成功' });
+                } else {
+                    await addUserDataAPI({ ...values, password: "123456", createTime: new Date().getTime().toString() });
+                    notification.success({ message: '🎉 创建用户成功' });
+                }
+
+                await getUserList();
+                setDrawerVisible(false);
+                reset()
+            })
+        } catch (error) {
+            setBtnLoading(false)
+        }
 
         setBtnLoading(false)
     };
 
-    const [filterForm] = Form.useForm();
-
     const onFilterSubmit = async (values: FilterForm) => {
-        const query: FilterUser = {
-            key: values.name,
-            roleId: values.role,
-            startDate: values.createTime && values.createTime[0].valueOf() + '',
-            endDate: values.createTime && values.createTime[1].valueOf() + ''
+        setLoading(true)
+
+        try {
+            const query: FilterUser = {
+                key: values.name,
+                roleId: values.role,
+                startDate: values.createTime && values.createTime[0].valueOf() + '',
+                endDate: values.createTime && values.createTime[1].valueOf() + ''
+            }
+
+            const { data } = await getUserListAPI({ query });
+            setUserList(data as User[]);
+        } catch (error) {
+            setLoading(false)
         }
 
-        const { data } = await getUserListAPI({ query });
-        setUserList(data as User[]);
+        setLoading(false)
     }
 
     return (
@@ -186,7 +217,7 @@ const UserPage = () => {
             </Title>
 
             <Card className='my-2 overflow-scroll'>
-                <Form form={filterForm} layout="inline" onFinish={onFilterSubmit} autoComplete="off" className='flex-nowrap'>
+                <Form layout="inline" onFinish={onFilterSubmit} autoComplete="off" className='flex-nowrap'>
                     <Form.Item label="名称" name="name" className='min-w-[200px]'>
                         <Input placeholder='请输入名称' />
                     </Form.Item>
@@ -227,9 +258,10 @@ const UserPage = () => {
                     setDrawerVisible(false)
                 }}
                 open={drawerVisible}
+                loading={editLoading}
             >
                 <Form
-                    form={userForm}
+                    form={form}
                     layout="vertical"
                     size='large'
                     onFinish={onSubmit}
@@ -278,7 +310,7 @@ const UserPage = () => {
                         label="角色"
                         rules={[{ required: true, message: '请选择角色' }]}
                     >
-                        <Select options={roleList.map(item => ({ label: item.name, value: item.id }))} placeholder="选择用户角色" />
+                        <Select options={roleList.map(item => ({ label: item.name, value: +item.id }))} placeholder="选择用户角色" />
                     </Form.Item>
 
                     <Form.Item>
