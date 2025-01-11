@@ -10,6 +10,9 @@ import { getConfigDataAPI } from '@/api/Project';
 import { useWebStore } from './stores';
 import { Web } from './types/app/project';
 
+import zhCN from 'antd/locale/zh_CN';
+import 'dayjs/locale/zh-cn';
+
 function App() {
   useAuthRedirect();
 
@@ -48,6 +51,7 @@ function App() {
   ) : (
     // 根据主题切换配置主题
     <ConfigProvider
+      locale={zhCN}
       theme={{
         token: {
           colorPrimary: '#727cf5',
