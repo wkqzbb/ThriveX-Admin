@@ -15,11 +15,11 @@ import { LuImagePlus } from "react-icons/lu";
 import { RiDeleteBinLine } from "react-icons/ri";
 
 export default () => {
+    const [loading, setLoading] = useState(false)
+
     const [params] = useSearchParams()
     const id = +params.get('id')!
     const navigate = useNavigate()
-
-    const [loading, setLoading] = useState(false)
 
     const [content, setContent] = useState("")
     const [imageList, setImageList] = useState<string[]>([])
@@ -61,17 +61,20 @@ export default () => {
     }
 
     const getRecordData = async () => {
-        setLoading(true)
-
-        const { data } = await getRecordDataAPI(id)
-        setContent(data.content)
-        setImageList(JSON.parse(data.images as string))
+        try {
+            const { data } = await getRecordDataAPI(id)
+            setContent(data.content)
+            setImageList(JSON.parse(data.images as string))
+        } catch (error) {
+            setLoading(false)
+        }
 
         setLoading(false)
     }
 
     // 回显数据
     useEffect(() => {
+        setLoading(true)
         // 有Id就回显指定的数据
         if (id) getRecordData()
     }, [id])
@@ -130,7 +133,7 @@ export default () => {
     };
 
     return (
-        <>
+        <div>
             <Title value="闪念" />
 
             <Spin spinning={loading}>
@@ -172,6 +175,7 @@ export default () => {
                             type="primary"
                             size="large"
                             icon={<BiLogoTelegram className="text-xl" />}
+                            loading={loading}
                             className="absolute bottom-4 right-4"
                             onClick={onSubmit}
                         />
@@ -188,6 +192,6 @@ export default () => {
                 }}
                 onCancel={() => setIsModalOpen(false)}
             />
-        </>
+        </div>
     )
 }

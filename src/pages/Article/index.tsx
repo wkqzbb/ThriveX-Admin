@@ -15,26 +15,28 @@ import { useWebStore } from '@/stores';
 
 import dayjs from 'dayjs';
 
-const ArticlePage = () => {
+export default () => {
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const [form] = Form.useForm();
     const web = useWebStore(state => state.web)
 
     const [current, setCurrent] = useState<number>(1);
-    const [loading, setLoading] = useState<boolean>(false);
     const [articleList, setArticleList] = useState<Article[]>([]);
 
-    const [form] = Form.useForm();
     const { RangePicker } = DatePicker;
 
     const getArticleList = async () => {
-        setLoading(true);
-        const { data } = await getArticleListAPI();
-        setArticleList(data as Article[]);
+        try {
+            const { data } = await getArticleListAPI();
+            setArticleList(data);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+        }
+
         setLoading(false);
     };
-
-    useEffect(() => {
-        getArticleList()
-    }, []);
 
     const delArticleData = async (id: number) => {
         setLoading(true);
@@ -46,7 +48,6 @@ const ArticlePage = () => {
             form.resetFields()
             setCurrent(1)
             notification.success({ message: '🎉 删除文章成功' })
-            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
@@ -149,19 +150,27 @@ const ArticlePage = () => {
         },
     ];
 
-    const onSubmit = async (values: FilterForm) => {
-        const query: FilterArticle = {
-            key: values.title,
-            cateIds: values.cateIds,
-            tagId: values.tagId,
-            isDraft: 0,
-            isDel: 0,
-            startDate: values.createTime && values.createTime[0].valueOf() + '',
-            endDate: values.createTime && values.createTime[1].valueOf() + ''
+    const onFilterSubmit = async (values: FilterForm) => {
+        setLoading(true)
+
+        try {
+            const query: FilterArticle = {
+                key: values.title,
+                cateIds: values.cateIds,
+                tagId: values.tagId,
+                isDraft: 0,
+                isDel: 0,
+                startDate: values.createTime && values.createTime[0].valueOf() + '',
+                endDate: values.createTime && values.createTime[1].valueOf() + ''
+            }
+
+            const { data } = await getArticleListAPI({ query });
+            setArticleList(data);
+        } catch (error) {
+            setLoading(false)
         }
 
-        const { data } = await getArticleListAPI({ query });
-        setArticleList(data as Article[]);
+        setLoading(false)
     }
 
     const [cateList, setCateList] = useState<Cate[]>([])
@@ -178,16 +187,18 @@ const ArticlePage = () => {
     }
 
     useEffect(() => {
+        setLoading(true);
+        getArticleList()
         getCateList()
         getTagList()
     }, [])
 
     return (
-        <>
+        <div>
             <Title value="文章管理" />
 
             <Card className='my-2 overflow-scroll'>
-                <Form form={form} layout="inline" onFinish={onSubmit} autoComplete="off" className='flex-nowrap'>
+                <Form form={form} layout="inline" onFinish={onFilterSubmit} autoComplete="off" className='flex-nowrap'>
                     <Form.Item label="标题" name="title" className='min-w-[200px]'>
                         <Input placeholder='请输入关键词' />
                     </Form.Item>
@@ -225,7 +236,6 @@ const ArticlePage = () => {
                     rowKey="id"
                     dataSource={articleList}
                     columns={columns as any}
-                    loading={loading}
                     scroll={{ x: 'max-content' }}
                     pagination={{
                         position: ['bottomCenter'],
@@ -235,10 +245,9 @@ const ArticlePage = () => {
                             setCurrent(current)
                         }
                     }}
+                    loading={loading}
                 />
             </Card>
-        </>
+        </div>
     );
 };
-
-export default ArticlePage;

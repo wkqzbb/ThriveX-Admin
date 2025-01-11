@@ -6,9 +6,10 @@ import { Form, Input, Button, Tree, Modal, Spin, Dropdown, Card, MenuProps, Popc
 import Title from '@/components/Title';
 import "./index.scss"
 
-const CatePage = () => {
+export default () => {
     const [loading, setLoading] = useState(false);
     const [btnLoading, setBtnLoading] = useState(false)
+    const [editLoading, setEditLoading] = useState(false)
 
     const [isModelOpen, setIsModelOpen] = useState(false);
     const [cate, setCate] = useState<Cate>({} as Cate);
@@ -41,19 +42,22 @@ const CatePage = () => {
     };
 
     const editCateData = async (id: number) => {
-        setLoading(true);
-        setIsMethod("edit")
-        setIsModelOpen(true);
+        setEditLoading(true);
 
         try {
+            setIsMethod("edit")
+            setIsModelOpen(true);
             const { data } = await getCateDataAPI(id);
-            setIsCateShow(data.type === "cate" ? false : true)
             setCate(data);
-
             form.setFieldsValue(data);
+
+            // 判断是分类还是导航
+            setIsCateShow(data.type === "cate" ? false : true)
         } catch (error) {
-            setLoading(false);
+            setEditLoading(false);
         }
+
+        setEditLoading(false);
     };
 
     const delCateData = async (id: number) => {
@@ -61,8 +65,8 @@ const CatePage = () => {
 
         try {
             await delCateDataAPI(id);
+            await getCateList();
             message.success('🎉 删除分类成功');
-            getCateList();
         } catch (error) {
             setLoading(false);
         }
@@ -83,17 +87,19 @@ const CatePage = () => {
                     message.success('🎉 新增分类成功');
                 }
 
+                await getCateList();
+
                 // 初始化表单状态
                 form.resetFields();
                 setCate({} as Cate);
-
                 setIsModelOpen(false);
-                getCateList();
                 setIsMethod("create")
             })
         } catch (error) {
             setBtnLoading(false)
         }
+
+        setBtnLoading(false)
     };
 
     const closeModel = () => {
@@ -153,7 +159,7 @@ const CatePage = () => {
                     <Tree defaultExpandAll={true} treeData={treeData(list)} />
                 </Spin>
 
-                <Modal title={isMethod === "edit" ? "编辑分类" : "新增分类"} open={isModelOpen} onCancel={closeModel} destroyOnClose footer={null}>
+                <Modal loading={editLoading} title={isMethod === "edit" ? "编辑分类" : "新增分类"} open={isModelOpen} onCancel={closeModel} destroyOnClose footer={null}>
                     <Form form={form} layout="vertical" initialValues={cate} size='large' preserve={false} className='mt-6'>
                         <Form.Item label="名称" name="name" rules={[{ required: true, message: '分类名称不能为空' }]}>
                             <Input placeholder="请输入分类名称" />
@@ -196,5 +202,3 @@ const CatePage = () => {
         </>
     );
 };
-
-export default CatePage;

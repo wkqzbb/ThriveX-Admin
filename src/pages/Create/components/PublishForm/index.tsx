@@ -15,6 +15,11 @@ import { Article, Status } from "@/types/app/article";
 
 import dayjs from 'dayjs';
 
+interface Props {
+    data: Article,
+    closeModel: () => void
+}
+
 interface FieldType {
     title: string,
     createTime: number;
@@ -28,7 +33,7 @@ interface FieldType {
     password: string
 }
 
-const PublishForm = ({ data, closeModel }: { data: Article, closeModel: () => void }) => {
+const PublishForm = ({ data, closeModel }: Props) => {
     const [params] = useSearchParams()
     const id = +params.get('id')!
     const isDraftParams = Boolean(params.get('draft'))
@@ -167,18 +172,19 @@ const PublishForm = ({ data, closeModel }: { data: Article, closeModel: () => vo
                     } as any)
                 }
             }
+
+            // 关闭弹框
+            closeModel()
+            // 清除本地持久化的数据
+            localStorage.removeItem('article_content')
+            // 如果是草稿就跳转到草稿页，否则文章页
+            isDraft ? navigate("/draft") : navigate("/article")
+            // 初始化表单
+            form.resetFields()
         } catch (error) {
             setBtnLoading(false)
         }
 
-        // 关闭弹框
-        closeModel()
-        // 清除本地持久化的数据
-        localStorage.removeItem('article_content')
-        // 如果是草稿就跳转到草稿页，否则文章页
-        isDraft ? navigate("/draft") : navigate("/article")
-        // 初始化表单
-        form.resetFields()
         setBtnLoading(false)
     }
 
@@ -191,7 +197,7 @@ const PublishForm = ({ data, closeModel }: { data: Article, closeModel: () => vo
     }
 
     return (
-        <>
+        <div>
             <Form
                 form={form}
                 name="basic"
@@ -277,7 +283,7 @@ const PublishForm = ({ data, closeModel }: { data: Article, closeModel: () => vo
                     </Form.Item>
                 )}
             </Form>
-        </>
+        </div>
     );
 };
 

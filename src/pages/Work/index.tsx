@@ -54,7 +54,7 @@ export default () => {
             return <Empty />;
         }
         return list.map(item => (
-            <List key={item.id} item={item} type={type} fetchData={(type) => fetchData(type)} />
+            <List key={item.id} item={item} type={type} fetchData={(type) => fetchData(type)} setLoading={setLoading} />
         ));
     };
 
@@ -62,32 +62,33 @@ export default () => {
         <>
             <Title value="工作台" />
 
-            <Spin spinning={loading}>
-                <Card className="mt-2 min-h-[calc(100vh-180px)]">
-                    <div className="flex flex-col md:flex-row w-full">
-                        <div className="w-full min-w-[200px] md:w-2/12 md:min-h-96 mb-5 md:mb-0 pr-4 md:border-b-transparent md:border-r border-[#eee] dark:border-strokedark">
-                            <ul className="space-y-1">
-                                {(["comment", "link", "wall"] as Menu[]).map((menu) => (
-                                    <li
-                                        key={menu}
-                                        className={`flex items-center w-full py-3 px-4 hover:bg-[#f9f9ff] dark:hover:bg-[#3c5370] hover:text-primary ${active === menu ? activeSty : ''} rounded-md text-base cursor-pointer transition-colors`}
-                                        onClick={() => setActive(menu)}
-                                    >
-                                        <img src={menu === "comment" ? comment : menu === "link" ? link : info} alt="" className="w-8 mr-4" />
-                                        <span>{menu === "comment" ? "评论" : menu === "link" ? "友联" : "留言"}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+            <Card className="mt-2 min-h-[calc(100vh-180px)]">
+                <div className="flex flex-col md:flex-row w-full">
+                    <div className="w-full min-w-[200px] md:w-2/12 md:min-h-96 mb-5 md:mb-0 pr-4 md:border-b-transparent md:border-r border-[#eee] dark:border-strokedark">
+                        <ul className="space-y-1">
+                            {(["comment", "link", "wall"] as Menu[]).map((menu) => (
+                                <li
+                                    key={menu}
+                                    className={`flex items-center w-full py-3 px-4 hover:bg-[#f9f9ff] dark:hover:bg-[#3c5370] hover:text-primary ${active === menu ? activeSty : ''} rounded-md text-base cursor-pointer transition-colors`}
+                                    onClick={() => setActive(menu)}
+                                >
+                                    <img src={menu === "comment" ? comment : menu === "link" ? link : info} alt="" className="w-8 mr-4" />
+                                    <span>{menu === "comment" ? "评论" : menu === "link" ? "友联" : "留言"}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
+                    <Spin spinning={loading}>
                         <div className="w-full md:w-10/12 md:pl-6 py-4 space-y-10">
                             {active === "link" && renderList(linkList, "link")}
                             {active === "comment" && renderList(commentList, "comment")}
                             {active === "wall" && renderList(wallList, "wall")}
                         </div>
-                    </div>
-                </Card>
-            </Spin>
+                    </Spin>
+                </div>
+            </Card>
+
         </>
     );
 }

@@ -13,12 +13,12 @@ import { BiSave } from "react-icons/bi";
 import { AiOutlineEdit, AiOutlineSend } from 'react-icons/ai';
 import { titleSty } from '@/styles/sty';
 
-const CreatePage = () => {
+export default () => {
+  const [loading, setLoading] = useState(false)
+
   const [params] = useSearchParams()
   const id = +params.get('id')!
   const isDraftParams = Boolean(params.get('draft'))
-
-  const [loading, setLoading] = useState(false)
 
   const [data, setData] = useState<Article>({} as Article)
   const [content, setContent] = useState('');
@@ -38,6 +38,8 @@ const CreatePage = () => {
     } catch (error) {
       setLoading(false)
     }
+
+    setLoading(false)
   }
 
   // 回显数据
@@ -91,53 +93,61 @@ const CreatePage = () => {
 
   // 解析接口数据
   const parsingData = async (command: string) => {
-    const res = await fetch(`/ai/v1/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${import.meta.env.VITE_AI_APIPassword}`
-      },
-      body: JSON.stringify({
-        model: import.meta.env.VITE_AI_MODEL,
-        messages: [{
-          role: "user",
-          content: `${command}${content}`
-        }],
-        stream: true
-      })
-    });
+    setLoading(true)
 
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder("utf-8");
+    try {
+      const res = await fetch(`/ai/v1/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_AI_APIPassword}`
+        },
+        body: JSON.stringify({
+          model: import.meta.env.VITE_AI_MODEL,
+          messages: [{
+            role: "user",
+            content: `${command}${content}`
+          }],
+          stream: true
+        })
+      });
 
-    let receivedText = "";
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder("utf-8");
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      receivedText += decoder.decode(value, { stream: true });
+      let receivedText = "";
 
-      // 处理每一块数据
-      const lines = receivedText.split("\n");
-      for (let i = 0; i < lines.length - 1; i++) {
-        const line = lines[i].trim();
-        if (line.startsWith("data:")) {
-          const jsonString = line.substring(5).trim();
-          if (jsonString !== "[DONE]") {
-            const data = JSON.parse(jsonString);
-            console.log("Received chunk:", data.choices[0].delta.content);
-            setContent((content) => content + data.choices[0].delta.content);
-            // 在这里处理每一块数据
-          } else {
-            console.log("Stream finished.");
-            return;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        receivedText += decoder.decode(value, { stream: true });
+
+        // 处理每一块数据
+        const lines = receivedText.split("\n");
+        for (let i = 0; i < lines.length - 1; i++) {
+          const line = lines[i].trim();
+          if (line.startsWith("data:")) {
+            const jsonString = line.substring(5).trim();
+            if (jsonString !== "[DONE]") {
+              const data = JSON.parse(jsonString);
+              console.log("Received chunk:", data.choices[0].delta.content);
+              setContent((content) => content + data.choices[0].delta.content);
+              // 在这里处理每一块数据
+            } else {
+              console.log("Stream finished.");
+              return;
+            }
           }
         }
-      }
 
-      // 保留最后一行未处理的数据
-      receivedText = lines[lines.length - 1];
+        // 保留最后一行未处理的数据
+        receivedText = lines[lines.length - 1];
+      }
+    } catch (error) {
+      setLoading(false)
     }
+
+    setLoading(false)
   }
 
   // AI功能
@@ -166,7 +176,7 @@ const CreatePage = () => {
   ];
 
   return (
-    <>
+    <div>
       <Title value="创作">
         <div className='flex items-center space-x-4 w-[360px]'>
           <Dropdown.Button menu={{ items }}>
@@ -196,8 +206,6 @@ const CreatePage = () => {
           <PublishForm data={data} closeModel={() => setPublishOpen(false)} />
         </Drawer>
       </Card >
-    </>
+    </div>
   );
 };
-
-export default CreatePage;

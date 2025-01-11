@@ -15,11 +15,12 @@ import { useWebStore, useUserStore } from '@/stores'
 
 import dayjs from 'dayjs';
 
-const CommentPage = () => {
+export default () => {
+    const [loading, setLoading] = useState(false);
+
     const web = useWebStore(state => state.web)
     const user = useUserStore(state => state.user)
 
-    const [loading, setLoading] = useState(false);
     const [btnLoading, setBtnLoading] = useState(false);
 
     const [comment, setComment] = useState<Comment>({} as Comment);
@@ -28,21 +29,15 @@ const CommentPage = () => {
     const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
 
     const getCommentList = async () => {
-        const { data } = await getCommentListAPI();
-        setList(data)
-        setLoading(false)
-    }
-
-    const delCommentData = async (id: number) => {
-        setLoading(true)
         try {
-            await delCommentDataAPI(id);
-            getCommentList();
-            message.success('🎉 删除评论成功');
+            const { data } = await getCommentListAPI();
+            setList(data)
         } catch (error) {
             setLoading(false)
         }
-    };
+
+        setLoading(false)
+    }
 
     useEffect(() => {
         setLoading(true)
@@ -119,6 +114,18 @@ const CommentPage = () => {
 
     const { RangePicker } = DatePicker;
 
+    const delCommentData = async (id: number) => {
+        setLoading(true)
+
+        try {
+            await delCommentDataAPI(id);
+            await getCommentList();
+            message.success('🎉 删除评论成功');
+        } catch (error) {
+            setLoading(false)
+        }
+    };
+
     const onSubmit = async (values: FilterForm) => {
         setLoading(true)
 
@@ -135,6 +142,8 @@ const CommentPage = () => {
         } catch (error) {
             setLoading(false)
         }
+
+        setLoading(false)
     }
 
     // 回复内容
@@ -156,18 +165,17 @@ const CommentPage = () => {
                 createTime: new Date().getTime().toString(),
             })
 
+            await getCommentList()
             message.success('🎉 回复评论成功');
-
             setIsReplyModalOpen(false)
             setReplyInfo("")
-            getCommentList()
         } catch (error) {
             setBtnLoading(false)
         }
     }
 
     return (
-        <>
+        <div>
             <Title value='评论管理' />
 
             <Card className='my-2 overflow-scroll'>
@@ -195,13 +203,13 @@ const CommentPage = () => {
                     rowKey="id"
                     dataSource={list}
                     columns={columns}
-                    loading={loading}
                     expandable={{ defaultExpandAllRows: true }}
                     scroll={{ x: 'max-content' }}
                     pagination={{
                         position: ['bottomCenter'],
                         defaultPageSize: 8,
                     }}
+                    loading={loading}
                 />
             </Card>
 
@@ -231,9 +239,6 @@ const CommentPage = () => {
                     <Button type="primary" loading={btnLoading} onClick={handleReply} className="w-full mt-2">确定</Button>
                 </div>
             </Modal>
-        </>
+        </div>
     );
 };
-
-export default CommentPage;
-

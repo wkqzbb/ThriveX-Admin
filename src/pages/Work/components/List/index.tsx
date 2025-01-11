@@ -17,9 +17,12 @@ interface ListItemProps {
     item: any;
     type: Menu;
     fetchData: (type: Menu) => void;
+    setLoading: (loading: boolean) => void;
 }
 
-export default ({ item, type, fetchData }: ListItemProps) => {
+export default ({ item, type, fetchData, setLoading }: ListItemProps) => {
+    const [btnLoading, setBtnLoading] = useState<boolean>(false)
+
     const web = useWebStore(state => state.web)
     const user = useUserStore(state => state.user)
 
@@ -27,64 +30,86 @@ export default ({ item, type, fetchData }: ListItemProps) => {
 
     // 通过
     const handleApproval = async () => {
-        if (type === "link") {
-            await auditWebDataAPI(item.id);
-        } else if (type === "comment") {
-            await auditCommentDataAPI(item.id);
-        } else if (type === "wall") {
-            await auditWallDataAPI(item.id);
-        }
+        setLoading(true)
 
-        btnType != "reply" && message.success('🎉 审核成功');
-        fetchData(type);
+        try {
+            if (type === "link") {
+                await auditWebDataAPI(item.id);
+            } else if (type === "comment") {
+                await auditCommentDataAPI(item.id);
+            } else if (type === "wall") {
+                await auditWallDataAPI(item.id);
+            }
+
+            await fetchData(type);
+            btnType != "reply" && message.success('🎉 审核成功');
+        } catch (error) {
+            setLoading(false)
+        }
     };
 
     // 回复
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [replyInfo, setReplyInfo] = useState("")
     const handleReply = async () => {
-        // 审核通过评论
-        await handleApproval()
+        setBtnLoading(true)
 
-        // 发送回复内容
-        await addCommentDataAPI({
-            avatar: user.avatar,
-            url: web.url,
-            content: replyInfo,
-            commentId: item?.id!,
-            auditStatus: 1,
-            email: user.email ? user.email : null,
-            name: user.name,
-            articleId: item?.articleId!,
-            createTime: new Date().getTime().toString(),
-        })
+        try {
+            // 审核通过评论
+            await handleApproval()
 
-        message.success('🎉 回复成功');
-        setIsModalOpen(false)
-        fetchData(type);
-        setReplyInfo("")
-        setBtnType("")
+            // 发送回复内容
+            await addCommentDataAPI({
+                avatar: user.avatar,
+                url: web.url,
+                content: replyInfo,
+                commentId: item?.id!,
+                auditStatus: 1,
+                email: user.email ? user.email : null,
+                name: user.name,
+                articleId: item?.articleId!,
+                createTime: new Date().getTime().toString(),
+            })
+
+            await fetchData(type);
+            message.success('🎉 回复成功');
+            setReplyInfo("")
+            setBtnType("")
+            setIsModalOpen(false)
+        } catch (error) {
+            setBtnLoading(false)
+        }
+
+        setBtnLoading(false)
     }
 
     // 驳回
     const [dismissInfo, setDismissInfo] = useState("")
     const handleDismiss = async () => {
-        if (type === "link") {
-            await delLinkDataAPI(item.id);
-        } else if (type === "comment") {
-            await delCommentDataAPI(item.id);
-        } else if (type === "wall") {
-            await delWallDataAPI(item.id);
+        setBtnLoading(true)
+
+        try {
+            if (type === "link") {
+                await delLinkDataAPI(item.id);
+            } else if (type === "comment") {
+                await delCommentDataAPI(item.id);
+            } else if (type === "wall") {
+                await delWallDataAPI(item.id);
+            }
+
+            // 有内容就发送驳回通知邮件，反之直接删除
+            if (dismissInfo.trim().length) await sendDismissEmail()
+
+            await fetchData(type);
+            message.success('🎉 驳回成功');
+            setDismissInfo("")
+            setBtnType("")
+            setIsModalOpen(false)
+        } catch (error) {
+            setBtnLoading(false)
         }
 
-        // 有内容就发送驳回通知邮件，反之直接删除
-        if (dismissInfo.trim().length) await sendDismissEmail()
-
-        message.success('🎉 驳回成功');
-        setIsModalOpen(false)
-        fetchData(type);
-        setDismissInfo("")
-        setBtnType("")
+        setBtnLoading(false)
     };
 
     // 发送驳回通知邮件
@@ -202,7 +227,7 @@ export default ({ item, type, fetchData }: ListItemProps) => {
 
                 <div className="flex space-x-4">
                     <Button className="w-full mt-2" onClick={() => setIsModalOpen(false)}>取消</Button>
-                    <Button type="primary" className="w-full mt-2" onClick={btnType === "reply" ? handleReply : handleDismiss}>确定</Button>
+                    <Button type="primary" onClick={btnType === "reply" ? handleReply : handleDismiss} loading={btnLoading} className="w-full mt-2">确定</Button>
                 </div>
             </Modal>
         </div>
