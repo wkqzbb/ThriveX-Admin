@@ -1,49 +1,48 @@
 import { useEffect, useState } from 'react';
-import { Spin, Form, notification, Input, Button } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { Form, notification, Input, Button } from 'antd';
 import { Theme } from '@/types/app/project';
 import { editConfigDataAPI, getConfigDataAPI } from '@/api/Project';
 
-const RecordTheme = () => {
+export default () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const [form] = Form.useForm();
 
     const getLayoutData = async () => {
         try {
-            const { data } = await getConfigDataAPI<Theme>("layout");
+            setLoading(true);
 
+            const { data } = await getConfigDataAPI<Theme>("layout");
             form.setFieldsValue({
                 record_name: data.record_name,
                 record_info: data.record_info
             });
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
-        setLoading(true);
         getLayoutData();
     }, []);
 
     const editThemeData = async (values: { record_name: string, record_info: string }) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             await editConfigDataAPI("layout", values);
 
             notification.success({
                 message: '成功',
                 description: '🎉 修改主题成功',
             });
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     return (
@@ -70,5 +69,3 @@ const RecordTheme = () => {
         </div>
     );
 };
-
-export default RecordTheme;

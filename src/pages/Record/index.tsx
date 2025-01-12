@@ -23,28 +23,31 @@ export default () => {
 
   const getRecordList = async () => {
     try {
+      setLoading(true);
+
       const { data } = await getRecordListAPI();
       setRecordList(data as Record[]);
+
+      setLoading(false);
     } catch (error) {
       setLoading(false);
     }
-
-    setLoading(false);
   };
 
   useEffect(() => {
-    setLoading(true);
     getRecordList()
   }, []);
 
   const delRecordData = async (id: number) => {
-    setLoading(true);
-
     try {
+      setLoading(true);
+
       await delRecordDataAPI(id);
       await getRecordList();
       form.resetFields()
       notification.success({ message: '🎉 删除说说成功' })
+
+      setLoading(false);
     } catch (error) {
       setLoading(false);
     }
@@ -116,9 +119,9 @@ export default () => {
   ];
 
   const onFilterSubmit = async (values: FilterForm) => {
-    setLoading(true);
-
     try {
+      setLoading(true);
+
       const query = {
         key: values.content,
         startDate: values.createTime && values.createTime[0].valueOf() + '',
@@ -126,12 +129,12 @@ export default () => {
       }
 
       const { data } = await getRecordListAPI({ query });
-      setRecordList(data as Record[]);
+      setRecordList(data);
+
+      setLoading(false);
     } catch (error) {
       setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (

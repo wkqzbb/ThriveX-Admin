@@ -27,17 +27,19 @@ export default () => {
     // 获取网站列表
     const getLinkList = async () => {
         try {
+            setLoading(true);
+
             const { data } = await getLinkListAPI();
             data.sort((a, b) => a.order - b.order)
             data.sort((a, b) => a.type.order - b.type.order)
 
             setList(data);
             setListTemp(data);
+
+            setLoading(false)
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false)
     };
 
     // 获取网站类型列表
@@ -47,7 +49,6 @@ export default () => {
     };
 
     useEffect(() => {
-        setLoading(true);
         getLinkList();
         getWebTypeList();
     }, []);
@@ -57,9 +58,9 @@ export default () => {
     }, [search, list]);
 
     const deleteLinkData = async (id: number) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             await delLinkDataAPI(id);
             await getLinkList();
             message.success('🎉 删除网站成功');
@@ -69,20 +70,19 @@ export default () => {
     };
 
     const editLinkData = async (record: Web) => {
-        setEditLoading(true)
-
         try {
+            setEditLoading(true)
             setTab('operate');
             setIsMethod("edit");
 
             const { data } = await getLinkDataAPI(record.id)
             setLink(data);
             form.setFieldsValue(data);
+
+            setEditLoading(false)
         } catch (error) {
             setEditLoading(false)
         }
-
-        setEditLoading(false)
     };
 
     // 做一些初始化的事情
@@ -98,9 +98,9 @@ export default () => {
     };
 
     const submit = async () => {
-        setBtnLoading(true)
-
         try {
+            setBtnLoading(true)
+
             form.validateFields().then(async (values: Web) => {
                 if (isMethod === "edit") {
                     await editLinkDataAPI({ ...link, ...values });
@@ -114,11 +114,11 @@ export default () => {
                 reset()
                 setTab('list');
             });
+
+            setBtnLoading(false)
         } catch (error) {
             setBtnLoading(false)
         }
-
-        setBtnLoading(false)
     };
 
     const { Option } = Select;
@@ -137,7 +137,7 @@ export default () => {
             label: '网站列表',
             key: 'list',
             children: (
-                <>
+                <div>
                     <div className="w-[300px] mx-auto">
                         <Input
                             size="large"
@@ -179,14 +179,14 @@ export default () => {
                             <Empty description="暂无数据" className='my-7' />
                         )}
                     </Spin>
-                </>
+                </div>
             ),
         },
         {
             label: isMethod === "edit" ? '编辑网站' : '新增网站',
             key: 'operate',
             children: (
-                <>
+                <div>
                     <h2 className="text-xl pb-4 text-center">{isMethod === "edit" ? '编辑网站' : '新增网站'}</h2>
 
                     <Spin spinning={editLoading}>
@@ -232,7 +232,7 @@ export default () => {
                             </Form>
                         </div>
                     </Spin>
-                </>
+                </div>
             ),
         },
     ];

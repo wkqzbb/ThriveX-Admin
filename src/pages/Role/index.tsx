@@ -52,54 +52,56 @@ export default () => {
     // 获取角色列表
     const getRoleList = async () => {
         try {
+            setLoading(true);
+
             const { data } = await getRoleListAPI();
             setRoleList(data as Role[]);
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
-        setLoading(true);
         getRoleList()
         getRouteList()
     }, []);
 
     // 获取指定角色的路由列表
     const bindingRoute = async (record: Role) => {
-        setEditLoading(true)
-        
         try {
+            setEditLoading(true)
+
             setIsModalOpen(true)
+            
             const { data } = await getRoleRouteListAPI(record.id);
             setTargetKeys(data.map(item => item.id) as number[])
+
+            setEditLoading(false)
         } catch (error) {
             setEditLoading(false)
         }
-
-        setEditLoading(false)
     }
 
     const editRoleData = async (record: Role) => {
-        setEditLoading(true);
-
         try {
+            setEditLoading(true);
+
             const { data } = await getRoleDataAPI(record.id);
             setRole(data);
             form.setFieldsValue(data);
+
+            setEditLoading(false);
         } catch (error) {
             setEditLoading(false);
         }
-
-        setEditLoading(false);
     };
 
     const delRoleData = async (id: number) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             await delRoleDataAPI(id);
             await getRoleList();
             message.success('🎉 删除角色成功');
@@ -109,9 +111,9 @@ export default () => {
     };
 
     const onSubmit = async () => {
-        setBtnLoading(true)
-
         try {
+            setBtnLoading(true)
+
             form.validateFields().then(async (values: Role) => {
                 if (role.id) {
                     await editRoleDataAPI({ ...role, ...values });
@@ -126,11 +128,11 @@ export default () => {
                 form.setFieldsValue({ name: '', description: '' })
                 setRole({} as Role);
             });
+
+            setBtnLoading(false)
         } catch (error) {
             setBtnLoading(false)
         }
-
-        setBtnLoading(false)
     };
 
     // 设置目标路由
@@ -138,10 +140,11 @@ export default () => {
 
     // 绑定路由
     const onBindingRouteSubmit = async () => {
-        setBindingLoading(true);
-
         try {
+            setBindingLoading(true);
+
             await bindingRouteAPI(role.id, targetKeys)
+            setBindingLoading(false);
             message.success('🎉 绑定成功');
             // 刷新页面
             window.location.reload()

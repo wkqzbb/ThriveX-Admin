@@ -17,13 +17,15 @@ export default () => {
 
     const getWallList = async () => {
         try {
+            setLoading(true)
+
             const { data } = await getWallListAPI();
             setList(data)
+
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     }
 
     const delWallData = async (id: number) => {
@@ -48,7 +50,6 @@ export default () => {
     }
 
     useEffect(() => {
-        setLoading(true)
         getWallList();
         getCateList()
     }, []);
@@ -118,9 +119,9 @@ export default () => {
     const { RangePicker } = DatePicker;
 
     const onFilterSubmit = async (values: FilterForm) => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const query: FilterWall = {
                 key: values.content,
                 cateId: values.cateId,
@@ -130,11 +131,11 @@ export default () => {
 
             const { data } = await getWallListAPI({ query });
             setList(data)
+
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     }
 
     return (

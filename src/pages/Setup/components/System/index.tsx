@@ -35,9 +35,9 @@ export default () => {
     };
 
     const handleSubmit = async (values: EditUser) => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             await editAdminPassAPI(values);
 
             confirm({
@@ -47,11 +47,11 @@ export default () => {
                 onOk: store.quitLogin,
                 cancelButtonProps: { style: { display: 'none' } }
             });
+
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     };
 
     return (

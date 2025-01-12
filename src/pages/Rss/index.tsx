@@ -20,17 +20,18 @@ export default () => {
 
     const getRssList = async () => {
         try {
+            setLoading(true);
+
             const { data } = await getRssListAPI();
             setList(data);
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
-        setLoading(true);
         getRssList();
     }, []);
 

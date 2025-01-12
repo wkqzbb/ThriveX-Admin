@@ -19,25 +19,26 @@ export default () => {
 
     const getUserData = async () => {
         try {
+            setLoading(true);
+
             const { data } = await getUserDataAPI(store.user?.id);
             store.setUser(data);
             form.setFieldsValue(data);
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
-        setLoading(true);
         getUserData();
     }, []);
 
     const onSubmit = async (values: UserForm) => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             await editUserDataAPI({
                 id: store.user.id, ...values,
                 role: undefined

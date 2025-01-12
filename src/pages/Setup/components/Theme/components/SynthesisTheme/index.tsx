@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { notification, Divider, Input, Alert, Button, Spin, Form } from 'antd';
-import { PictureOutlined, LoadingOutlined, CloudUploadOutlined } from '@ant-design/icons';
+import { notification, Divider, Input, Alert, Button, Form } from 'antd';
+import { PictureOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import { editConfigDataAPI, getConfigDataAPI } from '@/api/Project';
 import { Theme } from '@/types/app/project';
 import FileUpload from '@/components/FileUpload';
 
-const SynthesisTheme = () => {
+export default () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -22,6 +22,8 @@ const SynthesisTheme = () => {
 
     const getLayoutData = async () => {
         try {
+            setLoading(true);
+            
             const { data } = await getConfigDataAPI<Theme>("layout");
             setTheme(data);
 
@@ -34,22 +36,21 @@ const SynthesisTheme = () => {
                 covers: data.covers ? JSON.parse(data.covers).join("\n") : '',
                 reco_article: data.reco_article ? JSON.parse(data.reco_article).join("\n") : '',
             });
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
-        setLoading(true);
         getLayoutData();
     }, []);
 
     const editThemeData = async (values: any) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             const updatedLayout = {
                 ...theme,
                 ...values,
@@ -64,11 +65,11 @@ const SynthesisTheme = () => {
                 message: '成功',
                 description: '🎉 修改主题成功',
             });
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     const getFile = (name: string) => {
@@ -199,5 +200,3 @@ const SynthesisTheme = () => {
         </div>
     );
 };
-
-export default SynthesisTheme;

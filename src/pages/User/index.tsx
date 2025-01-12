@@ -111,33 +111,31 @@ export default () => {
 
     const getUserList = async () => {
         try {
+            setLoading(true);
+
             const { data } = await getUserListAPI();
             setUserList(data as User[]);
+
             setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     const getRoleList = async () => {
         const { data } = await getRoleListAPI();
-        console.log(data);
-
         setRoleList(data);
     };
 
     useEffect(() => {
-        setLoading(true);
         getUserList();
         getRoleList()
     }, []);
 
     const delUserData = async (id: number) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             await delUserDataAPI(id);
             await getUserList();
             notification.success({ message: '🎉 删除用户成功' });
@@ -147,18 +145,18 @@ export default () => {
     };
 
     const editUserData = async (id: number) => {
-        setEditLoading(true);
-
         try {
+            setEditLoading(true);
+
             setDrawerVisible(true);
             const { data } = await getUserDataAPI(id)
             setUser(data);
             form.setFieldsValue(data);
+
+            setEditLoading(false);
         } catch (error) {
             setEditLoading(false);
         }
-
-        setEditLoading(false);
     };
 
     const reset = () => {
@@ -167,9 +165,9 @@ export default () => {
     }
 
     const onSubmit = async () => {
-        setBtnLoading(true)
-
         try {
+            setBtnLoading(true)
+
             form.validateFields().then(async (values: User) => {
                 if (user.id) {
                     await editUserDataAPI({ ...user, ...values });
@@ -183,17 +181,17 @@ export default () => {
                 setDrawerVisible(false);
                 reset()
             })
+
+            setBtnLoading(false)
         } catch (error) {
             setBtnLoading(false)
         }
-
-        setBtnLoading(false)
     };
 
     const onFilterSubmit = async (values: FilterForm) => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const query: FilterUser = {
                 key: values.name,
                 roleId: values.role,
@@ -202,12 +200,12 @@ export default () => {
             }
 
             const { data } = await getUserListAPI({ query });
-            setUserList(data as User[]);
+            setUserList(data);
+
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     }
 
     return (

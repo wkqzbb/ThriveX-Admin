@@ -33,51 +33,54 @@ export default () => {
 
     const getRouteList = async () => {
         try {
+            setLoading(true);
+
             const { data } = await getRouteListAPI();
             setList(data);
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
-        setLoading(true);
         getRouteList();
     }, []);
 
     const editRouteData = async (record: Route) => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const { data } = await getRouteDataAPI(record.id);
             setRoute(data);
             form.setFieldsValue(data);
+
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     };
 
     const delRouteData = async (id: number) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             await delRouteDataAPI(id);
             await getRouteList();
             message.success('🎉 删除路由成功');
+
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
     };
 
     const onSubmit = async () => {
-        setLoading(true);
-        setBtnLoading(true)
-
         try {
+            setLoading(true);
+            setBtnLoading(true)
+
             form.validateFields().then(async (values: Route) => {
                 if (route.id) {
                     await editRouteDataAPI({ ...route, ...values });
@@ -92,13 +95,13 @@ export default () => {
                 form.setFieldsValue({ path: '', description: '' })
                 setRoute({} as Route);
             });
+
+            setLoading(false)
+            setBtnLoading(true)
         } catch (error) {
             setLoading(false)
             setBtnLoading(true)
         }
-
-        setLoading(false)
-        setBtnLoading(true)
     };
 
     return (

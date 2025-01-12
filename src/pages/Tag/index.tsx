@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Form, Input, Popconfirm, message, Card } from 'antd';
+import { Table, Button, Form, Input, Popconfirm, message, Card, Spin } from 'antd';
 import { getTagListAPI, addTagDataAPI, editTagDataAPI, delTagDataAPI, getTagDataAPI } from '@/api/Tag';
 import { Tag } from '@/types/app/tag';
 import Title from '@/components/Title';
@@ -8,6 +8,7 @@ import { ColumnsType } from 'antd/es/table';
 export default () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
+    const [editLoading, setEditLoading] = useState(false)
 
     const [form] = Form.useForm();
 
@@ -32,38 +33,39 @@ export default () => {
 
     const getTagList = async () => {
         try {
+            setLoading(true);
+
             const { data } = await getTagListAPI();
             setList(data as Tag[]);
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
-        setLoading(true);
         getTagList();
     }, []);
 
     const editTagData = async (record: Tag) => {
-        setLoading(true);
-
         try {
+            setEditLoading(true);
+
             const { data } = await getTagDataAPI(record.id)
             setTag(data);
             form.setFieldsValue(data);
-        } catch (error) {
-            setLoading(false);
-        }
 
-        setLoading(false);
+            setEditLoading(false);
+        } catch (error) {
+            setEditLoading(false);
+        }
     };
 
     const delTagData = async (id: number) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             await delTagDataAPI(id);
             await getTagList();
             message.success('🎉 删除标签成功');
@@ -73,10 +75,10 @@ export default () => {
     };
 
     const onSubmit = async () => {
-        setLoading(true);
-        setBtnLoading(true);
-
         try {
+            setLoading(true);
+            setBtnLoading(true);
+
             form.validateFields().then(async (values: Tag) => {
                 if (tag.id) {
                     await editTagDataAPI({ ...tag, ...values });
@@ -91,12 +93,13 @@ export default () => {
                 form.setFieldsValue({ name: '' })
                 setTag({} as Tag);
             });
+
+            setLoading(false);
+            setBtnLoading(false);
         } catch (error) {
             setLoading(false);
             setBtnLoading(false);
         }
-
-        setBtnLoading(false);
     };
 
     return (
@@ -104,23 +107,25 @@ export default () => {
             <Title value="标签管理" />
 
             <div className='flex md:justify-between flex-col md:flex-row mx-auto mt-2'>
-                <Card className="w-full md:w-[40%] h-[calc(100vh-180px)]">
-                    <Form
-                        form={form}
-                        layout="vertical"
-                        initialValues={tag}
-                        onFinish={onSubmit}
-                        size='large'
-                    >
-                        <Form.Item label="标签名称" name="name" rules={[{ required: true, message: '标签名称不能为空' }]}>
-                            <Input placeholder="请输入标签名称" />
-                        </Form.Item>
+                <Spin spinning={editLoading}>
+                    <Card className="w-full md:w-[40%] h-[calc(100vh-180px)]">
+                        <Form
+                            form={form}
+                            layout="vertical"
+                            initialValues={tag}
+                            onFinish={onSubmit}
+                            size='large'
+                        >
+                            <Form.Item label="标签名称" name="name" rules={[{ required: true, message: '标签名称不能为空' }]}>
+                                <Input placeholder="请输入标签名称" />
+                            </Form.Item>
 
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" loading={btnLoading} className="w-full">{tag.id ? '编辑标签' : '新增标签'}</Button>
-                        </Form.Item>
-                    </Form>
-                </Card>
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit" loading={btnLoading} className="w-full">{tag.id ? '编辑标签' : '新增标签'}</Button>
+                            </Form.Item>
+                        </Form>
+                    </Card>
+                </Spin>
 
                 <Card className="w-full md:w-[59%] [&>.ant-card-body]:!p-0 mt-2 md:mt-0">
                     <Table

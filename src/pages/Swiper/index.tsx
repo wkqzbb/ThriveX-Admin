@@ -43,53 +43,54 @@ export default () => {
 
     const getSwiperList = async () => {
         try {
+            setLoading(true);
+
             const { data } = await getSwiperListAPI();
             setList(data as Swiper[]);
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
-        setLoading(true);
         getSwiperList();
     }, []);
 
     const editSwiperData = async (record: Swiper) => {
-        setEditLoading(true);
-        setTab('operate');
-
         try {
+            setEditLoading(true);
+            setTab('operate');
+
             const { data } = await getSwiperDataAPI(record.id)
             setSwiper(data);
             form.setFieldsValue(record);
+
+            setEditLoading(false);
         } catch (error) {
             setEditLoading(false);
         }
-
-        setEditLoading(false);
     };
 
     const delSwiperData = async (id: number) => {
-        setBtnLoading(true);
-
         try {
+            setBtnLoading(true);
+
             await delSwiperDataAPI(id);
             await getSwiperList();
             message.success('🎉 删除轮播图成功');
+
+            setBtnLoading(false);
         } catch (error) {
             setBtnLoading(false);
         }
-
-        setBtnLoading(false);
     };
 
     const onSubmit = async () => {
-        setBtnLoading(true)
-
         try {
+            setBtnLoading(true)
+
             form.validateFields().then(async (values: Swiper) => {
                 if (swiper.id) {
                     await editSwiperDataAPI({ ...swiper, ...values });
@@ -104,6 +105,8 @@ export default () => {
                 form.resetFields();
                 setSwiper({} as Swiper);
             })
+
+            setBtnLoading(false)
         } catch (error) {
             setBtnLoading(false)
         }

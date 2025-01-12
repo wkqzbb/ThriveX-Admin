@@ -27,6 +27,8 @@ export default () => {
     // 重新获取最新数据
     const fetchData = async (type: Menu) => {
         try {
+            setLoading(true)
+
             if (type === "comment") {
                 const { data } = await getCommentListAPI({ query: { status: 0 }, pattern: "list" });
                 setCommentList(data);
@@ -37,15 +39,14 @@ export default () => {
                 const { data } = await getWallListAPI({ query: { status: 0 } });
                 setWallList(data);
             }
+
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     };
 
     useEffect(() => {
-        setLoading(true)
         fetchData(active);
     }, [active]);
 
