@@ -5,7 +5,7 @@ import { Route } from '@/types/app/route';
 import Title from '@/components/Title';
 import { ColumnsType } from 'antd/es/table';
 
-const RoutePage = () => {
+export default () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
 
@@ -102,7 +102,7 @@ const RoutePage = () => {
     };
 
     return (
-        <>
+        <div>
             <Title value="路由管理" />
 
             <div className='flex md:justify-between flex-col md:flex-row mx-auto mt-2 min-h-[calc(100vh-180px)]'>
@@ -143,8 +143,6 @@ const RoutePage = () => {
                     />
                 </Card>
             </div>
-        </>
+        </div>
     );
 };
-
-export default RoutePage;

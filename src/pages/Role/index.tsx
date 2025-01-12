@@ -7,7 +7,7 @@ import Title from '@/components/Title';
 import { ColumnsType } from 'antd/es/table';
 import "./index.scss"
 
-const RolePage = () => {
+export default () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
     const [editLoading, setEditLoading] = useState<boolean>(false);
@@ -15,7 +15,6 @@ const RolePage = () => {
 
     const [form] = Form.useForm();
 
-    const [id, setId] = useState(0)
     const [role, setRole] = useState<Role>({} as Role);
     const [roleList, setRoleList] = useState<Role[]>([]);
     const [routeList, setRouteList] = useState<{ key: number, title: string }[]>([]);
@@ -44,12 +43,6 @@ const RolePage = () => {
         }
     ];
 
-    // 获取指定角色的路由列表
-    const getRoleRouteList = async (id: number) => {
-        const { data } = await getRoleRouteListAPI(id);
-        setTargetKeys(data.map(item => item.id) as number[])
-    };
-
     // 获取路由列表
     const getRouteList = async () => {
         const { data } = await getRouteListAPI();
@@ -74,11 +67,19 @@ const RolePage = () => {
         getRouteList()
     }, []);
 
-    // 绑定路由
-    const bindingRoute = (record: Role) => {
-        setIsModalOpen(true)
-        getRoleRouteList(record.id)
-        setId(record.id)
+    // 获取指定角色的路由列表
+    const bindingRoute = async (record: Role) => {
+        setEditLoading(true)
+        
+        try {
+            setIsModalOpen(true)
+            const { data } = await getRoleRouteListAPI(record.id);
+            setTargetKeys(data.map(item => item.id) as number[])
+        } catch (error) {
+            setEditLoading(false)
+        }
+
+        setEditLoading(false)
     }
 
     const editRoleData = async (record: Role) => {
@@ -140,7 +141,7 @@ const RolePage = () => {
         setBindingLoading(true);
 
         try {
-            await bindingRouteAPI(id, targetKeys)
+            await bindingRouteAPI(role.id, targetKeys)
             message.success('🎉 绑定成功');
             // 刷新页面
             window.location.reload()
@@ -153,7 +154,7 @@ const RolePage = () => {
     const [n, setN] = useState(0)
 
     return (
-        <>
+        <div>
             <Title value="角色管理" />
 
             <div className='flex md:justify-between flex-col md:flex-row mx-auto mt-2 min-h-[calc(100vh-180px)]'>
@@ -216,8 +217,6 @@ const RolePage = () => {
 
                 <Button type='primary' className='w-full mt-2' loading={bindingLoading} onClick={onBindingRouteSubmit}>保存</Button>
             </Modal>
-        </>
+        </div>
     );
 };
-
-export default RolePage;

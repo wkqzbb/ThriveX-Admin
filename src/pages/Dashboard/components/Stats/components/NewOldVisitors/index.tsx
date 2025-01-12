@@ -1,7 +1,8 @@
 import { ApexOptions } from 'apexcharts';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import dayjs from 'dayjs';
+import { Spin } from 'antd';
 
 interface ChartThreeState {
   series: number[];
@@ -49,7 +50,9 @@ const options: ApexOptions = {
   ],
 };
 
-const ChartThree: React.FC = () => {
+export default () => {
+  const [loading, setLoading] = useState(true)
+
   const [result, setResult] = useState({ newVisitors: 0, oldVisitors: 0 })
   const [date, setDate] = useState(dayjs(new Date()).format("YYYY/MM/DD"));
 
@@ -58,18 +61,26 @@ const ChartThree: React.FC = () => {
   });
 
   const getDataList = async () => {
-    const siteId = import.meta.env.VITE_BAIDU_TONGJI_SITE_ID;
-    const token = import.meta.env.VITE_BAIDU_TONGJI_ACCESS_TOKEN;
+    setLoading(true)
 
-    const response = await fetch(`/api/rest/2.0/tongji/report/getData?access_token=${token}&site_id=${siteId}&start_date=${date}&end_date=${date}&metrics=new_visitor_count%2Cnew_visitor_ratio&method=trend%2Ftime%2Fa&gran=day&area=`);
-    const data = await response.json();
-    const { result } = data;
+    try {
+      const siteId = import.meta.env.VITE_BAIDU_TONGJI_SITE_ID;
+      const token = import.meta.env.VITE_BAIDU_TONGJI_ACCESS_TOKEN;
 
-    const newVisitors = result.items[1][0][1] !== "--" ? result.items[1][0][1] : 0
-    const oldVisitors = result.items[1][0][1] !== "--" ? 100 - result.items[1][0][1] : 0
+      const response = await fetch(`/api/rest/2.0/tongji/report/getData?access_token=${token}&site_id=${siteId}&start_date=${date}&end_date=${date}&metrics=new_visitor_count%2Cnew_visitor_ratio&method=trend%2Ftime%2Fa&gran=day&area=`);
+      const data = await response.json();
+      const { result } = data;
 
-    setState({ series: [newVisitors, oldVisitors] })
-    setResult({ newVisitors, oldVisitors })
+      const newVisitors = result.items[1][0][1] !== "--" ? result.items[1][0][1] : 0
+      const oldVisitors = result.items[1][0][1] !== "--" ? 100 - result.items[1][0][1] : 0
+
+      setState({ series: [newVisitors, oldVisitors] })
+      setResult({ newVisitors, oldVisitors })
+    } catch (error) {
+      setLoading(false)
+    }
+
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -77,48 +88,48 @@ const ChartThree: React.FC = () => {
   }, [])
 
   return (
-    <div className="sm:px-7.5 col-span-12 rounded-lg border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
-      <div className="mb-3 justify-between gap-4 sm:flex">
-        <div>
-          <h5 className="text-xl font-semibold text-black dark:text-white">
-            新老访客
-          </h5>
-        </div>
-      </div>
-
-      <div className="mb-2">
-        <div id="chartThree" className="mx-auto flex justify-center">
-          <ReactApexChart
-            options={options}
-            series={state.series}
-            type="donut"
-          />
-        </div>
-      </div>
-
-      <div className="-mx-8 mt-8 flex flex-wrap items-center justify-center gap-y-3">
-        <div className="sm:w-1/2 w-full px-8">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#91C8EA]"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> 新访客 </span>
-              <span> {result.newVisitors.toFixed(2)}% </span>
-            </p>
+    <Spin spinning={loading}>
+      <div className="sm:px-7.5 col-span-12 rounded-lg border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
+        <div className="mb-3 justify-between gap-4 sm:flex">
+          <div>
+            <h5 className="text-xl font-semibold text-black dark:text-white">
+              新老访客
+            </h5>
           </div>
         </div>
 
-        <div className="sm:w-1/2 w-full px-8">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#727cf5]"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> 老访客 </span>
-              <span> {result.oldVisitors.toFixed(2)}% </span>
-            </p>
+        <div className="mb-2">
+          <div id="chartThree" className="mx-auto flex justify-center">
+            <ReactApexChart
+              options={options}
+              series={state.series}
+              type="donut"
+            />
+          </div>
+        </div>
+
+        <div className="-mx-8 mt-8 flex flex-wrap items-center justify-center gap-y-3">
+          <div className="sm:w-1/2 w-full px-8">
+            <div className="flex w-full items-center">
+              <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#91C8EA]"></span>
+              <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                <span> 新访客 </span>
+                <span> {result.newVisitors.toFixed(2)}% </span>
+              </p>
+            </div>
+          </div>
+
+          <div className="sm:w-1/2 w-full px-8">
+            <div className="flex w-full items-center">
+              <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#727cf5]"></span>
+              <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                <span> 老访客 </span>
+                <span> {result.oldVisitors.toFixed(2)}% </span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Spin>
   );
 };
-
-export default ChartThree;

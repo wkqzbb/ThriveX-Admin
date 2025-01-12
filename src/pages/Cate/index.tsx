@@ -6,8 +6,8 @@ import { Form, Input, Button, Tree, Modal, Spin, Dropdown, Card, MenuProps, Popc
 import Title from '@/components/Title';
 import "./index.scss"
 
-export default () => {
-    const [loading, setLoading] = useState(false);
+const CatePage = () => {
+    const [loading, setLoading] = useState(false)
     const [btnLoading, setBtnLoading] = useState(false)
     const [editLoading, setEditLoading] = useState(false)
 
@@ -19,56 +19,58 @@ export default () => {
     const [form] = Form.useForm();
 
     const getCateList = async () => {
-        const { data } = await getCateListAPI();
-        data.sort((a, b) => a.order - b.order)
+        setLoading(true)
 
-        setList(data as Cate[]);
-        setLoading(false);
+        try {
+            const { data } = await getCateListAPI();
+            data.sort((a, b) => a.order - b.order)
+            setList(data);
+        } catch (error) {
+            setLoading(false)
+        }
+
+        setLoading(false)
     };
 
     useEffect(() => {
-        setLoading(true);
-        getCateList();
+        setLoading(true)
+        getCateList()
     }, []);
 
     const addCateData = (id: number) => {
         setIsMethod("create")
         setIsModelOpen(true);
         setIsCateShow(false)
-
         form.resetFields();
-
         setCate({ ...cate, level: id, type: "cate" });
     };
 
     const editCateData = async (id: number) => {
-        setEditLoading(true);
+        setIsMethod("edit");
+        setIsModelOpen(true);
+        setEditLoading(true)
 
         try {
-            setIsMethod("edit")
-            setIsModelOpen(true);
             const { data } = await getCateDataAPI(id);
+            setIsCateShow(data.type === "cate" ? false : true);
             setCate(data);
             form.setFieldsValue(data);
-
-            // 判断是分类还是导航
-            setIsCateShow(data.type === "cate" ? false : true)
         } catch (error) {
-            setEditLoading(false);
+            setEditLoading(false)
         }
 
-        setEditLoading(false);
+        setEditLoading(false)
     };
 
     const delCateData = async (id: number) => {
-        setLoading(true);
+        setLoading(true)
 
         try {
             await delCateDataAPI(id);
-            await getCateList();
             message.success('🎉 删除分类成功');
+            await getCateList();
         } catch (error) {
-            setLoading(false);
+            setLoading(false)
         }
     };
 
@@ -92,6 +94,7 @@ export default () => {
                 // 初始化表单状态
                 form.resetFields();
                 setCate({} as Cate);
+
                 setIsModelOpen(false);
                 setIsMethod("create")
             })
@@ -149,7 +152,7 @@ export default () => {
     )
 
     return (
-        <>
+        <div>
             <Title value="分类管理">
                 <Button type="primary" size='large' onClick={() => addCateData(0)}>新增分类</Button>
             </Title>
@@ -199,6 +202,8 @@ export default () => {
                     </Form>
                 </Modal>
             </Card>
-        </>
+        </div>
     );
 };
+
+export default CatePage;

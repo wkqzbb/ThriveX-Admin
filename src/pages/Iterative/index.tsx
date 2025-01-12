@@ -11,7 +11,7 @@ interface Commit {
     }
 }
 
-const Home = () => {
+export default () => {
     const [loading, setLoading] = useState<boolean>(false)
 
     const [year, setYear] = useState<number>(new Date().getFullYear())
@@ -77,7 +77,7 @@ const Home = () => {
     }, [])
 
     return (
-        <>
+        <div>
             <Title value='项目迭代记录'></Title>
 
             <Spin spinning={loading}>
@@ -118,8 +118,6 @@ const Home = () => {
                     </div>
                 </Card>
             </Spin>
-        </>
+        </div>
     );
 };
-
-export default Home;

@@ -238,12 +238,12 @@ export default () => {
     ];
 
     return (
-        <>
+        <div>
             <Title value="网站管理" />
 
             <Card className="WebPage mt-2 min-h-[calc(100vh-180px)]">
                 <Tabs activeKey={tab} tabPosition="top" onChange={handleTabChange} items={tabItems} />
             </Card>
-        </>
+        </div>
     );
 };

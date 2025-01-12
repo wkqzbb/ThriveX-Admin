@@ -11,7 +11,7 @@ interface UserForm {
     info: string;
 }
 
-const UserPage = () => {
+export default () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const [form] = Form.useForm<UserForm>();
@@ -95,11 +95,9 @@ const UserPage = () => {
                 </Form.Item>
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" className="w-full" loading={loading}>保存</Button>
+                    <Button type="primary" htmlType="submit" loading={loading} className="w-full">保存</Button>
                 </Form.Item>
             </Form>
         </div>
     );
 };
-
-export default UserPage;

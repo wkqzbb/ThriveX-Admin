@@ -59,7 +59,7 @@ export default () => {
     };
 
     return (
-        <>
+        <div>
             <Title value="工作台" />
 
             <Card className="mt-2 min-h-[calc(100vh-180px)]">
@@ -89,6 +89,6 @@ export default () => {
                 </div>
             </Card>
 
-        </>
+        </div>
     );
 }

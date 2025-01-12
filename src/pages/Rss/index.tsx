@@ -35,7 +35,7 @@ export default () => {
     }, []);
 
     return (
-        <>
+        <div>
             <Title value='订阅中心' />
 
             <Spin spinning={loading}>
@@ -70,6 +70,6 @@ export default () => {
                     />
                 </Card>
             </Spin>
-        </>
+        </div>
     );
 };

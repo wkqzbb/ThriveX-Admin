@@ -13,11 +13,12 @@ import { useWebStore } from '@/stores';
 import dayjs from 'dayjs';
 
 export default () => {
+    const [loading, setLoading] = useState<boolean>(false);
+
     const navigate = useNavigate()
     const web = useWebStore(state => state.web)
 
     const [current, setCurrent] = useState<number>(1);
-    const [loading, setLoading] = useState<boolean>(false);
     const [articleList, setArticleList] = useState<Article[]>([]);
 
     const [form] = Form.useForm();
@@ -156,7 +157,7 @@ export default () => {
     ];
 
     return (
-        <>
+        <div>
             <Title value="回收站" />
 
             <Card className={`${titleSty} mt-2 min-h-[calc(100vh-180px)]`}>
@@ -164,7 +165,6 @@ export default () => {
                     rowKey="id"
                     dataSource={articleList}
                     columns={columns as any}
-                    loading={loading}
                     scroll={{ x: 'max-content' }}
                     pagination={{
                         position: ['bottomCenter'],
@@ -174,8 +174,9 @@ export default () => {
                             setCurrent(current)
                         }
                     }}
+                    loading={loading}
                 />
             </Card>
-        </>
+        </div>
     );
 };

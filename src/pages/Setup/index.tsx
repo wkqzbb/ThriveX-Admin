@@ -18,7 +18,7 @@ interface Setup {
     key: string;
 }
 
-const SetupPage = () => {
+export default () => {
     const [active, setActive] = useState("system");
     
     const iconSty = "w-5 h-8 mr-1"
@@ -57,7 +57,7 @@ const SetupPage = () => {
     ];
 
     return (
-        <>
+        <div>
             <Title value="项目配置" />
 
             <Card className='mt-2 min-h-[calc(100vh-180px)]'>
@@ -87,8 +87,6 @@ const SetupPage = () => {
                     </div>
                 </div>
             </Card>
-        </>
+        </div>
     );
 };
-
-export default SetupPage;

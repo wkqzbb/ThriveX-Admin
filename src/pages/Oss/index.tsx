@@ -6,7 +6,7 @@ import Title from '@/components/Title';
 import type { ColumnsType } from 'antd/es/table';
 import { titleSty } from '@/styles/sty';
 
-const StoragePage = () => {
+export default () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false);
     const [editLoading, setEditLoading] = useState(false)
@@ -187,7 +187,7 @@ const StoragePage = () => {
     };
 
     return (
-        <>
+        <div>
             <Title value="存储管理">
                 <Button type="primary" size='large' onClick={addOssData}>新增配置</Button>
             </Title>
@@ -291,8 +291,6 @@ const StoragePage = () => {
                     </Form.Item>
                 </Form>
             </Modal >
-        </>
+        </div>
     );
 };
-
-export default StoragePage;

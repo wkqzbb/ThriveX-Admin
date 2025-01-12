@@ -14,7 +14,7 @@ export interface FilterForm {
   createTime: Date[]
 }
 
-const RecordPage = () => {
+export default () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [recordList, setRecordList] = useState<Record[]>([]);
@@ -135,7 +135,7 @@ const RecordPage = () => {
   }
 
   return (
-    <>
+    <div>
       <Title value="说说管理" />
 
       <Card className='my-2 overflow-scroll'>
@@ -167,8 +167,6 @@ const RecordPage = () => {
           }}
         />
       </Card>
-    </>
+    </div>
   );
 };
-
-export default RecordPage;

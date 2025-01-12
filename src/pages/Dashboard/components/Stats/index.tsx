@@ -1,11 +1,11 @@
+import { useEffect, useState } from "react"
+import { Spin } from "antd";
 import VisitorsStatisChat from "./components/VisitorsStatisChat"
 import NewOldVisitors from './components/NewOldVisitors'
 import CardDataStats from "@/components/CardDataStats"
 
 import { AiOutlineEye, AiOutlineMeh, AiOutlineStock, AiOutlineFieldTime } from "react-icons/ai";
-import { useEffect, useState } from "react"
 import dayjs from 'dayjs';
-import { Spin } from "antd";
 
 export default () => {
     const [loading, setLoading] = useState(false)

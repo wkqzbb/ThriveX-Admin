@@ -7,7 +7,7 @@ import Title from '@/components/Title';
 import type { Cate, Wall, FilterForm, FilterWall } from '@/types/app/wall';
 import dayjs from 'dayjs';
 
-const WallPage = () => {
+export default () => {
     const [loading, setLoading] = useState(false);
 
     const [wall, setWall] = useState<Wall>({} as Wall);
@@ -138,7 +138,7 @@ const WallPage = () => {
     }
 
     return (
-        <>
+        <div>
             <Title value='留言管理' />
 
             <Card className='my-2 overflow-scroll'>
@@ -188,8 +188,6 @@ const WallPage = () => {
                     <div><b>内容：</b> {wall?.content}</div>
                 </div>
             </Modal>
-        </>
+        </div>
     );
 };
-
-export default WallPage;

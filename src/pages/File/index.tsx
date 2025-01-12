@@ -21,6 +21,8 @@ const breakpointColumnsObj = {
 
 export default () => {
     const [loading, setLoading] = useState(false)
+    const [btnLoading, setBtnLoading] = useState(false)
+    const [downloadLoading, setDownloadLoading] = useState(false)
 
     const [openUploadModalOpen, setOpenUploadModalOpen] = useState(false);
     const [openFileInfoDrawer, setOpenFileInfoDrawer] = useState(false);
@@ -34,6 +36,8 @@ export default () => {
 
     // 获取目录列表
     const getDirList = async () => {
+        setLoading(true)
+
         try {
             const { data } = await getDirListAPI()
             setDirList(data)
@@ -46,44 +50,59 @@ export default () => {
 
     // 获取指定目录的文件列表
     const getFileList = async (dir: string) => {
-        const { data } = await getFileListAPI(dir)
+        setLoading(true)
 
-        if (!fileList.length && !(data as File[]).length) message.error("该目录中没有文件")
+        try {
+            const { data } = await getFileListAPI(dir)
+            if (!fileList.length && !data.length) message.error("该目录中没有文件")
+            setFileList(data)
+        } catch (error) {
+            setLoading(false)
+        }
 
-        setFileList(data as File[])
         setLoading(false)
     }
 
     // 删除图片
     const onDeleteImage = async (data: File) => {
-        setLoading(true)
+        setBtnLoading(true)
 
         try {
             await delFileDataAPI(data.url)
+            await getFileList(dirName)
             message.success("🎉 删除图片成功")
-            getFileList(dirName)
             setFile({} as File)
             setOpenFileInfoDrawer(false)
             setOpenFilePreviewDrawer(false)
         } catch (error) {
-            setLoading(false)
+            setBtnLoading(false)
         }
+
+        setBtnLoading(false)
     }
 
     // 下载图片
     const onDownloadImage = (data: File) => {
-        fetch(data.url)
-            .then((response) => response.blob())
-            .then((blob) => {
-                const url = URL.createObjectURL(new Blob([blob]));
-                const link = document.createElement<'a'>('a');
-                link.href = url;
-                link.download = data.name;
-                document.body.appendChild(link);
-                link.click();
-                URL.revokeObjectURL(url);
-                link.remove();
-            });
+        setDownloadLoading(true)
+
+        try {
+            fetch(data.url)
+                .then((response) => response.blob())
+                .then((blob) => {
+                    const url = URL.createObjectURL(new Blob([blob]));
+                    const link = document.createElement<'a'>('a');
+                    link.href = url;
+                    link.download = data.name;
+                    document.body.appendChild(link);
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    link.remove();
+                });
+        } catch (error) {
+            setDownloadLoading(false)
+        }
+
+        setDownloadLoading(false)
     };
 
     // 打开目录
@@ -93,18 +112,17 @@ export default () => {
     }
 
     useEffect(() => {
-        setLoading(true)
         getDirList()
     }, [])
 
     // 查看文件信息
-    const viewOpenFileInfo = (item: File) => {
+    const viewOpenFileInfo = (record: File) => {
         setOpenFileInfoDrawer(true)
-        setFile(item)
+        setFile(record)
     }
 
     return (
-        <>
+        <div>
             <Title value='文件管理' />
 
             <Card className='FilePage mt-2 min-h-[calc(100vh-180px)]'>
@@ -244,7 +262,7 @@ export default () => {
                     }} />
 
                 <Divider orientation="center">图片操作</Divider>
-                <Button type='primary' className='w-full mb-2' onClick={() => onDownloadImage(file)}>下载图片</Button>
+                <Button type='primary' loading={downloadLoading} onClick={() => onDownloadImage(file)} className='w-full mb-2'>下载图片</Button>
                 <Popconfirm
                     title="警告"
                     description="删除后无法恢复，确定要删除吗"
@@ -252,9 +270,9 @@ export default () => {
                     okText="删除"
                     cancelText="取消"
                 >
-                    <Button type='primary' danger className='w-full'>删除图片</Button>
+                    <Button type='primary' danger loading={btnLoading} className='w-full'>删除图片</Button>
                 </Popconfirm>
             </Drawer>
-        </>
+        </div>
     )
 }

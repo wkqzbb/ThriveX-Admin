@@ -6,7 +6,7 @@ import { UserOutlined, LockOutlined, EyeOutlined, EyeInvisibleOutlined } from '@
 import { loginDataAPI } from '@/api/User';
 import { useUserStore } from '@/stores';
 
-const LoginPage = () => {
+export default () => {
     const [loading, setLoading] = useState(false)
 
     const [form] = useForm();
@@ -87,5 +87,3 @@ const LoginPage = () => {
         </div>
     );
 };
-
-export default LoginPage;

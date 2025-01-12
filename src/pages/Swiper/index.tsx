@@ -7,7 +7,7 @@ import { ColumnsType } from 'antd/es/table';
 import { CloudUploadOutlined, PictureOutlined } from '@ant-design/icons';
 import FileUpload from '@/components/FileUpload';
 
-const SwiperPage = () => {
+export default () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
     const [editLoading, setEditLoading] = useState(false)
@@ -180,7 +180,7 @@ const SwiperPage = () => {
     ];
 
     return (
-        <>
+        <div>
             <Title value="轮播图管理" />
 
             <Card className="[&>.ant-card-body]:!pt-0 mt-2 min-h-[calc(100vh-180px)]">
@@ -193,8 +193,6 @@ const SwiperPage = () => {
                 onSuccess={(url: string[]) => form.setFieldValue("image", url.join("\n"))}
                 onCancel={() => setIsModalOpen(false)}
             />
-        </>
+        </div>
     );
 };
-
-export default SwiperPage;

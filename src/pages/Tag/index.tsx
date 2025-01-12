@@ -5,7 +5,7 @@ import { Tag } from '@/types/app/tag';
 import Title from '@/components/Title';
 import { ColumnsType } from 'antd/es/table';
 
-const TagPage = () => {
+export default () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
 
@@ -139,5 +139,3 @@ const TagPage = () => {
         </div>
     );
 };
-
-export default TagPage;

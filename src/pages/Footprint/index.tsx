@@ -9,7 +9,7 @@ import { IoSearch } from "react-icons/io5";
 import dayjs from 'dayjs';
 import axios from 'axios';
 
-const FootprintPage = () => {
+export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState(false)
   const [editLoading, setEditLoading] = useState(false)
@@ -165,8 +165,8 @@ const FootprintPage = () => {
           message.success('🎉 新增足迹成功');
         }
 
+        await getFootprintList();
         reset()
-        getFootprintList();
       });
     } catch (error) {
       setBtnLoading(false)
@@ -225,11 +225,11 @@ const FootprintPage = () => {
       setEditLoading(false)
     }
 
-    
+    setEditLoading(false)
   };
 
   return (
-    <>
+    <div>
       <Title value="足迹管理">
         <Button type="primary" size='large' onClick={addFootprintData}>新增足迹</Button>
       </Title>
@@ -303,8 +303,6 @@ const FootprintPage = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </>
+    </div>
   );
 };
-
-export default FootprintPage;

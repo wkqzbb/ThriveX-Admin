@@ -1,4 +1,4 @@
-import { Form, Input, Button, notification, Modal } from 'antd';
+import { Form, Input, Button, Modal } from 'antd';
 import { useUserStore } from '@/stores';
 import { editAdminPassAPI } from '@/api/User';
 import { EditUser } from '@/types/app/user'
@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 const { confirm } = Modal;
 
-const SystemPage = () => {
+export default () => {
     const store = useUserStore();
 
     const [loading, setLoading] = useState(false)
@@ -97,5 +97,3 @@ const SystemPage = () => {
         </div>
     );
 };
-
-export default SystemPage;

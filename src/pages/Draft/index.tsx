@@ -12,10 +12,11 @@ import type { Article } from '@/types/app/article';
 import { useWebStore } from '@/stores';
 
 export default () => {
+    const [loading, setLoading] = useState<boolean>(false);
+    
     const web = useWebStore(state => state.web)
 
     const [current, setCurrent] = useState<number>(1);
-    const [loading, setLoading] = useState<boolean>(false);
     const [articleList, setArticleList] = useState<Article[]>([]);
 
     const [form] = Form.useForm();
@@ -110,7 +111,7 @@ export default () => {
     ];
 
     return (
-        <>
+        <div>
             <Title value="草稿箱" />
 
             <Card className={`${titleSty} mt-2 min-h-[calc(100vh-180px)]`}>
@@ -130,6 +131,6 @@ export default () => {
                     }}
                 />
             </Card>
-        </>
+        </div>
     );
 };

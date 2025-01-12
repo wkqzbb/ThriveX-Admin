@@ -6,12 +6,13 @@ import { MonthlySums, ChartOneState } from './type';
 import dayjs from 'dayjs';
 import { Result } from '../../type';
 
-const VisitorsStatisChat = () => {
+export default () => {
+    const [loading, setLoading] = useState<boolean>(false);
+
     const [result, setResult] = useState<Result | null>(null);
     const [scope, setScope] = useState<"day" | "month" | "year">("day");
     const [startDate, setStartDate] = useState(dayjs(new Date()).subtract(7, "day").format("YYYY/MM/DD"));
     const [endDate, setEndDate] = useState(dayjs(new Date()).format("YYYY/MM/DD"));
-    const [loading, setLoading] = useState<boolean>(false);
 
     // 图表相关配置
     const [options, setOptions] = useState<ApexOptions>({
@@ -123,15 +124,19 @@ const VisitorsStatisChat = () => {
 
     // 获取统计数据
     const getDataList = useCallback(async () => {
-        setLoading(true);
+        setLoading(true)
 
-        const siteId = import.meta.env.VITE_BAIDU_TONGJI_SITE_ID;
-        const token = import.meta.env.VITE_BAIDU_TONGJI_ACCESS_TOKEN;
+        try {
+            const siteId = import.meta.env.VITE_BAIDU_TONGJI_SITE_ID;
+            const token = import.meta.env.VITE_BAIDU_TONGJI_ACCESS_TOKEN;
 
-        const response = await fetch(`/api/rest/2.0/tongji/report/getData?access_token=${token}&site_id=${siteId}&start_date=${startDate}&end_date=${endDate}&metrics=pv_count%2Cip_count&method=overview%2FgetTimeTrendRpt`);
-        const data = await response.json();
-        const { result } = data;
-        setResult(result);
+            const response = await fetch(`/api/rest/2.0/tongji/report/getData?access_token=${token}&site_id=${siteId}&start_date=${startDate}&end_date=${endDate}&metrics=pv_count%2Cip_count&method=overview%2FgetTimeTrendRpt`);
+            const data = await response.json();
+            const { result } = data;
+            setResult(result);
+        } catch (error) {
+            setLoading(false)
+        }
 
         setLoading(false);
     }, [startDate, endDate]);
@@ -142,6 +147,8 @@ const VisitorsStatisChat = () => {
 
     // 切换不同范围的数据
     const scopeData = useMemo(() => {
+        setLoading(true)
+
         if (!result?.items?.length) return { categories: [], series: [[], []] };
 
         let categories = [];
@@ -231,6 +238,7 @@ const VisitorsStatisChat = () => {
 
     // 当数据发生变化时，更新图表选项和状态
     useEffect(() => {
+        setLoading(true)
         setOptions((data) => ({
             ...data,
             xaxis: { ...options.xaxis, categories: scopeData.categories || [] }
@@ -249,6 +257,8 @@ const VisitorsStatisChat = () => {
                 },
             ],
         }));
+
+        setLoading(false)
     }, [scopeData]);
 
     // 处理范围变更并相应地更新日期范围
@@ -323,5 +333,3 @@ const VisitorsStatisChat = () => {
         </div>
     );
 };
-
-export default VisitorsStatisChat;

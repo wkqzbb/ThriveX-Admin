@@ -14,7 +14,7 @@ import Title from '@/components/Title';
 import logo from '@/images/logo/logo.png';
 import dayjs from 'dayjs';
 
-const UserPage = () => {
+export default () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
     const [editLoading, setEditLoading] = useState(false)
@@ -211,7 +211,7 @@ const UserPage = () => {
     }
 
     return (
-        <>
+        <div>
             <Title value="用户管理">
                 <Button type="primary" size='large' onClick={() => setDrawerVisible(true)}>新增用户</Button>
             </Title>
@@ -318,8 +318,6 @@ const UserPage = () => {
                     </Form.Item>
                 </Form>
             </Drawer>
-        </>
+        </div>
     );
 };
-
-export default UserPage;

@@ -3,11 +3,11 @@ import { Segmented } from 'antd';
 import SynthesisTheme from './components/SynthesisTheme';
 import RecordTheme from './components/RecordTheme';
 
-const ThemePage = () => {
+export default () => {
     const [current, setCurrent] = useState<string>("综合配置");
 
     return (
-        <>
+        <div>
             <Segmented<string>
                 size="large"
                 options={['综合配置', '说说配置']}
@@ -22,8 +22,6 @@ const ThemePage = () => {
             {current === "说说配置" && (
                 <RecordTheme />
             )}
-        </>
+        </div>
     );
 };
-
-export default ThemePage;

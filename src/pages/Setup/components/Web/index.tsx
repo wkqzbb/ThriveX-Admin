@@ -4,7 +4,7 @@ import { editConfigDataAPI } from '@/api/Project';
 import { Web } from '@/types/app/project'
 import { useWebStore } from '@/stores';
 
-const WebPage = () => {
+export default () => {
     const [loading, setLoading] = useState(false);
 
     const [form] = Form.useForm();
@@ -102,5 +102,3 @@ const WebPage = () => {
         </div>
     );
 };
-
-export default WebPage;
