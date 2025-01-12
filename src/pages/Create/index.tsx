@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Button, Card, Drawer, Dropdown, MenuProps, message } from 'antd';
+import { Button, Card, Drawer, Dropdown, MenuProps, message, Spin } from 'antd';
 
 import Title from '@/components/Title';
 import Editor from './components/Editor';
@@ -143,7 +143,7 @@ export default () => {
 
         // 保留最后一行未处理的数据
         receivedText = lines[lines.length - 1];
-        
+
         setLoading(false)
       }
     } catch (error) {
@@ -194,19 +194,21 @@ export default () => {
         </div>
       </Title>
 
-      <Card loading={loading} className={`${titleSty} overflow-hidden rounded-xl min-h-[calc(100vh-180px)]`}>
-        <Editor value={content} onChange={(value) => setContent(value)} />
+      <Spin spinning={loading}>
+        <Card className={`${titleSty} overflow-hidden rounded-xl min-h-[calc(100vh-180px)]`}>
+          <Editor value={content} onChange={(value) => setContent(value)} />
 
-        <Drawer
-          title={(id && !isDraftParams) ? "编辑文章" : "发布文章"}
-          placement="right"
-          size='large'
-          onClose={() => setPublishOpen(false)}
-          open={publishOpen}
-        >
-          <PublishForm data={data} closeModel={() => setPublishOpen(false)} />
-        </Drawer>
-      </Card >
+          <Drawer
+            title={(id && !isDraftParams) ? "编辑文章" : "发布文章"}
+            placement="right"
+            size='large'
+            onClose={() => setPublishOpen(false)}
+            open={publishOpen}
+          >
+            <PublishForm data={data} closeModel={() => setPublishOpen(false)} />
+          </Drawer>
+        </Card >
+      </Spin>
     </div>
   );
 };
