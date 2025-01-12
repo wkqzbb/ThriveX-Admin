@@ -27,6 +27,8 @@ export default () => {
     const { RangePicker } = DatePicker;
 
     const getArticleList = async () => {
+        setLoading(true);
+
         try {
             const { data } = await getArticleListAPI();
             setArticleList(data);
@@ -34,8 +36,6 @@ export default () => {
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     const delArticleData = async (id: number) => {
@@ -166,11 +166,10 @@ export default () => {
 
             const { data } = await getArticleListAPI({ query });
             setArticleList(data);
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     }
 
     const [cateList, setCateList] = useState<Cate[]>([])
@@ -187,7 +186,6 @@ export default () => {
     }
 
     useEffect(() => {
-        setLoading(true);
         getArticleList()
         getCateList()
         getTagList()

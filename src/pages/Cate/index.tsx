@@ -19,17 +19,16 @@ const CatePage = () => {
     const [form] = Form.useForm();
 
     const getCateList = async () => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const { data } = await getCateListAPI();
             data.sort((a, b) => a.order - b.order)
             setList(data);
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     };
 
     useEffect(() => {
@@ -46,20 +45,19 @@ const CatePage = () => {
     };
 
     const editCateData = async (id: number) => {
-        setIsMethod("edit");
-        setIsModelOpen(true);
-        setEditLoading(true)
-
         try {
+            setIsMethod("edit");
+            setIsModelOpen(true);
+            setEditLoading(true)
+
             const { data } = await getCateDataAPI(id);
             setIsCateShow(data.type === "cate" ? false : true);
             setCate(data);
             form.setFieldsValue(data);
+            setEditLoading(false)
         } catch (error) {
             setEditLoading(false)
         }
-
-        setEditLoading(false)
     };
 
     const delCateData = async (id: number) => {
@@ -67,8 +65,8 @@ const CatePage = () => {
 
         try {
             await delCateDataAPI(id);
-            message.success('🎉 删除分类成功');
             await getCateList();
+            message.success('🎉 删除分类成功');
         } catch (error) {
             setLoading(false)
         }
@@ -98,11 +96,11 @@ const CatePage = () => {
                 setIsModelOpen(false);
                 setIsMethod("create")
             })
+
+            setBtnLoading(false)
         } catch (error) {
             setBtnLoading(false)
         }
-
-        setBtnLoading(false)
     };
 
     const closeModel = () => {

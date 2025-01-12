@@ -102,6 +102,8 @@ export default () => {
     }, []);
 
     const enableOssData = async (id: number) => {
+        setLoading(true)
+        
         try {
             await enableOssDataAPI(id);
             await getOssList();
@@ -112,6 +114,8 @@ export default () => {
     };
 
     const disableOssData = async (id: number) => {
+        setLoading(true)
+
         try {
             await disableOssDataAPI(id);
             await getOssList();
