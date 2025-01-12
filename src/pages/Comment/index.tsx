@@ -150,9 +150,9 @@ export default () => {
     const [replyInfo, setReplyInfo] = useState("")
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
     const handleReply = async () => {
-        setBtnLoading(true)
-
         try {
+            setBtnLoading(true)
+
             await addCommentDataAPI({
                 avatar: user.avatar,
                 url: web.url,
@@ -169,6 +169,8 @@ export default () => {
             message.success('🎉 回复评论成功');
             setIsReplyModalOpen(false)
             setReplyInfo("")
+
+            setBtnLoading(true)
         } catch (error) {
             setBtnLoading(false)
         }

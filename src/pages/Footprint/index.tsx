@@ -129,9 +129,9 @@ export default () => {
   };
 
   const editFootprintData = async (id: number) => {
-    setEditLoading(true);
-
     try {
+      setEditLoading(true);
+
       setIsMethod("edit");
       setIsModelOpen(true);
 
@@ -142,17 +142,17 @@ export default () => {
 
       setFootprint(data);
       form.setFieldsValue(data);
+
+      setEditLoading(false);
     } catch (error) {
       setEditLoading(false);
     }
-
-    setEditLoading(false);
   };
-
+  
   const onSubmit = async () => {
-    setBtnLoading(true)
-
     try {
+      setBtnLoading(true)
+
       form.validateFields().then(async (values: Footprint) => {
         values.createTime = values.createTime.valueOf()
         values.images = values.images ? (values.images as string).split("\n") : []
@@ -166,6 +166,7 @@ export default () => {
         }
 
         await getFootprintList();
+        setBtnLoading(false)
         reset()
       });
     } catch (error) {
@@ -176,9 +177,9 @@ export default () => {
   const closeModel = () => reset();
 
   const onFilterSubmit = async (values: FilterForm) => {
-    setLoading(true)
-
     try {
+      setLoading(true)
+
       const query: FilterData = {
         key: values.address,
         startDate: values.createTime && values.createTime[0].valueOf() + '',
@@ -187,18 +188,18 @@ export default () => {
 
       const { data } = await getFootprintListAPI({ query });
       setFootprintList(data);
+      
+      setLoading(false)
     } catch (error) {
       setLoading(false)
     }
-
-    setLoading(false)
   }
 
   // 通过详细地址获取纬度
   const getGeocode = async () => {
-    setEditLoading(true)
-    
     try {
+      setEditLoading(true)
+
       const address = form.getFieldValue("address")
 
       const { data } = await axios.get('https://restapi.amap.com/v3/geocode/geo', {
@@ -215,17 +216,15 @@ export default () => {
         // 立即触发校验
         form.validateFields(['position']);
 
-        setEditLoading(false)
-
         return data.geocodes[0].location;
       } else {
         message.warning('未找到该地址的经纬度');
       }
+
+      setEditLoading(false)
     } catch (error) {
       setEditLoading(false)
     }
-
-    setEditLoading(false)
   };
 
   return (

@@ -7,19 +7,21 @@ import { loginDataAPI } from '@/api/User';
 import { useUserStore } from '@/stores';
 
 export default () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const store = useUserStore();
+    
     const [loading, setLoading] = useState(false)
 
     const [form] = useForm();
+
     const [isPassVisible, setIsPassVisible] = useState(false);
-    const store = useUserStore();
-    const navigate = useNavigate();
-    const location = useLocation();
     const returnUrl = new URLSearchParams(location.search).get('returnUrl') || '/';
 
     const onSubmit = async () => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const values = await form.validateFields();
             const { data } = await loginDataAPI(values);
 
@@ -33,12 +35,11 @@ export default () => {
                 description: `Hello ${data.user.name} 欢迎回来`,
             });
 
+            setLoading(false)
             navigate(returnUrl);
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     };
 
     return (

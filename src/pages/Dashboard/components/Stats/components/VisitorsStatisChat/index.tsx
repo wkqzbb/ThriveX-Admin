@@ -2,9 +2,32 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { Spin } from 'antd';
 import { ApexOptions } from 'apexcharts';
 import ReactApexChart from 'react-apexcharts';
-import { MonthlySums, ChartOneState } from './type';
 import dayjs from 'dayjs';
-import { Result } from '../../type';
+
+interface Result {
+    timeSpan: string[];
+    fields: string[];
+    items: [
+        string[][],
+        number[][],
+        any[],
+        any[]
+    ];
+}
+
+interface MonthlySums {
+    [key: string]: {
+        pv: number;
+        ip: number;
+    };
+}
+
+interface ChartOneState {
+    series: {
+        name: string;
+        data: number[];
+    }[];
+}
 
 export default () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -124,9 +147,9 @@ export default () => {
 
     // 获取统计数据
     const getDataList = useCallback(async () => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const siteId = import.meta.env.VITE_BAIDU_TONGJI_SITE_ID;
             const token = import.meta.env.VITE_BAIDU_TONGJI_ACCESS_TOKEN;
 
@@ -134,16 +157,16 @@ export default () => {
             const data = await response.json();
             const { result } = data;
             setResult(result);
+
+            setLoading(false);
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false);
     }, [startDate, endDate]);
 
     useEffect(() => {
         getDataList();
-    }, [getDataList]);
+    }, []);
 
     // 切换不同范围的数据
     const scopeData = useMemo(() => {
@@ -239,6 +262,7 @@ export default () => {
     // 当数据发生变化时，更新图表选项和状态
     useEffect(() => {
         setLoading(true)
+        
         setOptions((data) => ({
             ...data,
             xaxis: { ...options.xaxis, categories: scopeData.categories || [] }

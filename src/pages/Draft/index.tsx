@@ -23,23 +23,25 @@ export default () => {
 
     const getArticleList = async () => {
         try {
+            setLoading(true)
+
             const { data } = await getArticleListAPI({ query: { isDraft: 1 } });
             setArticleList(data as Article[]);
+
+            setLoading(false)
         } catch (error) {
             setLoading(false);
         }
-        setLoading(false)
     };
 
     useEffect(() => {
-        setLoading(true)
         getArticleList()
     }, []);
 
     const delArticleData = async (id: number) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             await delArticleDataAPI(id);
             await getArticleList();
             form.resetFields()

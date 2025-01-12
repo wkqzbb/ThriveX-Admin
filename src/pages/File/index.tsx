@@ -36,56 +36,56 @@ export default () => {
 
     // 获取目录列表
     const getDirList = async () => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const { data } = await getDirListAPI()
             setDirList(data)
+
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     }
 
     // 获取指定目录的文件列表
     const getFileList = async (dir: string) => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const { data } = await getFileListAPI(dir)
             if (!fileList.length && !data.length) message.error("该目录中没有文件")
             setFileList(data)
+
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     }
 
     // 删除图片
     const onDeleteImage = async (data: File) => {
-        setBtnLoading(true)
-
         try {
+            setBtnLoading(true)
+
             await delFileDataAPI(data.url)
             await getFileList(dirName)
             message.success("🎉 删除图片成功")
             setFile({} as File)
             setOpenFileInfoDrawer(false)
             setOpenFilePreviewDrawer(false)
+
+            setBtnLoading(false)
         } catch (error) {
             setBtnLoading(false)
         }
-
-        setBtnLoading(false)
     }
 
     // 下载图片
     const onDownloadImage = (data: File) => {
-        setDownloadLoading(true)
-
         try {
+            setDownloadLoading(true)
+
             fetch(data.url)
                 .then((response) => response.blob())
                 .then((blob) => {
@@ -98,11 +98,11 @@ export default () => {
                     URL.revokeObjectURL(url);
                     link.remove();
                 });
+
+            setDownloadLoading(false)
         } catch (error) {
             setDownloadLoading(false)
         }
-
-        setDownloadLoading(false)
     };
 
     // 打开目录

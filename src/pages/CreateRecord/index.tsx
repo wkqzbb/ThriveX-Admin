@@ -32,9 +32,9 @@ export default () => {
     }
 
     const onSubmit = async () => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const data = {
                 content,
                 images: JSON.stringify(imageList),
@@ -52,29 +52,29 @@ export default () => {
                 await addRecordDataAPI(data)
             }
 
+            setLoading(false)
             navigate("/record")
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     }
 
     const getRecordData = async () => {
         try {
+            setLoading(true)
+
             const { data } = await getRecordDataAPI(id)
             setContent(data.content)
             setImageList(JSON.parse(data.images as string))
+            
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     }
 
     // 回显数据
     useEffect(() => {
-        setLoading(true)
         // 有Id就回显指定的数据
         if (id) getRecordData()
     }, [id])

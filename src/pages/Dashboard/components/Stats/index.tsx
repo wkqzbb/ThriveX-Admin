@@ -31,9 +31,9 @@ export default () => {
 
     // 获取统计数据
     const getDataList = async () => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const siteId = import.meta.env.VITE_BAIDU_TONGJI_SITE_ID;
             const token = import.meta.env.VITE_BAIDU_TONGJI_ACCESS_TOKEN;
 
@@ -78,11 +78,10 @@ export default () => {
 
             setStats({ pv, ip, bounce: (bounce / count) || 0, avgTime: formatTime(avgTime / count) || "00:00:00" })
 
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-        
-        setLoading(false)
     };
 
     useEffect(() => {

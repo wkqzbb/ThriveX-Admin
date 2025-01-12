@@ -24,6 +24,8 @@ export default () => {
     // 从github获取最近10次迭代记录
     const getCommitData = async (project: string) => {
         try {
+            setLoading(true)
+
             const res = await fetch(`https://api.github.com/repos/LiuYuYang01/${project}/commits?per_page=10`)
             const data = await res.json()
             const result = data?.map((item: Commit) => (
@@ -47,11 +49,11 @@ export default () => {
                     setServer_IterativeRecording(result)
                     break;
             }
+
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     }
 
     useEffect(() => {

@@ -25,6 +25,7 @@ const CatePage = () => {
             const { data } = await getCateListAPI();
             data.sort((a, b) => a.order - b.order)
             setList(data);
+
             setLoading(false)
         } catch (error) {
             setLoading(false)
@@ -46,14 +47,16 @@ const CatePage = () => {
 
     const editCateData = async (id: number) => {
         try {
+            setEditLoading(true)
+
             setIsMethod("edit");
             setIsModelOpen(true);
-            setEditLoading(true)
 
             const { data } = await getCateDataAPI(id);
             setIsCateShow(data.type === "cate" ? false : true);
             setCate(data);
             form.setFieldsValue(data);
+
             setEditLoading(false)
         } catch (error) {
             setEditLoading(false)
@@ -61,9 +64,9 @@ const CatePage = () => {
     };
 
     const delCateData = async (id: number) => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             await delCateDataAPI(id);
             await getCateList();
             message.success('🎉 删除分类成功');

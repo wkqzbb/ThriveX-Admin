@@ -86,25 +86,26 @@ export default () => {
 
     const getOssList = async () => {
         try {
+            setLoading(true);
+
             const { data } = await getOssListAPI();
             setOssList(data);
+
+            setLoading(false);
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
-        setLoading(true);
         getOssList();
         getOssPlatformList()
     }, []);
 
     const enableOssData = async (id: number) => {
-        setLoading(true)
-        
         try {
+            setLoading(true)
+
             await enableOssDataAPI(id);
             await getOssList();
             message.success('启用成功');
@@ -114,9 +115,9 @@ export default () => {
     };
 
     const disableOssData = async (id: number) => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             await disableOssDataAPI(id);
             await getOssList();
             message.success('禁用成功');
@@ -126,25 +127,25 @@ export default () => {
     };
 
     const editOssData = async (record: Oss) => {
-        setEditLoading(true)
-
         try {
+            setEditLoading(true)
+
             setIsModalOpen(true);
 
             const { data } = await getOssDataAPI(record.id)
             setOss(data);
             form.setFieldsValue(data);
+
+            setEditLoading(false)
         } catch (error) {
             setEditLoading(false)
         }
-
-        setEditLoading(false)
     };
 
     const delOssData = async (id: number) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             await delOssDataAPI(id);
             await getOssList();
             message.success('🎉 删除存储配置成功');
@@ -166,9 +167,9 @@ export default () => {
     };
 
     const onSubmit = async () => {
-        setBtnLoading(true);
-
         try {
+            setBtnLoading(true);
+
             const values = await form.validateFields();
 
             if (oss.id) {
@@ -179,15 +180,14 @@ export default () => {
                 message.success('🎉 新增存储配置成功');
             }
 
+            await getOssList();
             setIsModalOpen(false);
-            getOssList();
             form.resetFields();
+            
             setBtnLoading(false);
         } catch (error) {
             setBtnLoading(false);
         }
-
-        setBtnLoading(false)
     };
 
     return (

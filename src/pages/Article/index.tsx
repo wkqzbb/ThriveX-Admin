@@ -27,11 +27,12 @@ export default () => {
     const { RangePicker } = DatePicker;
 
     const getArticleList = async () => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             const { data } = await getArticleListAPI();
             setArticleList(data);
+
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -39,9 +40,9 @@ export default () => {
     };
 
     const delArticleData = async (id: number) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             // 普通删除：可从回收站恢复
             await delArticleDataAPI(id, true);
             await getArticleList();
@@ -151,9 +152,9 @@ export default () => {
     ];
 
     const onFilterSubmit = async (values: FilterForm) => {
-        setLoading(true)
-
         try {
+            setLoading(true)
+
             const query: FilterArticle = {
                 key: values.title,
                 cateIds: values.cateIds,
@@ -166,6 +167,7 @@ export default () => {
 
             const { data } = await getArticleListAPI({ query });
             setArticleList(data);
+
             setLoading(false)
         } catch (error) {
             setLoading(false)

@@ -25,24 +25,25 @@ export default () => {
 
     const getArticleList = async () => {
         try {
+            setLoading(true);
+
             const { data } = await getArticleListAPI({ query: { isDel: 1 } });
-            setArticleList(data as Article[]);
+            setArticleList(data);
+
+            setLoading(false);
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
-        setLoading(true);
         getArticleList()
     }, []);
 
     const delArticleData = async (id: number) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             // 严格删除：彻底从数据库删除，无法恢复
             await delArticleDataAPI(id);
             await getArticleList();
@@ -55,12 +56,14 @@ export default () => {
     };
 
     const reductionArticleData = async (id: number) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             await reductionArticleDataAPI(id)
-            navigate("/article")
             notification.success({ message: '🎉 还原文章成功' })
+            navigate("/article")
+
+            setLoading(false)
         } catch (error) {
             setLoading(false);
         }

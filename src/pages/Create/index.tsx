@@ -32,19 +32,20 @@ export default () => {
   // 获取文章数据
   const getArticleData = async () => {
     try {
+      setLoading(true)
+
       const { data } = await getArticleDataAPI(id)
       setData(data)
       setContent(data.content)
+
+      setLoading(false)
     } catch (error) {
       setLoading(false)
     }
-
-    setLoading(false)
   }
 
   // 回显数据
   useEffect(() => {
-    setLoading(true)
     setPublishOpen(false)
 
     // 有Id就回显指定的数据
@@ -93,9 +94,9 @@ export default () => {
 
   // 解析接口数据
   const parsingData = async (command: string) => {
-    setLoading(true)
-
     try {
+      setLoading(true)
+
       const res = await fetch(`/ai/v1/chat/completions`, {
         method: "POST",
         headers: {
@@ -142,12 +143,12 @@ export default () => {
 
         // 保留最后一行未处理的数据
         receivedText = lines[lines.length - 1];
+        
+        setLoading(false)
       }
     } catch (error) {
       setLoading(false)
     }
-
-    setLoading(false)
   }
 
   // AI功能
