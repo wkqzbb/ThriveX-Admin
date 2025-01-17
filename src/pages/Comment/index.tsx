@@ -30,21 +30,20 @@ export default () => {
 
     const getCommentList = async () => {
         try {
+            setLoading(true)
             const { data } = await getCommentListAPI();
             setList(data)
+            setLoading(false)
         } catch (error) {
             setLoading(false)
         }
-
-        setLoading(false)
     }
 
     useEffect(() => {
-        setLoading(true)
         getCommentList();
     }, []);
 
-    const columns: ColumnsType = [
+    const columns: ColumnsType<Comment> = [
         {
             title: 'ID',
             dataIndex: 'id',
@@ -61,7 +60,7 @@ export default () => {
             dataIndex: 'content',
             key: 'content',
             width: 400,
-            render: (text: string, record) => <span className="hover:text-primary cursor-pointer line-clamp-2" onClick={() => {
+            render: (text: string, record: Comment) => <span className="hover:text-primary cursor-pointer line-clamp-2" onClick={() => {
                 setComment(record)
                 setIsCommentModalOpen(true)
             }}>{text}</span>
