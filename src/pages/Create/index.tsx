@@ -101,7 +101,7 @@ export default () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_AI_APIPassword}`
+          "Authorization": `Bearer ${import.meta.env.VITE_AI_APIPASSWORD}`
         },
         body: JSON.stringify({
           model: import.meta.env.VITE_AI_MODEL,

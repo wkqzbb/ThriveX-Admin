@@ -43,7 +43,6 @@ export default () => {
                 return acc;
             }, {} as { [key: string]: Web[] });
 
-            console.log("grouped：", grouped);
             setList(grouped);
             setListTemp(data);
             setLoading(false)
@@ -55,8 +54,6 @@ export default () => {
     // 获取网站类型列表
     const getWebTypeList = async () => {
         const { data } = await getWebTypeListAPI();
-        console.log("typeList：", { data });
-
         setTypeList(data);
     };
 

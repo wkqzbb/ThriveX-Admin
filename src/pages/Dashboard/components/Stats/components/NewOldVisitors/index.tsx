@@ -67,7 +67,7 @@ export default () => {
       const siteId = import.meta.env.VITE_BAIDU_TONGJI_SITE_ID;
       const token = import.meta.env.VITE_BAIDU_TONGJI_ACCESS_TOKEN;
 
-      const response = await fetch(`/api/rest/2.0/tongji/report/getData?access_token=${token}&site_id=${siteId}&start_date=${date}&end_date=${date}&metrics=new_visitor_count%2Cnew_visitor_ratio&method=trend%2Ftime%2Fa&gran=day&area=`);
+      const response = await fetch(`/baidu/rest/2.0/tongji/report/getData?access_token=${token}&site_id=${siteId}&start_date=${date}&end_date=${date}&metrics=new_visitor_count%2Cnew_visitor_ratio&method=trend%2Ftime%2Fa&gran=day&area=`);
       const data = await response.json();
       const { result } = data;
 
@@ -88,8 +88,8 @@ export default () => {
   }, [])
 
   return (
-    <Spin spinning={loading}>
-      <div className="sm:px-7.5 col-span-12 rounded-lg border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
+    <div className="sm:px-7.5 col-span-12 rounded-lg border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
+      <Spin spinning={loading}>
         <div className="mb-3 justify-between gap-4 sm:flex">
           <div>
             <h5 className="text-xl font-semibold text-black dark:text-white">
@@ -100,11 +100,7 @@ export default () => {
 
         <div className="mb-2">
           <div id="chartThree" className="mx-auto flex justify-center">
-            <ReactApexChart
-              options={options}
-              series={state.series}
-              type="donut"
-            />
+            <ReactApexChart options={options} series={state.series} type="donut" />
           </div>
         </div>
 
@@ -129,7 +125,7 @@ export default () => {
             </div>
           </div>
         </div>
-      </div>
-    </Spin>
+      </Spin>
+    </div>
   );
 };

@@ -153,7 +153,7 @@ export default () => {
             const siteId = import.meta.env.VITE_BAIDU_TONGJI_SITE_ID;
             const token = import.meta.env.VITE_BAIDU_TONGJI_ACCESS_TOKEN;
 
-            const response = await fetch(`/api/rest/2.0/tongji/report/getData?access_token=${token}&site_id=${siteId}&start_date=${startDate}&end_date=${endDate}&metrics=pv_count%2Cip_count&method=overview%2FgetTimeTrendRpt`);
+            const response = await fetch(`/baidu/rest/2.0/tongji/report/getData?access_token=${token}&site_id=${siteId}&start_date=${startDate}&end_date=${endDate}&metrics=pv_count%2Cip_count&method=overview%2FgetTimeTrendRpt`);
             const data = await response.json();
             const { result } = data;
             setResult(result);
