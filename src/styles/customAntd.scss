@@ -8,3 +8,12 @@
         }
     }
 }
+
+// 暗色适配
+.ant-card {
+    @apply overflow-hidden dark:border-strokedark dark:bg-boxdark;
+
+    .ant-card-body {
+        @apply dark:bg-boxdark;
+    }
+}

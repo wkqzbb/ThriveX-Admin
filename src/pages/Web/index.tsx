@@ -178,7 +178,7 @@ export default () => {
                             {
                                 Object.keys(list).map((key) => (
                                     <div>
-                                        <Card className="[&>.ant-card-body]:flex [&>.ant-card-body]:py-2 [&>.ant-card-body]:px-4 my-2 ml-1.5 text-base bg-[#f5f6ff]">
+                                        <Card className="[&>.ant-card-body]:flex [&>.ant-card-body]:py-2 [&>.ant-card-body]:px-4 my-2 ml-1.5 text-base bg-[#f5f6ff] dark:bg-boxdark transition-colors">
                                             <img src={group} alt="分组图标" className='w-6 h-6 mr-2' />
                                             <span>{key}</span>
                                         </Card>

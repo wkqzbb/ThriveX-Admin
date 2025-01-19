@@ -54,7 +54,7 @@ export default () => {
         getCateList()
     }, []);
 
-    const columns: ColumnsType = [
+    const columns: ColumnsType<Wall> = [
         {
             title: 'ID',
             dataIndex: 'id',
@@ -65,7 +65,7 @@ export default () => {
             title: '分类',
             dataIndex: 'cate',
             key: 'cate',
-            render: ({ name }, { color }) => <Tag bordered={false} color={color} className='!text-[#565656]'>{name}</Tag>,
+            render: ({ name }, { color }) => <Tag bordered={false} color={color} className='!text-[#565656] dark:!text-white'>{name}</Tag>,
         },
         {
             title: '名称',
@@ -77,7 +77,7 @@ export default () => {
             dataIndex: 'content',
             key: 'content',
             width: 400,
-            render: (text: string, record) => <span className="hover:text-primary cursor-pointer line-clamp-2" onClick={() => {
+            render: (text: string, record: Wall) => <span className="hover:text-primary cursor-pointer line-clamp-2" onClick={() => {
                 setWall(record)
                 setIsModalOpen(true)
             }}>{text}</span>

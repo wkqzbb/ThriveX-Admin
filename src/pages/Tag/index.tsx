@@ -107,26 +107,28 @@ export default () => {
             <Title value="标签管理" />
 
             <div className='flex md:justify-between flex-col md:flex-row mx-auto mt-2 h-[calc(100vh-180px)]'>
-                <Spin spinning={editLoading} className='w-full md:w-[40%] '>
-                    {/* <Card className="w-full md:w-[40%] h-46"> */}
-                    <Card className="w-full h-46">
-                        <Form
-                            form={form}
-                            layout="vertical"
-                            initialValues={tag}
-                            onFinish={onSubmit}
-                            size='large'
-                        >
-                            <Form.Item label="标签名称" name="name" rules={[{ required: true, message: '标签名称不能为空' }]}>
-                                <Input placeholder="请输入标签名称" />
-                            </Form.Item>
+                <div className='w-full md:w-[40%]'>
+                    <Spin spinning={editLoading}>
+                        {/* <Card className="w-full md:w-[40%] h-46"> */}
+                        <Card className="w-full h-46">
+                            <Form
+                                form={form}
+                                layout="vertical"
+                                initialValues={tag}
+                                onFinish={onSubmit}
+                                size='large'
+                            >
+                                <Form.Item label="标签名称" name="name" rules={[{ required: true, message: '标签名称不能为空' }]}>
+                                    <Input placeholder="请输入标签名称" />
+                                </Form.Item>
 
-                            <Form.Item>
-                                <Button type="primary" htmlType="submit" loading={btnLoading} className="w-full">{tag.id ? '编辑标签' : '新增标签'}</Button>
-                            </Form.Item>
-                        </Form>
-                    </Card>
-                </Spin>
+                                <Form.Item>
+                                    <Button type="primary" htmlType="submit" loading={btnLoading} className="w-full">{tag.id ? '编辑标签' : '新增标签'}</Button>
+                                </Form.Item>
+                            </Form>
+                        </Card>
+                    </Spin>
+                </div>
 
                 <Card className="w-full md:w-[59%] [&>.ant-card-body]:!p-0 mt-2 md:mt-0">
                     <Table
