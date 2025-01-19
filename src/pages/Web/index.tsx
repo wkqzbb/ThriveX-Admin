@@ -5,6 +5,7 @@ import { getLinkListAPI, addLinkDataAPI, editLinkDataAPI, delLinkDataAPI, getWeb
 import { WebType, Web } from '@/types/app/web';
 import Title from '@/components/Title';
 import { RuleObject } from 'antd/es/form';
+import group from "./assets/svg/group.svg"
 import './index.scss';
 
 export default () => {
@@ -65,8 +66,23 @@ export default () => {
     }, []);
 
     useEffect(() => {
-        // setListTemp(list.filter(item => item.title.includes(search) || item.description.includes(search)));
-    }, [search, list]);
+        // 过滤出符合搜索条件的网站
+        const filteredList = listTemp.filter(item =>
+            item.title.includes(search) || item.description.includes(search)
+        );
+
+        // 按类型分组
+        const grouped = filteredList.reduce((acc, item) => {
+            const groupName = item.type.name;
+            if (!acc[groupName]) {
+                acc[groupName] = [];
+            }
+            acc[groupName].push(item);
+            return acc;
+        }, {} as { [key: string]: Web[] });
+
+        setList(grouped);
+    }, [search, listTemp]);
 
     const deleteLinkData = async (id: number) => {
         try {
@@ -149,13 +165,14 @@ export default () => {
             key: 'list',
             children: (
                 <div>
-                    <div className="w-[300px] mx-auto mb-10">
+                    <div className="flex justify-end w-full mb-8">
                         <Input
                             size="large"
                             placeholder="请输入网站名称或描述信息进行查询"
                             prefix={<SearchOutlined />}
                             value={search}
                             onChange={e => setSearch(e.target.value)}
+                            className='w-[400px]'
                         />
                     </div>
 
@@ -164,7 +181,10 @@ export default () => {
                             {
                                 Object.keys(list).map((key) => (
                                     <div>
-                                        <Card className="[&>.ant-card-body]:!py-2 [&>.ant-card-body]:!px-4 my-2 ml-1.5 text-base">{key}</Card>
+                                        <Card className="[&>.ant-card-body]:flex [&>.ant-card-body]:py-2 [&>.ant-card-body]:px-4 my-2 ml-1.5 text-base bg-[#f5f6ff]">
+                                            <img src={group} alt="分组图标" className='w-6 h-6 mr-2' />
+                                            <span>{key}</span>
+                                        </Card>
 
                                         {
                                             Object.values(list[key]).length ? (
