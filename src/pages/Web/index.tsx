@@ -15,7 +15,7 @@ export default () => {
     const [form] = Form.useForm();
 
     const [tab, setTab] = useState<string>('list');
-    const [list, setList] = useState<Web[]>([]);
+    const [list, setList] = useState<{ [key: string]: Web[] }>({});
     const [listTemp, setListTemp] = useState<Web[]>([]);
     const [typeList, setTypeList] = useState<WebType[]>([]);
     const [search, setSearch] = useState<string>('');
@@ -33,9 +33,18 @@ export default () => {
             data.sort((a, b) => a.order - b.order)
             data.sort((a, b) => a.type.order - b.type.order)
 
-            setList(data);
-            setListTemp(data);
+            const grouped = data.reduce((acc, item) => {
+                const groupName = item.type.name;
+                if (!acc[groupName]) {
+                    acc[groupName] = [];
+                }
+                acc[groupName].push(item);
+                return acc;
+            }, {} as { [key: string]: Web[] });
 
+            console.log("grouped：", grouped);
+            setList(grouped);
+            setListTemp(data);
             setLoading(false)
         } catch (error) {
             setLoading(false);
@@ -45,6 +54,8 @@ export default () => {
     // 获取网站类型列表
     const getWebTypeList = async () => {
         const { data } = await getWebTypeListAPI();
+        console.log("typeList：", { data });
+
         setTypeList(data);
     };
 
@@ -54,7 +65,7 @@ export default () => {
     }, []);
 
     useEffect(() => {
-        setListTemp(list.filter(item => item.title.includes(search) || item.description.includes(search)));
+        // setListTemp(list.filter(item => item.title.includes(search) || item.description.includes(search)));
     }, [search, list]);
 
     const deleteLinkData = async (id: number) => {
@@ -77,8 +88,8 @@ export default () => {
 
             const { data } = await getLinkDataAPI(record.id)
             setLink(data);
-            form.setFieldsValue(data);
 
+            form.setFieldsValue(data);
             setEditLoading(false)
         } catch (error) {
             setEditLoading(false)
@@ -138,7 +149,7 @@ export default () => {
             key: 'list',
             children: (
                 <div>
-                    <div className="w-[300px] mx-auto">
+                    <div className="w-[300px] mx-auto mb-10">
                         <Input
                             size="large"
                             placeholder="请输入网站名称或描述信息进行查询"
@@ -149,35 +160,45 @@ export default () => {
                     </div>
 
                     <Spin spinning={loading}>
-                        {listTemp.length > 0 ? (
-                            <div className="list">
-                                {
-                                    listTemp.map(item => (
-                                        <div key={item.id} className="item">
-                                            <div className="avatar">
-                                                <img src={item.image} alt="" className="avatar-img" />
-                                            </div>
+                        <div className='space-y-8'>
+                            {
+                                Object.keys(list).map((key) => (
+                                    <div>
+                                        <Card className="[&>.ant-card-body]:!py-2 [&>.ant-card-body]:!px-4 my-2 ml-1.5 text-base">{key}</Card>
 
-                                            <div className="name">{item.title}</div>
-                                            <div className="description">{item.description}</div>
-                                            <div className="type">{item.type.name}</div>
+                                        {
+                                            Object.values(list[key]).length ? (
+                                                <div className="list">
+                                                    {
+                                                        Object.values(list[key]).map(item => (
+                                                            <div key={item.id} className="item">
+                                                                <div className="avatar">
+                                                                    <img src={item.image} alt="" className="avatar-img" />
+                                                                </div>
 
-                                            <div className="operate">
-                                                <div onClick={() => editLinkData(item)} className="edit">修改</div>
+                                                                <div className="name">{item.title}</div>
+                                                                <div className="description">{item.description}</div>
+                                                                <div className="type">{item.type.name}</div>
 
-                                                <Popconfirm title="警告" description="你确定要删除吗" okText="确定" cancelText="取消" onConfirm={() => deleteLinkData(item.id!)}>
-                                                    <div className="delete">删除</div>
-                                                </Popconfirm>
-                                            </div>
+                                                                <div className="operate">
+                                                                    <div onClick={() => editLinkData(item)} className="edit">修改</div>
 
-                                            <div onClick={() => toHref(item.url)} className="headFor">前往该网站 &rarr;</div>
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                        ) : (
-                            <Empty description="暂无数据" className='my-7' />
-                        )}
+                                                                    <Popconfirm title="警告" description="你确定要删除吗" okText="确定" cancelText="取消" onConfirm={() => deleteLinkData(item.id!)}>
+                                                                        <div className="delete">删除</div>
+                                                                    </Popconfirm>
+                                                                </div>
+
+                                                                <div onClick={() => toHref(item.url)} className="headFor">前往该网站 &rarr;</div>
+                                                            </div>
+                                                        ))
+                                                    }
+                                                </div>
+                                            ) : <Empty description="暂无数据" className='my-7' />
+                                        }
+                                    </div>
+                                ))
+                            }
+                        </div>
                     </Spin>
                 </div>
             ),
