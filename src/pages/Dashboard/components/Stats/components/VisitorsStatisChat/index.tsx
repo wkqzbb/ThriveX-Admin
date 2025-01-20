@@ -332,7 +332,7 @@ export default () => {
                 </div>
 
                 <div className="flex w-full max-w-45 justify-end">
-                    <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
+                    <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4 space-x-1">
                         <button className={`rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:bg-meta-4 dark:text-white dark:hover:bg-boxdark ${scope === "day" ? "bg-white dark:!bg-[#4e5969] shadow-card" : ""}`} onClick={() => handleScopeChange("day")}>
                             天
                         </button>

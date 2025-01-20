@@ -145,7 +145,7 @@ export default () => {
                             placeholder="记录此刻！"
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
-                            className="w-full p-4 border-2 border-[#eee] dark:border-strokedark text-base rounded-md"
+                            className="w-full p-4 border-2 border-[#eee] dark:bg-boxdark-2 dark:border-transparent text-base rounded-md"
                         />
 
                         <div className="absolute bottom-4 left-4 flex items-end space-x-3 max-w-[calc(100%-80px)]">

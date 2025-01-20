@@ -40,7 +40,7 @@ module.exports = {
         whiten: '#F1F5F9',
         whiter: '#F5F7FD',
         boxdark: '#334459',
-        'boxdark-2': '#1A222C',
+        'boxdark-2': '#263444',
         strokedark: '#475f7d',
         'form-strokedark': '#3d4d60',
         'form-input': '#1d2a39',
