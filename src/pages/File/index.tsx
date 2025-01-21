@@ -211,7 +211,7 @@ export default () => {
                         <span className='min-w-20 font-bold'>文件大小</span>
                         <span className='text-[#333] dark:text-white'>{(file.size / 1048576).toFixed(2)}MB</span>
                     </div>
-
+                    
                     <div className='flex'>
                         <span className='min-w-20  font-bold'>文件链接</span>
                         <span className='text-[#333] dark:text-white hover:text-primary cursor-pointer transition' onClick={async () => {

@@ -23,9 +23,8 @@ const EditorMD = ({ value, onChange }: Props) => {
     const [loading, setLoading] = useState(false)
 
     const uploadImages = async (files: File[]) => {
-        setLoading(true);
-
         try {
+            setLoading(true);
             // 处理成后端需要的格式
             const formData = new FormData();
             formData.append("dir", "article");
@@ -37,14 +36,14 @@ const EditorMD = ({ value, onChange }: Props) => {
                     "Content-Type": "multipart/form-data"
                 }
             });
+            
+            setLoading(false);
 
             // 返回图片信息数组
             return data.map((url: string) => ({ url }));
         } catch (error) {
             setLoading(false);
         }
-
-        setLoading(false);
     }
 
     return (
