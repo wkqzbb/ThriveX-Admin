@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Form, Input, Popconfirm, message, Card, Modal, Transfer, Spin } from 'antd';
+import { Table, Button, Form, Input, Popconfirm, message, Card, Modal, Transfer, Spin, Checkbox } from 'antd';
 import { getRouteListAPI } from '@/api/Route';
 import { getRoleListAPI, addRoleDataAPI, editRoleDataAPI, delRoleDataAPI, getRouteListAPI as getRoleRouteListAPI, bindingRouteAPI, getRoleDataAPI } from '@/api/Role';
 import { Role } from '@/types/app/role';
 import Title from '@/components/Title';
 import { ColumnsType } from 'antd/es/table';
 import "./index.scss"
+import { getPermissionListAPI } from '@/api/Permission';
+import { Permission } from '@/types/app/permission';
 
 export default () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -18,11 +20,15 @@ export default () => {
     const [role, setRole] = useState<Role>({} as Role);
     const [roleList, setRoleList] = useState<Role[]>([]);
     const [routeList, setRouteList] = useState<{ key: number, title: string }[]>([]);
+
     // 当前角色的路由列表
-    const [targetKeys, setTargetKeys] = useState<number[]>([]);
+    const [targetRouteKeys, setTargetRouteKeys] = useState<number[]>([]);
 
     // 角色权限框
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [permissionList, setPermissionList] = useState<{ [key: string]: Permission[] }>({});
+    const [checkedPermissions, setCheckedPermissions] = useState<{ [key: string]: number[] }>({});
 
     const columns: ColumnsType<Role> = [
         { title: 'ID', dataIndex: 'id', key: 'id', align: 'center' },
@@ -43,10 +49,10 @@ export default () => {
         }
     ];
 
-    // 获取路由列表
-    const getRouteList = async () => {
-        const { data } = await getRouteListAPI();
-        setRouteList(data.map(item => ({ key: item.id, title: item.description })) as { key: number, title: string }[]);
+    // 获取路由和权限列表
+    const getDataList = async () => {
+        const { data: routes } = await getRouteListAPI();
+        setRouteList(routes.map(item => ({ key: item.id, title: item.description })) as { key: number, title: string }[]);
     };
 
     // 获取角色列表
@@ -65,7 +71,23 @@ export default () => {
 
     useEffect(() => {
         getRoleList()
-        getRouteList()
+        getDataList()
+    }, []);
+
+    useEffect(() => {
+        const fetchPermissions = async () => {
+            const { data: permissions } = await getPermissionListAPI();
+            const grouped = permissions.reduce((acc, permission) => {
+                if (!acc[permission.group]) {
+                    acc[permission.group] = [];
+                }
+                acc[permission.group].push(permission);
+                return acc;
+            }, {} as { [key: string]: Permission[] });
+            setPermissionList(grouped);
+        };
+
+        fetchPermissions();
     }, []);
 
     // 获取指定角色的路由列表
@@ -74,9 +96,9 @@ export default () => {
             setEditLoading(true)
 
             setIsModalOpen(true)
-            
+
             const { data } = await getRoleRouteListAPI(record.id);
-            setTargetKeys(data.map(item => item.id) as number[])
+            setTargetRouteKeys(data.map(item => item.id) as number[])
 
             setEditLoading(false)
         } catch (error) {
@@ -136,14 +158,14 @@ export default () => {
     };
 
     // 设置目标路由
-    const onChange: any = (list: number[]) => setTargetKeys(list);
+    const onRouteChange: any = (list: number[]) => setTargetRouteKeys(list);
 
     // 绑定路由
     const onBindingRouteSubmit = async () => {
         try {
             setBindingLoading(true);
 
-            await bindingRouteAPI(role.id, targetKeys)
+            await bindingRouteAPI(role.id, targetRouteKeys)
             setBindingLoading(false);
             message.success('🎉 绑定成功');
             // 刷新页面
@@ -152,6 +174,38 @@ export default () => {
             setBindingLoading(false);
         }
     }
+
+    const onPermissionChange = (group: string, checkedValues: number[]) => {
+        setCheckedPermissions(prev => ({ ...prev, [group]: checkedValues }));
+    };
+
+    const onCheckAllChange = (group: string, checked: boolean) => {
+        const groupPermissions = permissionList[group].map(permission => permission.id);
+        setCheckedPermissions(prev => ({
+            ...prev,
+            [group]: checked ? groupPermissions : []
+        }));
+    };
+
+    // 分组名称
+    const groupNames: { [key: string]: string } = {
+        "user": "用户管理",
+        "data": "数据管理",
+        "article": "文章管理",
+        "cate": "分类管理",
+        "comment": "评论管理",
+        "config": "配置管理",
+        "email": "邮件管理",
+        "file": "文件管理",
+        "oss": "OSS管理",
+        "record": "说说管理",
+        "role": "角色管理",
+        "route": "路由管理",
+        "swiper": "轮播图管理",
+        "tag": "标签管理",
+        "wall": "留言管理",
+        "permission": "权限管理"
+    };
 
     // 让n改变 触发Transfer重新渲染
     const [n, setN] = useState(0)
@@ -204,18 +258,42 @@ export default () => {
             </div>
 
             <Modal loading={editLoading} title="角色权限" open={isModalOpen} onCancel={() => [setIsModalOpen(false), setN(n + 1)]} footer={null} className='RolePageModal'>
-                <div className='flex justify-center py-6'>
-                    <Spin spinning={bindingLoading}>
-                        <Transfer
-                            key={n}
-                            dataSource={routeList}
-                            targetKeys={targetKeys}
-                            titles={['权限列表', '当前权限']}
-                            render={(item) => item.title}
-                            onChange={onChange}
-                            showSelectAll={false}
-                        />
-                    </Spin>
+                <div className='flex justify-center mt-4'>
+                    <Transfer
+                        key={n}
+                        dataSource={routeList}
+                        targetKeys={targetRouteKeys}
+                        titles={['页面列表', '当前页面']}
+                        render={(item) => item.title}
+                        onChange={onRouteChange}
+                        showSelectAll={false}
+                    />
+                </div>
+
+                <div className='overflow-y-auto h-55 p-4 mt-10 mb-4 border border-[#eee] rounded-md'>
+                    {Object.keys(permissionList).map((group, index) => (
+                        <div key={index}>
+                            <div className='flex justify-center items-center'>
+                                <h3 className='text-xl mr-3'>{groupNames[group]}</h3>
+
+                                <Checkbox
+                                    indeterminate={!!checkedPermissions[group]?.length && checkedPermissions[group].length < permissionList[group].length}
+                                    onChange={e => onCheckAllChange(group, e.target.checked)}
+                                    checked={checkedPermissions[group]?.length === permissionList[group].length}
+                                />
+                            </div>
+
+                            <Checkbox.Group
+                                value={checkedPermissions[group]}
+                                onChange={checkedValues => onPermissionChange(group, checkedValues as number[])}
+                                options={permissionList[group].map(permission => ({
+                                    label: permission.description,
+                                    value: permission.id
+                                }))}
+                                className='flex-col'
+                            />
+                        </div>
+                    ))}
                 </div>
 
                 <Button type='primary' className='w-full mt-2' loading={bindingLoading} onClick={onBindingRouteSubmit}>保存</Button>
