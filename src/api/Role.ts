@@ -1,6 +1,7 @@
 import Request from '@/utils/request'
 import { Role } from '@/types/app/role'
 import { Route } from '@/types/app/route'
+import { Permission } from '@/types/app/permission'
 
 // 新增角色
 export const addRoleDataAPI = (data: Role) => Request<Role>("POST", "/role", { data })
@@ -18,7 +19,10 @@ export const getRoleDataAPI = (id: number) => Request<Role>("GET", `/role/${id}`
 export const getRoleListAPI = () => Request<Role[]>("GET", "/role");
 
 // 获取指定角色的路由列表
-export const getRouteListAPI = (id: number) => Request<Route[]>("GET", `/role/route/${id}`);
+export const getRoleRouteListAPI = (id: number) => Request<Route[]>("GET", `/role/route/${id}`);
+
+// 获取指定角色的权限列表
+export const getRolePermissionListAPI = (id: number) => Request<Permission[]>("GET", `/role/permission/${id}`);
 
 // 给指定角色绑定路由
-export const bindingRouteAPI = (id: number, ids: number[]) => Request<Route[]>("PATCH", `/role/bindingRoute/${id}`, { data: ids });
+export const bindingRouteAPI = (id: number, data: { route_ids: number[], permission_ids: number[] }) => Request<Route[]>("PATCH", `/role/bindingRoute/${id}`, { data });
