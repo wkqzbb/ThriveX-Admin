@@ -180,6 +180,18 @@ export default () => {
         try {
             setBindingLoading(true);
 
+            if (targetRouteKeys.length === 0) {
+                message.error('请至少选择一个页面');
+                setBindingLoading(false);
+                return
+            }
+
+            if (targetPermissionKeys.length === 0) {
+                message.error('请至少选择一个权限');
+                setBindingLoading(false);
+                return
+            }
+
             await bindingRouteAPI(role.id, { route_ids: targetRouteKeys, permission_ids: targetPermissionKeys })
             setBindingLoading(false);
             message.success('🎉 绑定成功');
