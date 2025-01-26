@@ -8,6 +8,7 @@ import { getRoleListAPI, addRoleDataAPI, editRoleDataAPI, delRoleDataAPI, getRol
 import { Role } from '@/types/app/role';
 import { Permission } from '@/types/app/permission';
 import "./index.scss"
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 export default () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -66,9 +67,17 @@ export default () => {
             if (!acc[permission.group]) {
                 acc[permission.group] = [];
             }
-            acc[permission.group].push(permission);
+
+            // 检查当前组中是否已经存在具有相同 name 的权限
+            const isDuplicate = acc[permission.group].some(existingPermission => existingPermission.name === permission.name);
+
+            if (!isDuplicate) {
+                acc[permission.group].push(permission);
+            }
+
             return acc;
         }, {} as { [key: string]: Permission[] });
+
         setPermissionList(grouped);
     };
 
@@ -107,9 +116,9 @@ export default () => {
             // 初始化 checkedPermissions
             const newCheckedPermissions: { [key: string]: number[] } = {};
             Object.keys(permissionList).forEach(group => {
-                newCheckedPermissions[group] = permissions
+                newCheckedPermissions[group] = Array.from(new Set(permissions
                     .filter(permission => permission.group === group)
-                    .map(permission => permission.id);
+                    .map(permission => permission.id)));
             });
 
             setCheckedPermissions(newCheckedPermissions);
@@ -210,28 +219,26 @@ export default () => {
                 [group]: selectedKeys
             };
 
-            // 更新 targetPermissionKeys
-            const allSelectedKeys = Object.values(updated).flat();
-            const uniqueKeys = Array.from(new Set(allSelectedKeys)); // 去重
-            setTargetPermissionKeys(uniqueKeys);
-
             return updated;
         });
     };
 
+    useEffect(() => {
+        let list: number[] = []
+        for (const k in checkedPermissions) {
+            list = [...list, ...checkedPermissions[k]]
+        }
+        setTargetPermissionKeys(list)
+    }, [checkedPermissions]);
+
     // 全选或取消全选
-    const onGroupSelectAllChange = (group: string, checked: boolean) => {
-        const groupPermissions = permissionList[group].map(permission => permission.id);
+    const onGroupSelectAllChange = (group: string, e: CheckboxChangeEvent) => {
         setCheckedPermissions(prev => {
             const updated = {
                 ...prev,
-                [group]: checked ? groupPermissions : []
+                // 如果选中则返回当前分组下所有权限的id数组,否则返回空数组
+                [group]: e.target.checked ? permissionList[group].map(permission => permission.id) : []
             };
-
-            // 更新 targetPermissionKeys
-            const allSelectedKeys = Object.values(updated).flat();
-            const uniqueKeys = Array.from(new Set(allSelectedKeys)); // 去重
-            setTargetPermissionKeys(uniqueKeys);
 
             return updated;
         });
@@ -331,9 +338,9 @@ export default () => {
                                 <div className='flex justify-center items-center'>
                                     <h3 className='text-base mr-3'>{groupNames[group]}</h3>
                                     <Checkbox
-                                        checked={checkedPermissions[group]?.length === permissionList[group].length}
                                         indeterminate={checkedPermissions[group]?.length > 0 && checkedPermissions[group]?.length < permissionList[group].length}
-                                        onChange={(e) => onGroupSelectAllChange(group, e.target.checked)}
+                                        checked={checkedPermissions[group]?.length === permissionList[group].length}
+                                        onChange={(e) => onGroupSelectAllChange(group, e)}
                                     />
                                 </div>
 
