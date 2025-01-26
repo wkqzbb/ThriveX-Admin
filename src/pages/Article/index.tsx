@@ -25,6 +25,11 @@ export default () => {
     const [articleList, setArticleList] = useState<Article[]>([]);
     const { RangePicker } = DatePicker;
 
+    useEffect(() => {
+        console.log(perm);
+        
+    }, [])
+
     const getArticleList = async () => {
         try {
             setLoading(true);

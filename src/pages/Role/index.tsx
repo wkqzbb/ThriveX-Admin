@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Table, Button, Form, Input, Popconfirm, message, Card, Modal, Transfer, Checkbox } from 'antd';
 import { ColumnsType } from 'antd/es/table';
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import Title from '@/components/Title';
 import { getRouteListAPI } from '@/api/Route';
 import { getPermissionListAPI } from '@/api/Permission';
 import { getRoleListAPI, addRoleDataAPI, editRoleDataAPI, delRoleDataAPI, getRoleRouteListAPI, bindingRouteAPI, getRoleDataAPI, getRolePermissionListAPI } from '@/api/Role';
 import { Role } from '@/types/app/role';
 import { Permission } from '@/types/app/permission';
+import { useUserStore } from '@/stores'
 import "./index.scss"
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 export default () => {
+    const user = useUserStore(state => state.user);
+    const quitLogin = useUserStore(state => state.quitLogin);
+
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
     const [editLoading, setEditLoading] = useState<boolean>(false);
@@ -204,6 +208,12 @@ export default () => {
             await bindingRouteAPI(role.id, { route_ids: targetRouteKeys, permission_ids: targetPermissionKeys })
             setBindingLoading(false);
             message.success('🎉 绑定成功');
+
+            // 如果修改的是当前用户所使用的角色，则退出登录
+            if (role.id === user.roleId) {
+                return quitLogin()
+            }
+
             // 刷新页面
             window.location.reload()
         } catch (error) {
