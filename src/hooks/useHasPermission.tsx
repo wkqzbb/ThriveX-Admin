@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
 import { getRolePermissionListAPI } from "@/api/Role";
 import { Permission } from "@/types/app/permission";
-import { useUserStore } from '@/stores'
+import { useUserStore } from "@/stores";
 
-interface Props {
-    code: string;
-    children: React.ReactNode;
-}
-
-export default ({ code, children }: Props) => {
+export default (code: string) => {
     const user = useUserStore(state => state.user);
+
     const [permissionList, setPermissionList] = useState<Permission[]>([]);
 
     // 获取权限列表
@@ -22,8 +18,7 @@ export default ({ code, children }: Props) => {
         getPermissionList();
     }, []);
 
-    // 判断有没有这个权限
     const hasPermission = permissionList.some(permission => permission.name === code);
 
-    return hasPermission ? children : null;
+    return hasPermission;
 }
