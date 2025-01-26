@@ -11,8 +11,7 @@ import type { Tag as ArticleTag } from '@/types/app/tag';
 import type { Cate } from '@/types/app/cate';
 import type { Article, Config, FilterArticle, FilterForm } from '@/types/app/article';
 
-import HasPermission from '@/components/HasPermission';
-import useHasPermission from '@/hooks/useHasPermission';
+import perm from '@/utils/permission';
 
 import { useWebStore } from '@/stores';
 
@@ -25,10 +24,6 @@ export default () => {
     const [current, setCurrent] = useState<number>(1);
     const [articleList, setArticleList] = useState<Article[]>([]);
     const { RangePicker } = DatePicker;
-
-    const perm = {
-        del: useHasPermission('article:del')
-    }
 
     const getArticleList = async () => {
         try {
@@ -144,11 +139,11 @@ export default () => {
             render: (text: string, record: Article) => (
                 <div className='flex justify-center space-x-2'>
                     <Link to={`/create?id=${record.id}`}>
-                        <Button>编辑</Button>
+                        <Button disabled={!perm.article.edit}>编辑</Button>
                     </Link>
 
                     <Popconfirm title="警告" description="你确定要删除吗" okText="确定" cancelText="取消" onConfirm={() => delArticleData(record.id!)}>
-                        <Button type="primary" danger disabled={!perm.del}>删除</Button>
+                        <Button type="primary" danger disabled={!perm.article.del}>删除</Button>
                     </Popconfirm>
                 </div>
             ),
