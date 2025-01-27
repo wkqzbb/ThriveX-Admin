@@ -7,7 +7,7 @@ import { LiaRssSolid } from "react-icons/lia";
 import { TbBrandAirtable } from "react-icons/tb";
 
 import { useUserStore } from '@/stores';
-import { getRouteListAPI } from '@/api/Role'
+import { getRoleRouteListAPI } from '@/api/Role'
 import { Route } from '@/types/app/route';
 import logo from '@/images/logo/logo.png'
 import useVersionData from '@/hooks/useVersionData';
@@ -255,7 +255,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   // 获取路由列表
   const getRouteList = async (id: number) => {
-    const { data } = await getRouteListAPI(id)
+    const { data } = await getRoleRouteListAPI(id)
     // 处理成路径
     const pathSet = new Set(data.map((item: Route) => item.path));
 

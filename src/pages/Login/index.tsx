@@ -5,12 +5,13 @@ import { Button, Form, Input, notification } from 'antd';
 import { UserOutlined, LockOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { loginDataAPI } from '@/api/User';
 import { useUserStore } from '@/stores';
+import { getRolePermissionListAPI } from '@/api/Role';
 
 export default () => {
     const navigate = useNavigate();
     const location = useLocation();
     const store = useUserStore();
-    
+
     const [loading, setLoading] = useState(false)
 
     const [form] = useForm();
@@ -24,12 +25,14 @@ export default () => {
 
             const values = await form.validateFields();
             const { data } = await loginDataAPI(values);
+            const { data: permission } = await getRolePermissionListAPI(data.role.id as number);
 
             // 将用户信息和token保存起来
             store.setToken(data.token);
             store.setUser(data.user);
             store.setRole(data.role)
-
+            store.setPermission(permission)
+            
             notification.success({
                 message: '🎉 登录成功',
                 description: `Hello ${data.user.name} 欢迎回来`,

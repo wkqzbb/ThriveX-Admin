@@ -30,7 +30,7 @@ import Oss from "@/pages/Oss";
 import PageTitle from "../PageTitle";
 
 import { useUserStore } from "@/stores";
-import { getRouteListAPI } from "@/api/Role";
+import { getRoleRouteListAPI } from "@/api/Role";
 import { checkTokenAPI } from '@/api/User'
 import { Route as RouteType } from "@/types/app/route";
 import NotFound from "../NotFound";
@@ -70,7 +70,7 @@ export default () => {
     const [routes, setRoutes] = useState<typeof routesAll | null>(null);
 
     const getRouteList = async (id: number) => {
-        const { data } = await getRouteListAPI(id);
+        const { data } = await getRoleRouteListAPI(id);
         const pathSet = new Set(data.map((item: RouteType) => item.path));
         setRoutes(routesAll.filter(r1 => pathSet.has(r1.path)));
     };

@@ -1,6 +1,5 @@
 import Request from '@/utils/request'
 import { Web, WebType } from '@/types/app/web'
-import { getListAPI } from '@/utils'
 
 // 新增网站
 export const addLinkDataAPI = (data: Web) => Request<Web>("POST", "/link", { data })

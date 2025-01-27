@@ -97,7 +97,7 @@ export default () => {
             });
 
             setLoading(false)
-            setBtnLoading(true)
+            setBtnLoading(false)
         } catch (error) {
             setLoading(false)
             setBtnLoading(true)

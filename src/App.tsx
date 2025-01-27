@@ -26,6 +26,7 @@ function App() {
 
   const setWeb = useWebStore(state => state.setWeb);
   const getWebData = async () => {
+    if(pathname === '/login') return;
     const { data } = await getConfigDataAPI<Web>("web");
     setWeb(data);
   };
