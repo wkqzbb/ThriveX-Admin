@@ -92,7 +92,7 @@ export default () => {
                     path="/login"
                     element={
                         <>
-                            <PageTitle title="Thrive | 现代化博客管理系统" />
+                            <PageTitle title="ThriveX | 现代化博客管理系统" />
                             <Login />
                         </>
                     }

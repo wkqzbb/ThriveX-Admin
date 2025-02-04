@@ -183,7 +183,7 @@ export default () => {
             await getOssList();
             setIsModalOpen(false);
             form.resetFields();
-            
+
             setBtnLoading(false);
         } catch (error) {
             setBtnLoading(false);
@@ -229,46 +229,44 @@ export default () => {
                         <Select options={platformList} placeholder="请选择平台" />
                     </Form.Item>}
 
-                    {oss.platform !== "local" && (
-                        <>
-                            <Form.Item
-                                label="Access Key"
-                                name="accessKey"
-                                rules={[
-                                    { required: true, message: 'Access Key 不能为空' },
-                                    { min: 10, max: 50, message: 'Access Key 限制在10~50个字符' }
-                                ]}
-                            >
-                                <Input placeholder="请输入Access Key" />
-                            </Form.Item>
-
-                            <Form.Item
-                                label="SecretKey"
-                                name="secretKey"
-                                rules={[{ required: true, message: 'SecretKey不能为空' }]}
-                            >
-                                <Input.Password placeholder="请输入SecretKey" />
-                            </Form.Item>
-                        </>
-                    )}
-
-                    <Form.Item
-                        label="地域"
-                        name="endPoint"
-                        rules={[{ required: true, message: '地域不能为空' }]}
-                    >
-                        <Input placeholder="请输入地域" />
-                    </Form.Item>
-
                     {
                         oss.platform !== "local" && (
-                            <Form.Item
-                                label="存储桶"
-                                name="bucketName"
-                                rules={[{ required: true, message: '存储桶不能为空' }]}
-                            >
-                                <Input placeholder="请输入存储桶" />
-                            </Form.Item>
+                            <>
+                                <Form.Item
+                                    label="Access Key"
+                                    name="accessKey"
+                                    rules={[
+                                        { required: true, message: 'Access Key 不能为空' },
+                                        { min: 10, max: 50, message: 'Access Key 限制在10~50个字符' }
+                                    ]}
+                                >
+                                    <Input placeholder="请输入Access Key" />
+                                </Form.Item>
+
+                                <Form.Item
+                                    label="SecretKey"
+                                    name="secretKey"
+                                    rules={[{ required: true, message: 'SecretKey不能为空' }]}
+                                >
+                                    <Input.Password placeholder="请输入SecretKey" />
+                                </Form.Item>
+
+                                <Form.Item
+                                    label="地域"
+                                    name="endPoint"
+                                    rules={[{ required: true, message: '地域不能为空' }]}
+                                >
+                                    <Input placeholder="请输入地域" />
+                                </Form.Item>
+
+                                <Form.Item
+                                    label="存储桶"
+                                    name="bucketName"
+                                    rules={[{ required: true, message: '存储桶不能为空' }]}
+                                >
+                                    <Input placeholder="请输入存储桶" />
+                                </Form.Item>
+                            </>
                         )
                     }
 
