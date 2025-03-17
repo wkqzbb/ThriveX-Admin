@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Tag, notification, Card, Popconfirm, Form, Spin } from 'antd';
+import { Table, Button, Tag, notification, Card, Popconfirm, Form } from 'antd';
 import { titleSty } from '@/styles/sty'
 import Title from '@/components/Title';
 
