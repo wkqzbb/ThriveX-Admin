@@ -226,7 +226,7 @@ export default () => {
                     className='mt-6'
                 >
                     {!oss.id && <Form.Item label="选择平台" name="platform" className='w-full'>
-                        <Select options={platformList} placeholder="请选择平台" />
+                        <Select options={platformList} placeholder="请选择平台" allowClear />
                     </Form.Item>}
 
                     {

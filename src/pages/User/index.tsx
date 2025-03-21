@@ -221,7 +221,7 @@ export default () => {
                     </Form.Item>
 
                     <Form.Item label="角色" name="role" className='min-w-[230px]'>
-                        <Select options={roleList.map(item => ({ label: item.name, value: item.id }))} placeholder="请选择角色" />
+                        <Select options={roleList.map(item => ({ label: item.name, value: item.id }))} placeholder="请选择角色" allowClear />
                     </Form.Item>
 
                     <Form.Item label="时间范围" name="createTime" className='min-w-[250px]'>
@@ -308,7 +308,7 @@ export default () => {
                         label="角色"
                         rules={[{ required: true, message: '请选择角色' }]}
                     >
-                        <Select options={roleList.map(item => ({ label: item.name, value: +item.id }))} placeholder="选择用户角色" />
+                        <Select options={roleList.map(item => ({ label: item.name, value: +item.id }))} placeholder="选择用户角色" allowClear />
                     </Form.Item>
 
                     <Form.Item>
