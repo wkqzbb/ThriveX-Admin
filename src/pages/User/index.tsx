@@ -15,16 +15,16 @@ import logo from '@/images/logo/logo.png';
 import dayjs from 'dayjs';
 
 export default () => {
+    const store = useUserStore()
+    const [form] = Form.useForm();
+
     const [loading, setLoading] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState(false)
     const [editLoading, setEditLoading] = useState(false)
 
-    const [form] = Form.useForm();
-    const store = useUserStore()
-
+    const [user, setUser] = useState<User>({} as User)
     const [userList, setUserList] = useState<User[]>([]);
     const [roleList, setRoleList] = useState<Role[]>([]);
-    const [user, setUser] = useState<User>({} as User)
     const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
 
     const { RangePicker } = DatePicker;

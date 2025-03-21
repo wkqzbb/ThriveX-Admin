@@ -6,14 +6,21 @@ import { titleSty } from '@/styles/sty';
 import Title from '@/components/Title';
 import type { Cate, Wall, FilterForm, FilterWall } from '@/types/app/wall';
 import dayjs from 'dayjs';
+import TextArea from 'antd/es/input/TextArea';
+import { sendReplyWallEmailAPI } from '@/api/Email';
+import { useWebStore } from '@/stores';
 
 export default () => {
+    const web = useWebStore(state => state.web)
+    
     const [loading, setLoading] = useState(false);
 
     const [wall, setWall] = useState<Wall>({} as Wall);
     const [list, setList] = useState<Wall[]>([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [replyInfo, setReplyInfo] = useState("");
+    const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
 
     const getWallList = async () => {
         try {
@@ -105,8 +112,8 @@ export default () => {
                 <div className='flex justify-center space-x-2'>
                     <Button onClick={() => {
                         setWall(record)
-                        setIsModalOpen(true)
-                    }}>查看</Button>
+                        setIsReplyModalOpen(true)
+                    }}>回复</Button>
 
                     <Popconfirm title="警告" description="你确定要删除吗" okText="确定" cancelText="取消" onConfirm={() => delWallData(record.id)}>
                         <Button type="primary" danger>删除</Button>
@@ -137,6 +144,31 @@ export default () => {
             setLoading(false)
         }
     }
+
+    // 回复留言
+    const onHandleReply = async () => {
+        try {
+            setLoading(true);
+
+            await sendReplyWallEmailAPI({
+                to: wall?.email!,
+                recipient: wall?.name!,
+                your_content: wall?.content!,
+                reply_content: replyInfo,
+                time: dayjs(+wall?.createTime!).format('YYYY-MM-DD HH:mm:ss'),
+                url: web.url,
+            });
+
+            message.success('🎉 回复留言成功');
+            setIsReplyModalOpen(false);
+            setReplyInfo("");
+            getWallList();
+
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+        }
+    };
 
     return (
         <div>
@@ -187,6 +219,20 @@ export default () => {
                     <div><b>留言时间：</b> {dayjs(+wall?.createTime!).format("YYYY-MM-DD HH:mm:ss")}</div>
                     <div><b>留言用户：</b> {wall?.name}</div>
                     <div><b>内容：</b> {wall?.content}</div>
+                </div>
+            </Modal>
+
+            <Modal title="回复留言" open={isReplyModalOpen} footer={null} onCancel={() => setIsReplyModalOpen(false)}>
+                <TextArea
+                    value={replyInfo}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setReplyInfo(e.target.value)}
+                    placeholder="请输入回复内容"
+                    autoSize={{ minRows: 3, maxRows: 5 }}
+                />
+
+                <div className="flex space-x-4">
+                    <Button className="w-full mt-2" onClick={() => setIsReplyModalOpen(false)}>取消</Button>
+                    <Button type="primary" loading={loading} onClick={onHandleReply} className="w-full mt-2">确定</Button>
                 </div>
             </Modal>
         </div>

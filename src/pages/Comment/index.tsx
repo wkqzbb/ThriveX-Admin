@@ -148,7 +148,7 @@ export default () => {
     // 回复内容
     const [replyInfo, setReplyInfo] = useState("")
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
-    const handleReply = async () => {
+    const onHandleReply = async () => {
         try {
             setBtnLoading(true)
 
@@ -164,8 +164,8 @@ export default () => {
                 createTime: new Date().getTime().toString(),
             })
 
-            await getCommentList()
             message.success('🎉 回复评论成功');
+            getCommentList()
             setIsReplyModalOpen(false)
             setReplyInfo("")
 
@@ -237,7 +237,7 @@ export default () => {
 
                 <div className="flex space-x-4">
                     <Button className="w-full mt-2" onClick={() => setIsReplyModalOpen(false)}>取消</Button>
-                    <Button type="primary" loading={btnLoading} onClick={handleReply} className="w-full mt-2">确定</Button>
+                    <Button type="primary" loading={btnLoading} onClick={onHandleReply} className="w-full mt-2">确定</Button>
                 </div>
             </Modal>
         </div>
