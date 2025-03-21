@@ -48,8 +48,10 @@ export default () => {
 
             if (id) {
                 await editRecordDataAPI({ id, content: data.content, images: data.images })
+                message.success("编辑闪念成功")
             } else {
                 await addRecordDataAPI(data)
+                message.success("发布闪念成功")
             }
 
             setLoading(false)
