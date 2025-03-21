@@ -7,7 +7,7 @@ import RouteList from './components/RouteList';
 import "@/styles/customAntd.scss";
 
 import { getConfigDataAPI } from '@/api/Project';
-import { useWebStore } from './stores';
+import { useWebStore, useUserStore } from './stores';
 import { Web } from './types/app/project';
 
 import zhCN from 'antd/locale/zh_CN';
@@ -15,6 +15,8 @@ import 'dayjs/locale/zh-cn';
 
 function App() {
   useAuthRedirect();
+
+  const token = useUserStore(state => state.token);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
@@ -26,13 +28,12 @@ function App() {
 
   const setWeb = useWebStore(state => state.setWeb);
   const getWebData = async () => {
-    if(pathname === '/login') return;
+    if (!token) return;
     const { data } = await getConfigDataAPI<Web>("web");
     setWeb(data);
   };
 
   useEffect(() => {
-    getWebData();
     setTimeout(() => setLoading(false), 1000);
 
     const bodyClassList = document.body.classList;
@@ -46,6 +47,10 @@ function App() {
 
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    getWebData();
+  }, [token]);
 
   return loading ? (
     <Loader />
