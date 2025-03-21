@@ -3,19 +3,19 @@ import { Article, FilterArticle } from "@/types/app/article";
 
 // 新增文章
 export const addArticleDataAPI = (data: Article) =>
-  Request<Article>("POST", "/article", { data });
+  Request("POST", "/article", { data });
 
 // 删除文章
 export const delArticleDataAPI = (id: number, isDel?: boolean) =>
-  Request<Article>("DELETE", isDel ? `/article/${id}/1` : `/article/${id}/0`);
+  Request("DELETE", isDel ? `/article/${id}/1` : `/article/${id}/0`);
 
 // 还原被删除的文章
 export const reductionArticleDataAPI = (id: number) =>
-  Request<Article>("PATCH", `/article/reduction/${id}`);
+  Request("PATCH", `/article/reduction/${id}`);
 
 // 编辑文章
 export const editArticleDataAPI = (data: Article) =>
-  Request<Article>("PATCH", "/article", { data });
+  Request("PATCH", "/article", { data });
 
 // 获取文章
 export const getArticleDataAPI = (id?: number) => Request<Article>("GET", `/article/${id}`)

@@ -4,13 +4,13 @@ import { Route } from '@/types/app/route'
 import { Permission } from '@/types/app/permission'
 
 // 新增角色
-export const addRoleDataAPI = (data: Role) => Request<Role>("POST", "/role", { data })
+export const addRoleDataAPI = (data: Role) => Request("POST", "/role", { data })
 
 // 删除角色
-export const delRoleDataAPI = (id: number) => Request<Role>("DELETE", `/role/${id}`)
+export const delRoleDataAPI = (id: number) => Request("DELETE", `/role/${id}`)
 
 // 修改角色
-export const editRoleDataAPI = (data: Role) => Request<Role>("PATCH", "/role", { data })
+export const editRoleDataAPI = (data: Role) => Request("PATCH", "/role", { data })
 
 // 获取角色
 export const getRoleDataAPI = (id: number) => Request<Role>("GET", `/role/${id}`)

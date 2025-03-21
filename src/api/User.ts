@@ -2,15 +2,13 @@ import Request from '@/utils/request'
 import { LoginReturn, EditUser, Login, User, UserInfo } from '@/types/app/user'
 
 // 新增用户
-export const addUserDataAPI = (data: User) =>
-    Request<User>("POST", "/user", { data });
+export const addUserDataAPI = (data: User) => Request("POST", "/user", { data });
 
 // 删除用户
-export const delUserDataAPI = (id: number) =>
-    Request<User>("DELETE", `/user/${id}`);
+export const delUserDataAPI = (id: number) => Request("DELETE", `/user/${id}`);
 
 // 编辑用户
-export const editUserDataAPI = (data: UserInfo) => Request<UserInfo>("PATCH", "/user", { data })
+export const editUserDataAPI = (data: UserInfo) => Request("PATCH", "/user", { data })
 
 // 获取用户
 export const getUserDataAPI = (id?: number) => Request<User>("GET", `/user/${id}`)
@@ -32,7 +30,7 @@ export const getUserPagingAPI = (data?: QueryData) => Request<Paginate<User[]>>(
 export const loginDataAPI = (data: Login) => Request<LoginReturn>("POST", "/user/login", { data })
 
 // 修改管理员密码
-export const editAdminPassAPI = (data: EditUser) => Request<UserInfo>("PATCH", "/user/pass", { data })
+export const editAdminPassAPI = (data: EditUser) => Request("PATCH", "/user/pass", { data })
 
 // 判断当前token是否有效
-export const checkTokenAPI = (token: string) => Request<any>("GET", `/user/check?token=${token}`)
+export const checkTokenAPI = (token: string) => Request("GET", `/user/check?token=${token}`)

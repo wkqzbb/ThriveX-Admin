@@ -2,13 +2,13 @@ import Request from '@/utils/request'
 import { Footprint } from '@/types/app/footprint'
 
 // 新增足迹
-export const addFootprintDataAPI = (data: Footprint) => Request<Footprint>("POST", "/footprint", { data })
+export const addFootprintDataAPI = (data: Footprint) => Request("POST", "/footprint", { data })
 
 // 删除足迹
-export const delFootprintDataAPI = (id: number) => Request<Footprint>("DELETE", `/footprint/${id}`)
+export const delFootprintDataAPI = (id: number) => Request("DELETE", `/footprint/${id}`)
 
 // 修改足迹
-export const editFootprintDataAPI = (data: Footprint) => Request<Footprint>("PATCH", "/footprint", { data })
+export const editFootprintDataAPI = (data: Footprint) => Request("PATCH", "/footprint", { data })
 
 // 获取足迹
 export const getFootprintDataAPI = (id?: number) => Request<Footprint>("GET", `/footprint/${id}`)

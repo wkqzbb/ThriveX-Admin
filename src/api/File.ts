@@ -2,7 +2,7 @@ import Request from '@/utils/request'
 import { File, FileDir } from '@/types/app/file'
 
 // 删除文件
-export const delFileDataAPI = (filePath: string) => Request<File>("DELETE", `/file?filePath=${filePath}`)
+export const delFileDataAPI = (filePath: string) => Request("DELETE", `/file?filePath=${filePath}`)
 
 // 获取文件
 export const getFileDataAPI = (filePath: string) => Request<File>("GET", `/file/info?filePath=${filePath}`)
