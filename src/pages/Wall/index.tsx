@@ -156,7 +156,7 @@ export default () => {
                 your_content: wall?.content!,
                 reply_content: replyInfo,
                 time: dayjs(+wall?.createTime!).format('YYYY-MM-DD HH:mm:ss'),
-                url: web.url,
+                url: web.url + '/wall/all',
             });
 
             message.success('🎉 回复留言成功');
