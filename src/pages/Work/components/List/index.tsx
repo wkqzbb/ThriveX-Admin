@@ -160,12 +160,12 @@ export default ({ item, type, fetchData, setLoading }: ListItemProps) => {
 
     return (
         <div key={item.id}>
-            <div className="text-center text-xs text-[#e0e0e0] mb-4">
+            <div className="text-center text-xs text-[#e0e0e0]">
                 {dayjs(+item.createTime!).format('YYYY-MM-DD HH:mm:ss')}
             </div>
 
-            <div className="flex justify-between md:p-7 rounded-md transition-colors">
-                <div className="flex mr-10">
+            <div className="flex justify-between md:p-7 !pt-3 rounded-md transition-colors">
+                <div className="flex">
                     {type !== "wall" ? (
                         <img src={item.avatar || item.image} alt="" className="w-13 h-13 border border-[#eee] rounded-full" />
                     ) : <RandomAvatar className="w-13 h-13 border border-[#eee] rounded-full" />}
@@ -196,7 +196,7 @@ export default ({ item, type, fetchData, setLoading }: ListItemProps) => {
                     </div>
                 </div>
 
-                <div className="flex items-end">
+                <div className="flex items-end ml-15">
                     <Dropdown menu={{
                         items: type === "comment"
                             ? [
