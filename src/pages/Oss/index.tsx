@@ -107,7 +107,7 @@ export default () => {
             setLoading(true)
 
             await enableOssDataAPI(id);
-            await getOssList();
+            getOssList();
             message.success('启用成功');
         } catch (error) {
             setLoading(false)
@@ -119,7 +119,7 @@ export default () => {
             setLoading(true)
 
             await disableOssDataAPI(id);
-            await getOssList();
+            getOssList();
             message.success('禁用成功');
         } catch (error) {
             setLoading(false)
@@ -147,7 +147,7 @@ export default () => {
             setLoading(true);
 
             await delOssDataAPI(id);
-            await getOssList();
+            getOssList();
             message.success('🎉 删除存储配置成功');
         } catch (error) {
             setLoading(false)
@@ -180,7 +180,7 @@ export default () => {
                 message.success('🎉 新增存储配置成功');
             }
 
-            await getOssList();
+            getOssList();
             setIsModalOpen(false);
             form.resetFields();
 
