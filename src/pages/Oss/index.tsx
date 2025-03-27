@@ -278,13 +278,17 @@ export default () => {
                         <Input placeholder="请输入域名" />
                     </Form.Item>
 
-                    <Form.Item
-                        label="文件目录"
-                        name="basePath"
-                        rules={[{ required: true, message: '文件目录不能为空' }]}
-                    >
-                        <Input placeholder="请输入文件目录" />
-                    </Form.Item>
+                    {
+                        oss.platform !== "local" && (
+                            <Form.Item
+                                label="文件目录"
+                                name="basePath"
+                                rules={[{ required: true, message: '文件目录不能为空' }]}
+                            >
+                                <Input placeholder="请输入文件目录" />
+                            </Form.Item>
+                        )
+                    }
 
                     <Form.Item className='mb-0'>
                         <Button type="primary" htmlType="submit" loading={btnLoading} className="w-full">
