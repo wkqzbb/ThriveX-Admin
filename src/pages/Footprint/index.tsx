@@ -217,12 +217,12 @@ export default () => {
         // 立即触发校验
         form.validateFields(['position']);
 
+        setSearchLoading(false)
         return data.geocodes[0].location;
       } else {
+        setSearchLoading(false)
         message.warning('未找到该地址的经纬度');
       }
-
-      setSearchLoading(false)
     } catch (error) {
       setSearchLoading(false)
     }
