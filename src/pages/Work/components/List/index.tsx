@@ -55,10 +55,10 @@ export default ({ item, type, fetchData, setLoading }: ListItemProps) => {
         setBtnLoading(true)
 
         try {
-            if (type === "comment") {
-                // 审核通过评论
-                await handleApproval()
+            // 审核通过
+            await handleApproval()
 
+            if (type === "comment") {
                 // 发送回复内容
                 await addCommentDataAPI({
                     avatar: user.avatar,
