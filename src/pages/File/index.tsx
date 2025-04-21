@@ -195,7 +195,9 @@ export default () => {
                             }} />
                     }
 
-                    <Button type="primary" disabled={!fileList.length} onClick={() => setOpenUploadModalOpen(true)}>上传文件</Button>
+                    {
+                        dirName && <Button type="primary" disabled={!fileList.length} onClick={() => setOpenUploadModalOpen(true)}>上传文件</Button>
+                    }
                 </div>
 
                 {/* 文件列表 */}

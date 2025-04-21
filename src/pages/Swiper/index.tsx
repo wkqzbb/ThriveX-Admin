@@ -5,7 +5,6 @@ import { Swiper } from '@/types/app/swiper';
 import Title from '@/components/Title';
 import { ColumnsType } from 'antd/es/table';
 import { CloudUploadOutlined, PictureOutlined } from '@ant-design/icons';
-import FileUpload from '@/components/FileUpload';
 import Material from '@/components/Material';
 
 export default () => {
@@ -17,7 +16,6 @@ export default () => {
 
     const [swiper, setSwiper] = useState<Swiper>({} as Swiper);
     const [list, setList] = useState<Swiper[]>([]);
-    const [isSwiperModalOpen, setIsSwiperModalOpen] = useState<boolean>(false);
     const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
     const [tab, setTab] = useState<string>('list');
 
@@ -122,7 +120,7 @@ export default () => {
 
     // 文件上传
     const UploadBtn = () => (
-        <CloudUploadOutlined className='text-xl cursor-pointer' onClick={() => setIsSwiperModalOpen(true)} />
+        <CloudUploadOutlined className='text-xl cursor-pointer' onClick={() => setIsMaterialModalOpen(true)} />
     )
 
     const tabItems = [
@@ -192,16 +190,13 @@ export default () => {
                 <Tabs activeKey={tab} onChange={handleTabChange} items={tabItems} />
             </Card>
 
-            <FileUpload
-                dir="swiper"
-                open={isSwiperModalOpen}
-                onSuccess={(url: string[]) => form.setFieldValue("image", url.join("\n"))}
-                onCancel={() => setIsSwiperModalOpen(false)}
-            />
-
-            <Material open={isMaterialModalOpen} onClose={() => setIsMaterialModalOpen(false)} onSelect={(files) => {
-                console.log(files)
-            }} />
+            <Material
+                // multiple
+                open={isMaterialModalOpen}
+                onClose={() => setIsMaterialModalOpen(false)}
+                onSelect={(url) => {
+                    form.setFieldValue("image", url.join("\n"))
+                }} />
         </div>
     );
 };

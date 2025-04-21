@@ -8,6 +8,7 @@ import { File, FileDir } from '@/types/app/file'
 import errorImg from '@/pages/File/image/error.png'
 import fileSvg from '@/pages/File/image/file.svg'
 import { PiKeyReturnFill } from "react-icons/pi"
+import FileUpload from '@/components/FileUpload'
 import "./index.scss"
 
 // Masonry布局的响应式断点配置
@@ -19,12 +20,13 @@ const breakpointColumnsObj = {
 }
 
 interface Props {
+  multiple?: boolean
   open: boolean
   onClose: () => void
   onSelect?: (files: string[]) => void
 }
 
-export default ({ open, onClose, onSelect }: Props) => {
+export default ({ multiple, open, onClose, onSelect }: Props) => {
   // 加载状态
   const [loading, setLoading] = useState(false)
   // 当前页码
@@ -41,6 +43,9 @@ export default ({ open, onClose, onSelect }: Props) => {
   const [dirName, setDirName] = useState("")
   // 选中的文件列表
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+
+  // 上传文件弹窗
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
 
   // 获取目录列表
   const getDirList = async () => {
@@ -118,11 +123,17 @@ export default ({ open, onClose, onSelect }: Props) => {
   // 处理选中的图片
   const onHandleSelectImage = (item: File) => {
     setSelectedFiles(prev => {
-      const isSelected = prev.some(file => file.url === item.url)
-      if (isSelected) {
-        return prev.filter(file => file.url !== item.url)
+      if (multiple) {
+        // 多选模式
+        const isSelected = prev.some(file => file.url === item.url)
+        if (isSelected) {
+          return prev.filter(file => file.url !== item.url)
+        } else {
+          return [...prev, item]
+        }
       } else {
-        return [...prev, item]
+        // 单选模式
+        return [item]
       }
     })
   }
@@ -150,7 +161,6 @@ export default ({ open, onClose, onSelect }: Props) => {
       onCancel={onCancelSelect}
       footer={[
         <Button key="cancel" onClick={onCancelSelect}>取消</Button>,
-
         <Button
           key="confirm"
           type="primary"
@@ -166,6 +176,10 @@ export default ({ open, onClose, onSelect }: Props) => {
           !fileList.length
             ? <PiKeyReturnFill className='text-4xl text-[#E0DFDF] cursor-pointer' />
             : <PiKeyReturnFill className='text-4xl text-primary cursor-pointer' onClick={reset} />
+        }
+        
+        {
+          dirName && <Button type="primary" onClick={() => setIsUploadModalOpen(true)}>上传文件</Button>
         }
       </div>
 
@@ -220,6 +234,14 @@ export default ({ open, onClose, onSelect }: Props) => {
           }
         </div>
       </Spin>
+
+      {/* 文件上传弹窗 */}
+      <FileUpload
+        dir={dirName}
+        open={isUploadModalOpen}
+        onSuccess={() => getFileList(dirName)}
+        onCancel={() => setIsUploadModalOpen(false)}
+      />
     </Modal>
   )
 }
