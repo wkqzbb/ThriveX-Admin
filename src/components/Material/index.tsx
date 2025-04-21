@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
-import { Image, Spin, message } from 'antd'
-import { DownloadOutlined, RotateLeftOutlined, RotateRightOutlined, SwapOutlined, UndoOutlined, ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
+import { Image, Spin, message, Button } from 'antd'
+import { CheckOutlined } from '@ant-design/icons'
 import { Modal } from "antd"
 import Masonry from "react-masonry-css"
 import { getFileListAPI, getDirListAPI } from '@/api/File'
@@ -21,9 +21,10 @@ const breakpointColumnsObj = {
 interface Props {
   open: boolean
   onClose: () => void
+  onSelect?: (files: string[]) => void
 }
 
-export default ({ open, onClose }: Props) => {
+export default ({ open, onClose, onSelect }: Props) => {
   // 加载状态
   const [loading, setLoading] = useState(false)
   // 当前页码
@@ -38,14 +39,10 @@ export default ({ open, onClose }: Props) => {
   const [dirList, setDirList] = useState<FileDir[]>([])
   // 当前选中的目录
   const [dirName, setDirName] = useState("")
-  // 当前选中的文件
-  const [file, setFile] = useState<File>({} as File)
-  // 预览抽屉状态
-  const [openFilePreviewDrawer, setOpenFilePreviewDrawer] = useState(false)
+  // 选中的文件列表
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
 
-  /**
-   * 获取目录列表
-   */
+  // 获取目录列表
   const getDirList = async () => {
     try {
       setLoading(true)
@@ -57,11 +54,7 @@ export default ({ open, onClose }: Props) => {
     }
   }
 
-  /**
-   * 获取文件列表
-   * @param dir 目录名称
-   * @param isLoadMore 是否为加载更多
-   */
+  // 获取文件列表
   const getFileList = async (dir: string, isLoadMore = false) => {
     // 防止重复加载
     if (loadingRef.current) return
@@ -97,33 +90,7 @@ export default ({ open, onClose }: Props) => {
     }
   }
 
-  /**
-   * 下载图片
-   * @param data 要下载的文件数据
-   */
-  const onDownloadImage = (data: File) => {
-    try {
-      fetch(data.url)
-        .then((response) => response.blob())
-        .then((blob) => {
-          const url = URL.createObjectURL(new Blob([blob]));
-          const link = document.createElement<'a'>('a');
-          link.href = url;
-          link.download = data.name;
-          document.body.appendChild(link);
-          link.click();
-          URL.revokeObjectURL(url);
-          link.remove();
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  /**
-   * 处理滚动事件，实现下拉加载更多
-   * @param e 滚动事件对象
-   */
+  // 处理滚动事件，实现下拉加载更多
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
     // 当滚动到底部（距离底部小于50px）且还有更多数据时，触发加载更多
@@ -132,29 +99,69 @@ export default ({ open, onClose }: Props) => {
     }
   }
 
-  /**
-   * 打开目录
-   * @param dir 目录名称
-   */
+  // 取消选择
+  const onCancelSelect = () => {
+    reset()
+    onClose()
+  }
+
+  // 打开目录
   const openDir = (dir: string) => {
     setDirName(dir)
     getFileList(dir)
   }
 
-  // 组件挂载时获取目录列表
-  useEffect(() => {
-    if (open) {
-      getDirList()
-    }
-  }, [open])
+  // 处理选中的图片
+  const onHandleSelectImage = (item: File) => {
+    setSelectedFiles(prev => {
+      const isSelected = prev.some(file => file.url === item.url)
+      if (isSelected) {
+        return prev.filter(file => file.url !== item.url)
+      } else {
+        return [...prev, item]
+      }
+    })
+  }
+
+  // 确认选择
+  const onHandleSelect = () => {
+    const list = selectedFiles.map(item => item.url)
+    if (onSelect) onSelect(list)
+    reset()
+    onClose()
+  }
+
+  const reset = () => {
+    setFileList([])
+    setSelectedFiles([])
+    setDirName("")
+    getDirList()
+  }
 
   return (
-    <Modal title="素材库" width={1000} open={open} onCancel={onClose} footer={null}>
+    <Modal
+      title="素材库"
+      width={1000}
+      open={open}
+      onCancel={onCancelSelect}
+      footer={[
+        <Button key="cancel" onClick={onCancelSelect}>取消</Button>,
+
+        <Button
+          key="confirm"
+          type="primary"
+          onClick={onHandleSelect}
+          disabled={selectedFiles.length === 0}
+        >
+          选择 ({selectedFiles.length})
+        </Button>
+      ]}
+    >
       <div className='flex justify-between mb-4 px-4'>
         {
           !fileList.length
             ? <PiKeyReturnFill className='text-4xl text-[#E0DFDF] cursor-pointer' />
-            : <PiKeyReturnFill className='text-4xl text-primary cursor-pointer' onClick={() => setFileList([])} />
+            : <PiKeyReturnFill className='text-4xl text-primary cursor-pointer' onClick={reset} />
         }
       </div>
 
@@ -175,37 +182,23 @@ export default ({ open, onClose }: Props) => {
                     fileList.map((item, index) =>
                       <div
                         key={index}
-                        className={`group relative overflow-hidden rounded-md cursor-pointer mb-4 border-2 border-[#eee] dark:border-transparent hover:!border-primary p-1 ${file.url === item.url ? 'border-primary' : 'border-gray-100'}`}
-                        onClick={() => setFile(item)}>
+                        className={`group relative overflow-hidden rounded-md cursor-pointer mb-4 border-2 border-[#eee] dark:border-transparent hover:!border-primary p-1 ${selectedFiles.some(file => file.url === item.url) ? 'border-primary' : 'border-gray-100'}`}
+                        onClick={() => onHandleSelectImage(item)}>
+                        <div className="relative">
+                          <Image
+                            src={item.url}
+                            className='w-full rounded-md'
+                            loading="lazy"
+                            fallback={errorImg}
+                            preview={false}
+                          />
 
-                        <Image
-                          src={item.url}
-                          className='w-full rounded-md'
-                          loading="lazy"
-                          preview={{
-                            onVisibleChange: (visible) => setOpenFilePreviewDrawer(visible),
-                            visible: openFilePreviewDrawer,
-                            toolbarRender: (
-                              _,
-                              {
-                                transform: { scale },
-                                actions: { onFlipY, onFlipX, onRotateLeft, onRotateRight, onZoomOut, onZoomIn, onReset },
-                              },
-                            ) => (
-                              <div className='customAntdPreviewsItem'>
-                                <DownloadOutlined onClick={() => onDownloadImage(item)} />
-                                <SwapOutlined rotate={90} onClick={onFlipY} />
-                                <SwapOutlined onClick={onFlipX} />
-                                <RotateLeftOutlined onClick={onRotateLeft} />
-                                <RotateRightOutlined onClick={onRotateRight} />
-                                <ZoomOutOutlined disabled={scale === 1} onClick={onZoomOut} />
-                                <ZoomInOutlined disabled={scale === 50} onClick={onZoomIn} />
-                                <UndoOutlined onClick={onReset} />
-                              </div>
-                            ),
-                          }}
-                          fallback={errorImg}
-                        />
+                          {selectedFiles.some(file => file.url === item.url) && (
+                            <div className="absolute top-2 right-2 bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center">
+                              <CheckOutlined />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )
                   }
