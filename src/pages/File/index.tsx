@@ -9,9 +9,8 @@ import { File, FileDir } from '@/types/app/file'
 import { PiKeyReturnFill } from "react-icons/pi";
 import { DeleteOutlined, DownloadOutlined, RotateLeftOutlined, RotateRightOutlined, SwapOutlined, UndoOutlined, ZoomInOutlined, ZoomOutOutlined, } from '@ant-design/icons';
 import Masonry from "react-masonry-css";
-import "./index.scss"
 import errorImg from './image/error.png'
-import Material from '@/components/Material'
+import "./index.scss"
 
 // Masonry布局的响应式断点配置
 const breakpointColumnsObj = {
@@ -39,7 +38,6 @@ export default () => {
     const [openUploadModalOpen, setOpenUploadModalOpen] = useState(false);
     const [openFileInfoDrawer, setOpenFileInfoDrawer] = useState(false);
     const [openFilePreviewDrawer, setOpenFilePreviewDrawer] = useState(false);
-    const [openMaterialModalOpen, setOpenMaterialModalOpen] = useState(false);
 
     // 目录和文件列表数据
     const [dirList, setDirList] = useState<FileDir[]>([])
@@ -191,17 +189,19 @@ export default () => {
                     {
                         !fileList.length
                             ? <PiKeyReturnFill className='text-4xl text-[#E0DFDF] cursor-pointer' />
-                            : <PiKeyReturnFill className='text-4xl text-primary cursor-pointer' onClick={() => setFileList([])} />
+                            : <PiKeyReturnFill className='text-4xl text-primary cursor-pointer' onClick={() => {
+                                setFileList([])
+                                setDirName("")
+                            }} />
                     }
 
-                    <Button type="primary" onClick={() => setOpenMaterialModalOpen(true)}>素材库</Button>
                     <Button type="primary" disabled={!fileList.length} onClick={() => setOpenUploadModalOpen(true)}>上传文件</Button>
                 </div>
 
                 {/* 文件列表 */}
                 <Spin spinning={loading}>
                     <div
-                        className={`flex flex-wrap ${dirName ? '!justify-center' : 'justify-start'} md:justify-normal overflow-y-auto max-h-[calc(100vh-300px)]`}
+                        className={`flex flex-wrap ${dirName ? '!justify-center' : 'justify-start!'} md:justify-normal overflow-y-auto max-h-[calc(100vh-300px)]`}
                         onScroll={handleScroll}
                     >
                         {
@@ -338,8 +338,6 @@ export default () => {
                     <Button type='primary' danger loading={btnLoading} className='w-full'>删除图片</Button>
                 </Popconfirm>
             </Drawer>
-
-            <Material open={openMaterialModalOpen} onClose={() => setOpenMaterialModalOpen(false)} />
         </div>
     )
 }

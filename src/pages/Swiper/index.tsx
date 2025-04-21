@@ -6,6 +6,7 @@ import Title from '@/components/Title';
 import { ColumnsType } from 'antd/es/table';
 import { CloudUploadOutlined, PictureOutlined } from '@ant-design/icons';
 import FileUpload from '@/components/FileUpload';
+import Material from '@/components/Material';
 
 export default () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -16,7 +17,8 @@ export default () => {
 
     const [swiper, setSwiper] = useState<Swiper>({} as Swiper);
     const [list, setList] = useState<Swiper[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isSwiperModalOpen, setIsSwiperModalOpen] = useState<boolean>(false);
+    const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
     const [tab, setTab] = useState<string>('list');
 
     const columns: ColumnsType<Swiper> = [
@@ -29,7 +31,7 @@ export default () => {
         { title: '描述', dataIndex: 'description', key: 'description', width: 500, },
         {
             title: '操作', key: 'action', align: 'center',
-            render: (text: string, record: Swiper) => (
+            render: (_: string, record: Swiper) => (
                 <>
                     <Button onClick={() => editSwiperData(record)}>修改</Button>
 
@@ -120,7 +122,7 @@ export default () => {
 
     // 文件上传
     const UploadBtn = () => (
-        <CloudUploadOutlined className='text-xl cursor-pointer' onClick={() => setIsModalOpen(true)} />
+        <CloudUploadOutlined className='text-xl cursor-pointer' onClick={() => setIsSwiperModalOpen(true)} />
     )
 
     const tabItems = [
@@ -192,10 +194,14 @@ export default () => {
 
             <FileUpload
                 dir="swiper"
-                open={isModalOpen}
+                open={isSwiperModalOpen}
                 onSuccess={(url: string[]) => form.setFieldValue("image", url.join("\n"))}
-                onCancel={() => setIsModalOpen(false)}
+                onCancel={() => setIsSwiperModalOpen(false)}
             />
+
+            <Material open={isMaterialModalOpen} onClose={() => setIsMaterialModalOpen(false)} onSelect={(files) => {
+                console.log(files)
+            }} />
         </div>
     );
 };
