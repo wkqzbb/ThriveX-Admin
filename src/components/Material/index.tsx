@@ -54,6 +54,10 @@ export default ({ open, onClose, onSelect }: Props) => {
     }
   }
 
+  useEffect(() => {
+    getDirList()
+  }, [])
+
   // 获取文件列表
   const getFileList = async (dir: string, isLoadMore = false) => {
     // 防止重复加载
