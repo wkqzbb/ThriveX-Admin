@@ -11,6 +11,7 @@ import { DeleteOutlined, DownloadOutlined, RotateLeftOutlined, RotateRightOutlin
 import Masonry from "react-masonry-css";
 import "./index.scss"
 import errorImg from './image/error.png'
+import Material from '@/components/Material'
 
 // Masonry布局的响应式断点配置
 const breakpointColumnsObj = {
@@ -38,6 +39,7 @@ export default () => {
     const [openUploadModalOpen, setOpenUploadModalOpen] = useState(false);
     const [openFileInfoDrawer, setOpenFileInfoDrawer] = useState(false);
     const [openFilePreviewDrawer, setOpenFilePreviewDrawer] = useState(false);
+    const [openMaterialModalOpen, setOpenMaterialModalOpen] = useState(false);
 
     // 目录和文件列表数据
     const [dirList, setDirList] = useState<FileDir[]>([])
@@ -75,7 +77,7 @@ export default () => {
 
             // 请求文件列表数据，如果是加载更多则页码+1
             const { data } = await getFileListAPI(dir, { page: isLoadMore ? page + 1 : 1, size: 15 })
-            
+
             // 根据是否是加载更多来决定是替换还是追加数据
             if (!isLoadMore) {
                 setFileList(data.result)
@@ -84,10 +86,10 @@ export default () => {
                 setFileList(prev => [...prev, ...data.result])
                 setPage(prev => prev + 1)
             }
-            
+
             // 判断是否还有更多数据
             setHasMore(data.result.length === 15)
-            
+
             // 首次加载且没有数据时显示提示
             if (!fileList.length && !data.result.length && !isLoadMore) {
                 message.error("该目录中没有文件")
@@ -192,13 +194,14 @@ export default () => {
                             : <PiKeyReturnFill className='text-4xl text-primary cursor-pointer' onClick={() => setFileList([])} />
                     }
 
+                    <Button type="primary" onClick={() => setOpenMaterialModalOpen(true)}>素材库</Button>
                     <Button type="primary" disabled={!fileList.length} onClick={() => setOpenUploadModalOpen(true)}>上传文件</Button>
                 </div>
 
                 {/* 文件列表 */}
                 <Spin spinning={loading}>
-                    <div 
-                        className='flex flex-wrap justify-center md:justify-normal overflow-y-auto max-h-[calc(100vh-300px)]'
+                    <div
+                        className={`flex flex-wrap ${dirName ? '!justify-center' : 'justify-start'} md:justify-normal overflow-y-auto max-h-[calc(100vh-300px)]`}
                         onScroll={handleScroll}
                     >
                         {
@@ -273,7 +276,7 @@ export default () => {
                         <span className='min-w-20 font-bold'>文件大小</span>
                         <span className='text-[#333] dark:text-white'>{(file.size / 1048576).toFixed(2)}MB</span>
                     </div>
-                    
+
                     <div className='flex'>
                         <span className='min-w-20  font-bold'>文件链接</span>
                         <span className='text-[#333] dark:text-white hover:text-primary cursor-pointer transition' onClick={async () => {
@@ -335,6 +338,8 @@ export default () => {
                     <Button type='primary' danger loading={btnLoading} className='w-full'>删除图片</Button>
                 </Popconfirm>
             </Drawer>
+
+            <Material open={openMaterialModalOpen} onClose={() => setOpenMaterialModalOpen(false)} />
         </div>
     )
 }
