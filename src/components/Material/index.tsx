@@ -138,6 +138,14 @@ export default ({ multiple, open, onClose, onSelect }: Props) => {
     })
   }
 
+  // 处理文件上传成功做的事情
+  const onUpdateSuccess = (urls: string[]) => {
+    setIsUploadModalOpen(false)
+    if (onSelect) onSelect(urls)
+    reset()
+    setTimeout(onClose, 0);
+  }
+
   // 确认选择
   const onHandleSelect = () => {
     const list = selectedFiles.map(item => item.url)
@@ -150,26 +158,23 @@ export default ({ multiple, open, onClose, onSelect }: Props) => {
     setFileList([])
     setSelectedFiles([])
     setDirName("")
-    getDirList()
   }
 
   return (
     <Modal
       title="素材库"
-      width={1000}
+      width={1200}
       open={open}
       onCancel={onCancelSelect}
-      footer={[
+      footer={dirName ? [
         <Button key="cancel" onClick={onCancelSelect}>取消</Button>,
         <Button
           key="confirm"
           type="primary"
           onClick={onHandleSelect}
           disabled={selectedFiles.length === 0}
-        >
-          选择 ({selectedFiles.length})
-        </Button>
-      ]}
+        >选择 ({selectedFiles.length})</Button>
+      ] : null}
     >
       <div className='flex justify-between mb-4 px-4'>
         {
@@ -177,7 +182,7 @@ export default ({ multiple, open, onClose, onSelect }: Props) => {
             ? <PiKeyReturnFill className='text-4xl text-[#E0DFDF] cursor-pointer' />
             : <PiKeyReturnFill className='text-4xl text-primary cursor-pointer' onClick={reset} />
         }
-        
+
         {
           dirName && <Button type="primary" onClick={() => setIsUploadModalOpen(true)}>上传文件</Button>
         }
@@ -237,9 +242,10 @@ export default ({ multiple, open, onClose, onSelect }: Props) => {
 
       {/* 文件上传弹窗 */}
       <FileUpload
+        multiple={multiple}
         dir={dirName}
         open={isUploadModalOpen}
-        onSuccess={() => getFileList(dirName)}
+        onSuccess={onUpdateSuccess}
         onCancel={() => setIsUploadModalOpen(false)}
       />
     </Modal>

@@ -169,7 +169,7 @@ export default () => {
                             <Input placeholder="https://liuyuyang.net/" />
                         </Form.Item>
 
-                        <Form.Item label="图片" name="image" rules={[{ required: true, message: '轮播图不能为空' }]}>
+                        <Form.Item label="图片" name="image" rules={[{ required: true, message: '轮播图地址不能为空' }]}>
                             <Input placeholder="https://liuyuyang.net/swiper.jpg" prefix={<PictureOutlined />} addonAfter={<UploadBtn />} className='customizeAntdInputAddonAfter' />
                         </Form.Item>
 
@@ -195,8 +195,10 @@ export default () => {
                 open={isMaterialModalOpen}
                 onClose={() => setIsMaterialModalOpen(false)}
                 onSelect={(url) => {
-                    form.setFieldValue("image", url.join("\n"))
-                }} />
+                    form.setFieldValue("image", url.join("\n"));
+                    form.validateFields(['image']); // 手动触发 image 字段的校验
+                }}
+            />
         </div>
     );
 };

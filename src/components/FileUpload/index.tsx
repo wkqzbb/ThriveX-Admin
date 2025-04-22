@@ -7,13 +7,14 @@ import { baseURL } from '@/utils/request';
 import Compressor from 'compressorjs';
 
 interface UploadFileProps {
+    multiple?: boolean
     dir: DirList,
     open: boolean,
     onSuccess: (urls: string[]) => void,
     onCancel: () => void
 }
 
-export default ({ dir, open, onCancel, onSuccess }: UploadFileProps) => {
+export default ({ multiple, dir, open, onCancel, onSuccess }: UploadFileProps) => {
     const store = useUserStore();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -138,7 +139,7 @@ export default ({ dir, open, onCancel, onSuccess }: UploadFileProps) => {
                         </div>
 
                         <input
-                            multiple
+                            multiple={multiple}
                             type="file"
                             onChange={onUploadFile}
                             ref={fileInputRef}
