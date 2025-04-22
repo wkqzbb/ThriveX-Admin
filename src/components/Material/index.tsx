@@ -54,7 +54,16 @@ export default ({ multiple, uploadDir = 'default', open, onClose, onSelect, maxC
     try {
       setLoading(true)
       const { data } = await getDirListAPI()
-      setDirList(data)
+
+      // 过滤掉没有文件的目录
+      const filteredDirs = await Promise.all(
+        data.map(async (dir) => {
+          const { data: fileData } = await getFileListAPI(dir.name, { page: 1, size: 1 })
+          return fileData.result.length > 0 ? dir : null
+        })
+      )
+      setDirList(filteredDirs.filter((dir): dir is FileDir => dir !== null))
+      
       setLoading(false)
     } catch (error) {
       setLoading(false)
@@ -100,7 +109,7 @@ export default ({ multiple, uploadDir = 'default', open, onClose, onSelect, maxC
       loadingRef.current = false
     }
   }
- 
+
   // 处理滚动事件，实现下拉加载更多
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
@@ -127,7 +136,7 @@ export default ({ multiple, uploadDir = 'default', open, onClose, onSelect, maxC
     setSelectedFiles(prev => {
       // 如果 maxCount 不为 1，则开启多选
       const isMultiple = multiple || (maxCount !== undefined && maxCount !== 1);
-      
+
       if (isMultiple) {
         // 多选模式
         const isSelected = prev.some(file => file.url === item.url)
