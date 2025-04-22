@@ -192,6 +192,7 @@ export default () => {
 
             <Material
                 // multiple
+                uploadDir="swiper"
                 open={isMaterialModalOpen}
                 onClose={() => setIsMaterialModalOpen(false)}
                 onSelect={(url) => {

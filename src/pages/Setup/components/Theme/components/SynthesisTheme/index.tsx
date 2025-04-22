@@ -79,12 +79,12 @@ export default () => {
     };
 
     const UploadBtn = ({ type }: { type: string }) => (
-        <CloudUploadOutlined 
-            className='text-xl cursor-pointer' 
+        <CloudUploadOutlined
+            className='text-xl cursor-pointer'
             onClick={() => {
                 setCurrentUploadType(type);
                 setIsMaterialModalOpen(true);
-            }} 
+            }}
         />
     );
 
@@ -200,6 +200,7 @@ export default () => {
             </div>
 
             <Material
+                uploadDir="config"
                 open={isMaterialModalOpen}
                 onClose={() => {
                     setIsMaterialModalOpen(false);

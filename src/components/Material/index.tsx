@@ -21,12 +21,14 @@ const breakpointColumnsObj = {
 
 interface Props {
   multiple?: boolean
+  maxCount?: number
+  uploadDir: string
   open: boolean
   onClose: () => void
   onSelect?: (files: string[]) => void
 }
 
-export default ({ multiple, open, onClose, onSelect }: Props) => {
+export default ({ multiple, uploadDir, open, onClose, onSelect, maxCount }: Props) => {
   // 加载状态
   const [loading, setLoading] = useState(false)
   // 当前页码
@@ -123,12 +125,21 @@ export default ({ multiple, open, onClose, onSelect }: Props) => {
   // 处理选中的图片
   const onHandleSelectImage = (item: File) => {
     setSelectedFiles(prev => {
-      if (multiple) {
+      // 如果 maxCount 不为 1，则开启多选
+      const isMultiple = multiple || (maxCount !== undefined && maxCount !== 1);
+      
+      if (isMultiple) {
         // 多选模式
         const isSelected = prev.some(file => file.url === item.url)
         if (isSelected) {
           return prev.filter(file => file.url !== item.url)
         } else {
+          // 检查是否超过最大数量限制
+          if (maxCount && prev.length >= maxCount) {
+            message.warning(`最多只能选择 ${maxCount} 个文件`)
+            return prev
+          }
+          
           return [...prev, item]
         }
       } else {
@@ -243,7 +254,7 @@ export default ({ multiple, open, onClose, onSelect }: Props) => {
       {/* 文件上传弹窗 */}
       <FileUpload
         multiple={multiple}
-        dir={dirName}
+        dir={uploadDir}
         open={isUploadModalOpen}
         onSuccess={onUpdateSuccess}
         onCancel={() => setIsUploadModalOpen(false)}
