@@ -100,7 +100,7 @@ export default ({ multiple, uploadDir, open, onClose, onSelect, maxCount }: Prop
       loadingRef.current = false
     }
   }
-
+ 
   // 处理滚动事件，实现下拉加载更多
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
@@ -139,7 +139,7 @@ export default ({ multiple, uploadDir, open, onClose, onSelect, maxCount }: Prop
             message.warning(`最多只能选择 ${maxCount} 个文件`)
             return prev
           }
-          
+
           return [...prev, item]
         }
       } else {

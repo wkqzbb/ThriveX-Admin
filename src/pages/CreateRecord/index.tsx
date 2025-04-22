@@ -88,6 +88,11 @@ export default () => {
                 key: 'upload',
                 label: '选择图片',
                 onClick: () => {
+                    if (imageList.length >= 4) {
+                        message.warning('最多只能上传 4 张图片');
+                        return;
+                    }
+                    
                     setIsMaterialModalOpen(true);
                 }
             },
