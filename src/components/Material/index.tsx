@@ -28,7 +28,7 @@ interface Props {
   onSelect?: (files: string[]) => void
 }
 
-export default ({ multiple, uploadDir, open, onClose, onSelect, maxCount }: Props) => {
+export default ({ multiple, uploadDir = 'default', open, onClose, onSelect, maxCount }: Props) => {
   // 加载状态
   const [loading, setLoading] = useState(false)
   // 当前页码
