@@ -9,6 +9,7 @@ export interface File {
 }
 
 export interface FileDir {
-    path: string,
-    name: string
+    path: string;
+    name: string;
+    icon?: string;
 }

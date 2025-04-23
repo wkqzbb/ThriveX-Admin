@@ -1,0 +1,45 @@
+.FilePage {
+  .ant-image {
+    display: block;
+    width: 100%;
+
+    .ant-image-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+}
+
+// 自定义图片预览样式
+.customAntdPreviewsItem {
+  overflow: hidden;
+  background: #fff;
+  border-radius: 10px;
+
+  .anticon {
+    font-size: 20px;
+    color: #5d5d5d;
+    padding: 10px;
+
+    &:hover {
+      color: #727cf5;
+    }
+  }
+}
+
+// Masonry布局样式
+.masonry-grid {
+  display: flex;
+  width: auto;
+  margin-left: -16px;
+}
+
+.masonry-grid_column {
+  padding-left: 16px;
+  background-clip: padding-box;
+}
+
+.masonry-grid_column > div {
+  margin-bottom: 16px;
+} 
