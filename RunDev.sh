@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 set -e
 # 如果 /thrive/admin下无文件则移动 /thrive/admin_source 目录覆盖
 if [ ! -d "/thrive/admin" ]; then
