@@ -6,11 +6,11 @@ import { delAlbumImageDataAPI } from '@/api/AlbumImage'
 import { AlbumCate } from '@/types/app/album'
 import { PiKeyReturnFill } from "react-icons/pi";
 import { DeleteOutlined, DownloadOutlined, RotateLeftOutlined, RotateRightOutlined, SwapOutlined, UndoOutlined, ZoomInOutlined, ZoomOutOutlined, EditOutlined } from '@ant-design/icons';
-import Masonry from "react-masonry-css";
 import errorImg from '../File/image/error.png'
 import albumSvg from '../File/image/file.svg'
-import "./index.scss"
 import Material from '@/components/Material'
+import Masonry from "react-masonry-css";
+import "./index.scss"
 
 // Masonry布局的响应式断点配置
 const breakpointColumnsObj = {
@@ -36,6 +36,7 @@ export default () => {
 
   // 弹窗状态
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isAddAlbumModalOpen, setIsAddAlbumModalOpen] = useState(false);
   const [openImageInfoDrawer, setOpenImageInfoDrawer] = useState(false);
   const [openImagePreviewDrawer, setOpenImagePreviewDrawer] = useState(false);
 
@@ -257,7 +258,7 @@ export default () => {
           <Space>
             {
               currentAlbum.id
-                ? <Button type="primary" disabled={!imageList.length} onClick={() => setIsUploadModalOpen(true)}>上传照片</Button>
+                ? <Button type="primary" disabled={!imageList.length} onClick={() => setIsAddAlbumModalOpen(true)}>上传照片</Button>
                 : <Button type="primary" onClick={() => openAlbumForm('add')}>新增相册</Button>
             }
           </Space>
