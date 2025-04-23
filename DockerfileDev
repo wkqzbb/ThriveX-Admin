@@ -19,6 +19,7 @@ COPY . .
 # 删除项目源码无关文件
 RUN rm -rf *.md .idea .git* .vite* ./images
 RUN mv /thrive/admin_source/RunDev.sh /RunDev.sh&& chmod +x /RunDev.sh
+WORKDIR /thrive/admin
 # 暴露端口 5173
 EXPOSE 5173
 # 设置启动命令

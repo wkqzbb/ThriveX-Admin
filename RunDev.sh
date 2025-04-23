@@ -33,7 +33,7 @@ if [ $? -ne 0 ]; then
     echo "npm不存在m"
     exit 3
 fi
-pushd /thrive/admin
+cd /thrive/admin
 if [ $? -ne 0 ]; then
     echo "进入 /thrive/admin 目录失败"
    exit 4
