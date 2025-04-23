@@ -1,5 +1,5 @@
 # 使用官方的Node.js镜像作为基础镜像
-FROM node:20-alpine AS builder
+FROM registry.cn-hangzhou.aliyuncs.com/liuyi778/node-20-alpine AS builder
 
 # 设置工作目录
 WORKDIR /thrive
