@@ -85,6 +85,7 @@ export default () => {
    */
   const getImageList = async (albumId: number, isLoadMore = false) => {
     if (loadingRef.current) return
+    
     try {
       loadingRef.current = true
       setLoading(true)
