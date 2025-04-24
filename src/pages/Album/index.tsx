@@ -547,7 +547,6 @@ export default () => {
 
       {/* Material组件 */}
       <Material
-        uploadDir="album"
         open={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onSelect={(url) => {

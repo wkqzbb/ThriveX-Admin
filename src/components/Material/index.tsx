@@ -22,13 +22,12 @@ const breakpointColumnsObj = {
 interface Props {
   multiple?: boolean
   maxCount?: number
-  uploadDir: string
   open: boolean
   onClose: () => void
   onSelect?: (files: string[]) => void
 }
 
-export default ({ multiple, uploadDir = 'default', open, onClose, onSelect, maxCount }: Props) => {
+export default ({ multiple, open, onClose, onSelect, maxCount }: Props) => {
   // 加载状态
   const [loading, setLoading] = useState(false)
   // 当前页码
@@ -267,7 +266,7 @@ export default ({ multiple, uploadDir = 'default', open, onClose, onSelect, maxC
       {/* 文件上传弹窗 */}
       <FileUpload
         multiple={multiple}
-        dir={uploadDir}
+        dir={dirName}
         open={isUploadModalOpen}
         onSuccess={onUpdateSuccess}
         onCancel={() => setIsUploadModalOpen(false)}
