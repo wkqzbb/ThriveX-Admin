@@ -188,7 +188,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             {
               to: "/album",
               path: "album",
-              name: "照片管理"
+              name: "相册管理"
             },
             {
               to: "/swiper",

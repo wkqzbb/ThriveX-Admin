@@ -2,10 +2,10 @@ import { useEffect, useState, useRef } from 'react'
 import { Image, Card, Space, Spin, message, Popconfirm, Button, Drawer, Divider, Modal, Form, Input } from 'antd'
 import Title from '@/components/Title'
 import { getAlbumCateListAPI, getImagesByAlbumIdAPI, delAlbumCateDataAPI, addAlbumCateDataAPI, editAlbumCateDataAPI } from '@/api/Album'
-import { delAlbumImageDataAPI } from '@/api/AlbumImage'
+import { delAlbumImageDataAPI, addAlbumImageDataAPI } from '@/api/AlbumImage'
 import { AlbumCate } from '@/types/app/album'
 import { PiKeyReturnFill } from "react-icons/pi";
-import { DeleteOutlined, DownloadOutlined, RotateLeftOutlined, RotateRightOutlined, SwapOutlined, UndoOutlined, ZoomInOutlined, ZoomOutOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined, RotateLeftOutlined, RotateRightOutlined, SwapOutlined, UndoOutlined, ZoomInOutlined, ZoomOutOutlined, EditOutlined, PictureOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import errorImg from '../File/image/error.png'
 import albumSvg from '../File/image/file.svg'
 import Material from '@/components/Material'
@@ -56,6 +56,11 @@ export default () => {
   const [albumModalType, setAlbumModalType] = useState<'add' | 'edit'>('add');
   // 相册表单加载状态
   const [albumFormLoading, setAlbumFormLoading] = useState(false);
+
+  // 上传照片表单
+  const [uploadForm] = Form.useForm();
+  // 上传照片加载状态
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   /**
    * 获取相册列表
@@ -237,6 +242,29 @@ export default () => {
       setBtnLoading(false);
     } catch (error) {
       setBtnLoading(false);
+    }
+  }
+
+  /**
+   * 提交上传照片表单
+   */
+  const onUploadSubmit = async () => {
+    try {
+      const values = await uploadForm.validateFields();
+      setUploadLoading(true);
+
+      await addAlbumImageDataAPI({
+        ...values,
+        cateId: currentAlbum.id!
+      });
+
+      message.success("🎉 上传照片成功");
+      setIsAddAlbumModalOpen(false);
+      uploadForm.resetFields();
+      getImageList(currentAlbum.id!);
+      setUploadLoading(false);
+    } catch (error) {
+      setUploadLoading(false);
     }
   }
 
@@ -478,13 +506,55 @@ export default () => {
         </Popconfirm>
       </Drawer>
 
+      {/* 上传照片弹窗 */}
+      <Modal
+        title="上传照片"
+        open={isAddAlbumModalOpen}
+        onOk={onUploadSubmit}
+        onCancel={() => {
+          setIsAddAlbumModalOpen(false);
+          uploadForm.resetFields();
+        }}
+        confirmLoading={uploadLoading}
+      >
+        <Form form={uploadForm} layout="vertical" size='large'>
+          <Form.Item
+            name="name"
+            label="照片名称"
+            rules={[{ required: true, message: '请输入照片名称' }]}
+          >
+            <Input placeholder="请输入照片名称" />
+          </Form.Item>
+
+          <div>
+            <Form.Item
+              name="image"
+              label="照片链接"
+              rules={[
+                { required: true, message: '请输入照片链接' },
+                {
+                  pattern: /^https?:\/\//,
+                  message: '请输入正确的链接',
+                  warningOnly: false
+                }
+              ]}
+            >
+              <Input placeholder="请输入照片链接" prefix={<PictureOutlined />} addonAfter={<CloudUploadOutlined className='text-xl cursor-pointer' onClick={() => setIsUploadModalOpen(true)} />} className='customizeAntdInputAddonAfter' />
+            </Form.Item>
+          </div>
+        </Form>
+      </Modal>
+
+      {/* Material组件 */}
       <Material
         uploadDir="album"
         open={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onSelect={(url) => {
-          // form.setFieldValue("image", url.join("\n"));
-          // form.validateFields(['image']);
+          if (url.length) {
+            uploadForm.setFieldValue("image", url[0]);
+            uploadForm.validateFields(['image']);
+          }
         }}
       />
     </div>
