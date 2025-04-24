@@ -54,16 +54,25 @@ export default () => {
         try {
             setLoading(true)
             const { data } = await getDirListAPI()
-            
-            // 过滤掉没有文件的目录
-            const filteredDirs = await Promise.all(
-                data.map(async (dir) => {
-                    const { data: fileData } = await getFileListAPI(dir.name, { page: 1, size: 1 })
-                    return fileData.result.length > 0 ? dir : null
-                })
-            )
-            setDirList(filteredDirs.filter((dir): dir is FileDir => dir !== null))
-            
+
+            const dirList = ['default', 'equipment', 'record', 'article', 'footprint', 'swiper', 'album']
+            dirList.forEach(dir => {
+                if (!data.some((item: FileDir) => item.name === dir)) {
+                    data.push({ name: dir, path: '' });
+                }
+            });
+
+            setDirList(data)
+
+            // // 过滤掉没有文件的目录
+            // const filteredDirs = await Promise.all(
+            //     data.map(async (dir) => {
+            //         const { data: fileData } = await getFileListAPI(dir.name, { page: 1, size: 1 })
+            //         return fileData.result.length > 0 ? dir : null
+            //     })
+            // )
+            // setDirList(filteredDirs.filter((dir): dir is FileDir => dir !== null))
+
             setLoading(false)
         } catch (error) {
             setLoading(false)
@@ -96,11 +105,6 @@ export default () => {
 
             // 判断是否还有更多数据
             setHasMore(data.result.length === 15)
-
-            // 首次加载且没有数据时显示提示
-            if (!fileList.length && !data.result.length && !isLoadMore) {
-                message.error("该目录中没有文件")
-            }
 
             setLoading(false)
             loadingRef.current = false
@@ -196,7 +200,7 @@ export default () => {
             <Card className='FilePage mt-2 min-h-[calc(100vh-180px)]'>
                 <div className='flex justify-between mb-4 px-4'>
                     {
-                        !fileList.length
+                        !fileList.length && !dirName
                             ? <PiKeyReturnFill className='text-4xl text-[#E0DFDF] cursor-pointer' />
                             : <PiKeyReturnFill className='text-4xl text-primary cursor-pointer' onClick={() => {
                                 setFileList([])
@@ -205,7 +209,7 @@ export default () => {
                     }
 
                     {
-                        dirName && <Button type="primary" disabled={!fileList.length} onClick={() => setOpenUploadModalOpen(true)}>上传文件</Button>
+                        dirName && <Button type="primary" onClick={() => setOpenUploadModalOpen(true)}>上传文件</Button>
                     }
                 </div>
 
@@ -216,7 +220,7 @@ export default () => {
                         onScroll={handleScroll}
                     >
                         {
-                            fileList.length
+                            fileList.length || !fileList.length && dirName
                                 ? (
                                     <Masonry
                                         breakpointCols={breakpointColumnsObj}
