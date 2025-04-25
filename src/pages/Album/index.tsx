@@ -390,7 +390,7 @@ export default () => {
         onCancel={() => setOpenAlbumModal(false)}
         confirmLoading={albumFormLoading}
       >
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="vertical" size='large'>
           <Form.Item name="id" hidden>
             <Input />
           </Form.Item>
