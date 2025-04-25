@@ -70,7 +70,6 @@ export default () => {
     try {
       setLoading(true)
       const { data } = await getAlbumCateListAPI()
-
       setAlbumList(data)
       setLoading(false)
     } catch (error) {
@@ -102,10 +101,6 @@ export default () => {
 
       setHasMore(data.result.length === 10)
 
-      if (!imageList.length && !data.result.length && !isLoadMore) {
-        message.error("该相册中没有照片")
-      }
-
       setLoading(false)
       loadingRef.current = false
     } catch (error) {
@@ -123,6 +118,7 @@ export default () => {
       setBtnLoading(true)
       await delAlbumImageDataAPI(data.id)
       await getImageList(currentAlbum.id!)
+      await getAlbumList();
       message.success("🎉 删除照片成功")
       setCurrentImage({})
       setOpenImageInfoDrawer(false)
@@ -267,6 +263,7 @@ export default () => {
       setIsAddAlbumModalOpen(false);
       uploadForm.resetFields();
       getImageList(currentAlbum.id!);
+      getAlbumList();
       setUploadLoading(false);
     } catch (error) {
       setUploadLoading(false);
@@ -280,7 +277,7 @@ export default () => {
       <Card className='AlbumPage mt-2 min-h-[calc(100vh-180px)]'>
         <div className='flex justify-between mb-4 px-4'>
           {
-            !imageList.length
+            !imageList.length && !currentAlbum.id
               ? <PiKeyReturnFill className='text-4xl text-[#E0DFDF] cursor-pointer' />
               : <PiKeyReturnFill className='text-4xl text-primary cursor-pointer' onClick={() => {
                 setImageList([])
@@ -291,7 +288,7 @@ export default () => {
           <Space>
             {
               currentAlbum.id
-                ? <Button type="primary" disabled={!imageList.length} onClick={() => setIsAddAlbumModalOpen(true)}>上传照片</Button>
+                ? <Button type="primary" onClick={() => setIsAddAlbumModalOpen(true)}>上传照片</Button>
                 : <Button type="primary" onClick={() => openAlbumForm('add')}>新增相册</Button>
             }
           </Space>
@@ -304,7 +301,7 @@ export default () => {
             onScroll={handleScroll}
           >
             {
-              imageList.length
+              imageList.length || !imageList.length && currentAlbum.id
                 ? (
                   <Masonry
                     breakpointCols={breakpointColumnsObj}
