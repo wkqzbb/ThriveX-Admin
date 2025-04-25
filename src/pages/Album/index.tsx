@@ -377,7 +377,7 @@ export default () => {
                     </div>
 
                     <p className='group-hover:text-primary transition-colors text-sm mt-1'>{item.name}</p>
-                    <p className='text-slate-400 text-xs mt-1'>{item.images?.length || 0} 张照片</p>
+                    <p className='text-slate-400 text-xs mt-1'>{item.count} 张照片</p>
                   </div>
                 ))
             }
