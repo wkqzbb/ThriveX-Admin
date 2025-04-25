@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Image, Card, Space, Spin, message, Popconfirm, Button, Drawer, Divider, Modal, Form, Input, DatePicker } from 'antd'
 import Title from '@/components/Title'
-import { getAlbumCateListAPI, getImagesByAlbumIdAPI, delAlbumCateDataAPI, addAlbumCateDataAPI, editAlbumCateDataAPI } from '@/api/Album'
+import { getAlbumCateListAPI, getImagesByAlbumIdAPI, delAlbumCateDataAPI, addAlbumCateDataAPI, editAlbumCateDataAPI } from '@/api/AlbumCate'
 import { delAlbumImageDataAPI, addAlbumImageDataAPI } from '@/api/AlbumImage'
 import { AlbumCate } from '@/types/app/album'
 import { PiKeyReturnFill } from "react-icons/pi";
@@ -85,7 +85,7 @@ export default () => {
    */
   const getImageList = async (albumId: number, isLoadMore = false) => {
     if (loadingRef.current) return
-    
+
     try {
       loadingRef.current = true
       setLoading(true)
@@ -406,27 +406,17 @@ export default () => {
             <Input placeholder="请输入相册名称" />
           </Form.Item>
 
-          <div>
-            <Form.Item name="cover" label="相册封面"
-              rules={[
-                {
-                  pattern: /^https?:\/\//,
-                  message: '请输入正确的链接',
-                  warningOnly: false
-                }
-              ]}
-            >
-              <Input placeholder="请输入相册封面链接" />
-            </Form.Item>
-
-            <div className='flex justify-center'>
-              <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.cover !== currentValues.cover}>
-                {() => (
-                  <img src={form.getFieldValue('cover')} alt="" className='h-35 rounded-md object-cover object-center' />
-                )}
-              </Form.Item>
-            </div>
-          </div>
+          <Form.Item name="cover" label="相册封面"
+            rules={[
+              {
+                pattern: /^https?:\/\//,
+                message: '请输入正确的链接',
+                warningOnly: false
+              }
+            ]}
+          >
+            <Input placeholder="请输入相册封面链接" />
+          </Form.Item>
         </Form>
       </Modal>
 
