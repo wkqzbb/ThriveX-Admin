@@ -198,6 +198,7 @@ export default ({ multiple, open, onClose, onSelect, maxCount }: Props) => {
           disabled={selectedFiles.length === 0}
         >选择 ({selectedFiles.length})</Button>
       ] : null}
+      zIndex={1100}
     >
       <div className='flex justify-between mb-4 px-4'>
         {
