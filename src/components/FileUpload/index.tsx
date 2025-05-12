@@ -15,7 +15,7 @@ interface UploadFileProps {
 }
 
 export default ({
-  multiple = true,
+  multiple,
   dir,
   open,
   onCancel,
