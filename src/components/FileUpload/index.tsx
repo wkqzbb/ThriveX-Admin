@@ -14,7 +14,7 @@ interface UploadFileProps {
     onCancel: () => void
 }
 
-export default ({ multiple, dir, open, onCancel, onSuccess }: UploadFileProps) => {
+export default ({ multiple = true, dir, open, onCancel, onSuccess }: UploadFileProps) => {
     const store = useUserStore();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
