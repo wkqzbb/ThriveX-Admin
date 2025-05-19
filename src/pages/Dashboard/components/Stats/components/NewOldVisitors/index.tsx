@@ -54,7 +54,7 @@ export default () => {
   const [loading, setLoading] = useState(true)
 
   const [result, setResult] = useState({ newVisitors: 0, oldVisitors: 0 })
-  const [date, setDate] = useState(dayjs(new Date()).format("YYYY/MM/DD"));
+  const date = dayjs(new Date()).format("YYYY/MM/DD");
 
   const [state, setState] = useState<ChartThreeState>({
     series: [0, 0],

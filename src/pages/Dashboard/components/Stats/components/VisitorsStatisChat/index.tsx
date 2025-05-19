@@ -35,7 +35,7 @@ export default () => {
     const [result, setResult] = useState<Result | null>(null);
     const [scope, setScope] = useState<"day" | "month" | "year">("day");
     const [startDate, setStartDate] = useState(dayjs(new Date()).subtract(7, "day").format("YYYY/MM/DD"));
-    const [endDate, setEndDate] = useState(dayjs(new Date()).format("YYYY/MM/DD"));
+    const endDate = dayjs(new Date()).format("YYYY/MM/DD");
 
     // 图表相关配置
     const [options, setOptions] = useState<ApexOptions>({
@@ -185,8 +185,12 @@ export default () => {
                     return item[0].replace(year, "");
                 });
 
-                pvList = result.items[1].map((item: number[]) => item[0]);
-                ipList = result.items[1].map((item: number[]) => item[1]);
+                pvList = result.items[1].map((item: number[]) =>
+                    typeof item[0] === 'string' ? 0 : item[0],
+                );
+                ipList = result.items[1].map((item: number[]) =>
+                    typeof item[1] === 'string' ? 0 : item[1],
+                );
                 break;
             case "month":
                 const datesArray: string[][] = result.items[0];
@@ -196,7 +200,7 @@ export default () => {
 
                 datesArray.forEach((dateArray, index) => {
                     const date: string = dateArray[0];
-                    const [year, month, day] = date.split('/');
+                    const month = date.split('/')[1];
 
                     if (!monthlySums[month]) {
                         monthlySums[month] = { pv: 0, ip: 0 };
@@ -228,7 +232,7 @@ export default () => {
 
                 result.items[0].forEach((dateArray: string[], index: number) => {
                     const date: string = dateArray[0];
-                    const [year, month, day] = date.split('/');
+                    const year = date.split('/')[0];
 
                     if (!yearlySums[year]) {
                         yearlySums[year] = { pv: 0, ip: 0 };
