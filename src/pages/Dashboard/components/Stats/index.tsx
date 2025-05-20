@@ -26,7 +26,7 @@ export default () => {
         const h = Math.floor(roundedSeconds / 3600).toString().padStart(2, '0');
         const m = Math.floor((roundedSeconds % 3600) / 60).toString().padStart(2, '0');
         const s = (roundedSeconds % 60).toString().padStart(2, '0');
-        return `${h}:${m}:${s}`;
+        return `${h}:${m}:${s}`; 
     };
 
     // 获取统计数据
