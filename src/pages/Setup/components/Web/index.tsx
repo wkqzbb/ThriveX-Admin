@@ -94,6 +94,14 @@ export default () => {
                     <Input placeholder="记录前端、Python、Java点点滴滴" />
                 </Form.Item>
 
+                <Form.Item
+                    label="ICP 备案号"
+                    name="icp"
+                    rules={[{ required: true, message: 'ICP 备案号不能为空' }]}
+                >
+                    <Input placeholder="豫ICP备2020031040号-1" />
+                </Form.Item>
+
                 <Form.Item>
                     <Button type="primary" htmlType="submit" loading={loading} block>保存</Button>
                 </Form.Item>
