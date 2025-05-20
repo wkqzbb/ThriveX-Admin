@@ -226,10 +226,6 @@ export default () => {
             case "year":
                 const yearlySums: { [year: string]: { pv: number, ip: number } } = {};
 
-                console.log(result.items);
-                console.log(result.items[0]);
-                
-
                 result.items[0].forEach((dateArray: string[], index: number) => {
                     const date: string = dateArray[0];
                     const year = date.split('/')[0];
