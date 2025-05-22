@@ -1,4 +1,4 @@
-import { Button, Card, Form, Input, List, Modal, Popconfirm } from 'antd';
+import { Button, Card, Form, Input, List, Modal, Popconfirm, Select } from 'antd';
 import { useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import Title from '@/components/Title';
@@ -11,7 +11,7 @@ export default () => {
 
   const {
     list,
-    testing,
+    testingMap,
     saveAssistant,
     delAssistantData,
     setDefaultAssistant,
@@ -51,8 +51,8 @@ export default () => {
                 <Button
                   type="link"
                   onClick={() => testConnection(item)}
-                  loading={testing}
-                >测试连接</Button>,
+                  loading={testingMap[item.id]}
+                >{testingMap[item.id] ? '测试中...' : '测试连接'}</Button>,
 
                 <Button type='primary' onClick={() => {
                   form.setFieldsValue(item);
@@ -91,7 +91,7 @@ export default () => {
           setId(null);
         }}
       >
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="vertical" size='large'>
           <Form.Item
             name="name"
             label="助手名称"
@@ -113,7 +113,10 @@ export default () => {
             label="模型"
             rules={[{ required: true, message: '请输入模型' }]}
           >
-            <Input placeholder="deepseek-chat" />
+            <Select placeholder="选择模型">
+              <Select.Option value="deepseek-chat">deepseek-chat</Select.Option>
+              <Select.Option value="deepseek-reasoner">deepseek-reasoner</Select.Option>
+            </Select>
           </Form.Item>
         </Form>
       </Modal>

@@ -35,14 +35,14 @@ export const testAssistantConnection = async (assistant: Assistant) => {
     });
 
     if (response.ok) {
-      message.success('连接测试成功');
+      message.success('测试连接成功');
       return true;
     } else {
-      message.error('连接测试失败');
+      message.error('测试连接失败');
       return false;
     }
   } catch (error) {
-    message.error('连接测试失败');
+    message.error('测试连接失败');
     return false;
   }
 };

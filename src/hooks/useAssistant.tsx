@@ -12,7 +12,7 @@ import {
 
 export default function useAssistant() {
   const [loading, setLoading] = useState(false);
-  const [testing, setTesting] = useState(false);
+  const [testingMap, setTestingMap] = useState<Record<string, boolean>>({});
 
   const [list, setList] = useState<Assistant[]>([]);
   const [assistant, setAssistant] = useState<string | null>(null);
@@ -73,10 +73,13 @@ export default function useAssistant() {
 
   // 测试助手连接
   const testConnection = async (assistant: Assistant) => {
-    setTesting(true);
-    const result = await testAssistantConnection(assistant);
-    setTesting(false);
-    return result;
+    setTestingMap(prev => ({ ...prev, [assistant.id]: true }));
+    try {
+      const result = await testAssistantConnection(assistant);
+      return result;
+    } finally {
+      setTestingMap(prev => ({ ...prev, [assistant.id]: false }));
+    }
   };
 
   // 调用助手API
@@ -107,7 +110,7 @@ export default function useAssistant() {
     assistant,
     setAssistant,
     loading,
-    testing,
+    testingMap,
     saveAssistant,
     delAssistantData,
     setDefaultAssistant,
