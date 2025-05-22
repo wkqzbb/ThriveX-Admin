@@ -1,55 +1,52 @@
 import { useState, useEffect } from 'react';
 import { message } from 'antd';
-import { 
-  getAssistants, 
-  saveAssistants, 
-  testAssistantConnection,
-  callAssistantAPI
-} from '@/services/assistant';
+import { testAssistantConnection, callAssistantAPI } from '@/services/assistant';
 import { Assistant } from '@/types/app/assistant';
+import {
+  delAssistantDataAPI,
+  getAssistantListAPI,
+  addAssistantDataAPI,
+  editAssistantDataAPI
+} from '@/api/Assistant'
 
 export default function useAssistant() {
-  const [assistants, setAssistants] = useState<Assistant[]>([]);
-  const [selectedAssistant, setSelectedAssistant] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [testing, setTesting] = useState(false);
 
+  const [list, setList] = useState<Assistant[]>([]);
+  const [assistant, setAssistant] = useState<string | null>(null);
+
+  // 获取助手列表
+  const getAssistantList = async () => {
+    const { data } = await getAssistantListAPI();
+    setList(data);
+
+    // 设置默认助手
+    const defaultAssistant = data.find(a => a.isOpen);
+    if (defaultAssistant) setAssistant(defaultAssistant.id);
+  }
+
   // 初始化加载助手列表
   useEffect(() => {
-    const loadedAssistants = getAssistants();
-    setAssistants(loadedAssistants);
-    
-    // 设置默认助手
-    const defaultAssistant = loadedAssistants.find(a => a.isDefault);
-    if (defaultAssistant) {
-      setSelectedAssistant(defaultAssistant.id);
-    }
+    getAssistantList()
   }, []);
 
   // 添加或更新助手
-  const saveAssistant = (assistant: Omit<Assistant, 'id' | 'isDefault'>, id?: string) => {
+  const saveAssistant = async (assistant: Assistant) => {
     setLoading(true);
+
     try {
-      let updatedAssistants: Assistant[];
-      
-      if (id) {
+      if (assistant.id) {
         // 更新现有助手
-        updatedAssistants = assistants.map(a => 
-          a.id === id ? { ...assistant, id, isDefault: a.isDefault } : a
-        );
+        await editAssistantDataAPI(assistant);
       } else {
         // 添加新助手
-        const newAssistant = {
-          ...assistant,
-          id: Date.now().toString(),
-          isDefault: assistants.length === 0
-        };
-        updatedAssistants = [...assistants, newAssistant];
+        await addAssistantDataAPI(assistant);
       }
 
-      saveAssistants(updatedAssistants);
-      setAssistants(updatedAssistants);
-      message.success(id ? '助手已更新' : '助手已添加');
+      // 更新成功后重新获取列表
+      await getAssistantList();
+      message.success(assistant.id ? '助手已更新' : '助手已添加');
       return true;
     } catch (error) {
       message.error('保存失败');
@@ -60,28 +57,20 @@ export default function useAssistant() {
   };
 
   // 删除助手
-  const deleteAssistant = (id: string) => {
-    const updatedAssistants = assistants.filter(a => a.id !== id);
-    saveAssistants(updatedAssistants);
-    setAssistants(updatedAssistants);
-    
-    // 如果删除的是当前选中的助手，清空选中状态
-    if (selectedAssistant === id) {
-      setSelectedAssistant(null);
-    }
-    
+  const delAssistantData = async (id: number) => {
+    await delAssistantDataAPI(id)
+    getAssistantList()
     message.success('助手已删除');
   };
 
   // 设置默认助手
   const setDefaultAssistant = (id: string) => {
-    const updated = assistants.map(a => ({
+    const updated = list.map(a => ({
       ...a,
-      isDefault: a.id === id
+      isOpen: 1
     }));
-    saveAssistants(updated);
-    setAssistants(updated);
-    setSelectedAssistant(id);
+    setList(updated);
+    setAssistant(id);
     message.success('默认助手已更新');
   };
 
@@ -95,35 +84,35 @@ export default function useAssistant() {
 
   // 调用助手API
   const callAssistant = async (
-    messages: Array<{role: string; content: string}>,
+    messages: Array<{ role: string; content: string }>,
     options?: {
       stream?: boolean;
       temperature?: number;
       max_tokens?: number;
     }
   ) => {
-    if (!selectedAssistant) {
+    if (!assistant) {
       message.error('请先选择助手');
       return null;
     }
 
-    const assistant = assistants.find(a => a.id === selectedAssistant);
-    if (!assistant) {
+    const data = list.find(a => a.id === assistant);
+    if (!data) {
       message.error('助手不存在');
       return null;
     }
 
-    return callAssistantAPI(assistant, messages, options);
+    return callAssistantAPI(data, messages, options);
   };
 
   return {
-    assistants,
-    selectedAssistant,
-    setSelectedAssistant,
+    list,
+    assistant,
+    setAssistant,
     loading,
     testing,
     saveAssistant,
-    deleteAssistant,
+    delAssistantData,
     setDefaultAssistant,
     testConnection,
     callAssistant
