@@ -6,7 +6,8 @@ import {
   delAssistantDataAPI,
   getAssistantListAPI,
   addAssistantDataAPI,
-  editAssistantDataAPI
+  editAssistantDataAPI,
+  setDefaultAssistantAPI
 } from '@/api/Assistant'
 
 export default function useAssistant() {
@@ -22,7 +23,7 @@ export default function useAssistant() {
     setList(data);
 
     // 设置默认助手
-    const defaultAssistant = data.find(a => a.isOpen);
+    const defaultAssistant = data.find(a => a.isDefault);
     if (defaultAssistant) setAssistant(defaultAssistant.id);
   }
 
@@ -64,13 +65,9 @@ export default function useAssistant() {
   };
 
   // 设置默认助手
-  const setDefaultAssistant = (id: string) => {
-    const updated = list.map(a => ({
-      ...a,
-      isOpen: 1
-    }));
-    setList(updated);
-    setAssistant(id);
+  const setDefaultAssistant = async (id: number) => {
+    await setDefaultAssistantAPI(id)
+    getAssistantList()
     message.success('默认助手已更新');
   };
 

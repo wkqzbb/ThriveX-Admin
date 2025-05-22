@@ -3,5 +3,5 @@ export interface Assistant {
   name: string;
   key: string;
   model: string;
-  isOpen: number;
+  isDefault: number;
 }

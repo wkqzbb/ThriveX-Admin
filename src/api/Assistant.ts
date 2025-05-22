@@ -17,3 +17,6 @@ export const getAssistantDataAPI = (id?: number) => Request<Assistant>("GET", `/
 export const getAssistantListAPI = (data?: QueryData) => Request<Assistant[]>("POST", "/assistant/list", {
     data: { ...data?.query }
 });
+
+// 设置默认助手
+export const setDefaultAssistantAPI = (id: number) => Request("PATCH", `/assistant/default/${id}`)

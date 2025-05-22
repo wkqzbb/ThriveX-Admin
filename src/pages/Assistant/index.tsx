@@ -70,15 +70,12 @@ export default () => {
                 </Popconfirm>,
 
                 <Button
-                  type={item.isOpen ? 'primary' : 'default'}
-                  onClick={() => setDefaultAssistant(item.id)}
-                >{item.isOpen ? '默认助手' : '设为默认'}</Button>,
+                  type={item.isDefault ? 'primary' : 'default'}
+                  onClick={() => setDefaultAssistant(+item.id)}
+                >{item.isDefault ? '默认助手' : '设为默认'}</Button>,
               ]}
             >
-              <List.Item.Meta
-                title={item.name}
-                description={`模型: ${item.model}`}
-              />
+              <List.Item.Meta title={item.name} description={`模型: ${item.model}`} />
             </List.Item>
           )}
         />
