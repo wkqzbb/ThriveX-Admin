@@ -1,8 +1,8 @@
 export interface Assistant {
   id: string;
   name: string;
-  baseUrl: string;
-  apiKey: string;
-  modelId: string;
+  url: string;
+  key: string;
+  model: string;
   isDefault: boolean;
 }
