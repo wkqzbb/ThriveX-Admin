@@ -34,6 +34,7 @@ export default forwardRef((props, ref) => {
     // 编辑器配置
     const editorConfig: Partial<IEditorConfig> = {
         placeholder: '记录此刻美好...',
+        autoFocus: true, // 默认获取焦点
     }
 
     useEffect(() => {
