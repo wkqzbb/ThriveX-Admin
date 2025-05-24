@@ -173,6 +173,8 @@ export default () => {
         getFootprintList();
         reset()
       });
+
+      setBtnLoading(false)
     } catch (error) {
       setBtnLoading(false)
     }
