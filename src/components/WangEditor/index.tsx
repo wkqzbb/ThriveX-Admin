@@ -33,7 +33,7 @@ export default forwardRef((props, ref) => {
 
     // 编辑器配置
     const editorConfig: Partial<IEditorConfig> = {
-        placeholder: '请输入内容...',
+        placeholder: '记录此刻美好...',
     }
 
     useEffect(() => {
