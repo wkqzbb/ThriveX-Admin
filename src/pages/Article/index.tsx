@@ -151,7 +151,7 @@ export default () => {
                     </Link>
 
                     <Popconfirm title="警告" description="你确定要删除吗" okText="确定" cancelText="取消" onConfirm={() => delArticleData(record.id!)}>
-                        <Button type="primary" danger loading={loading}>删除</Button>
+                        <Button type="primary" danger>删除</Button>
                     </Popconfirm>
                 </div>
             ),
